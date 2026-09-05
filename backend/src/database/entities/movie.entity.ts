@@ -1,8 +1,10 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
+import { MusicTrackEntity } from './musicTrack.entity';
+import { GuessEntity } from './guess.entity';
 
 
 @Entity('movies')
-export class Movie {
+export class MovieEntity {
 
     @PrimaryGeneratedColumn('uuid')
     id!: string;
@@ -10,9 +12,15 @@ export class Movie {
     @Column({ unique: true })
     title!: string;
 
-    @Column()
+    @Column({ name: 'release_year' })
     releaseYear!: number;
 
-    @Column({ nullable: true })
+    @Column({ nullable: true, name: 'poster_url' })
     posterUrl!: string;
+
+    @OneToMany(() => MusicTrackEntity, (musicTrack) => musicTrack.movie)
+    musicTracks!: MusicTrackEntity[];
+
+    @OneToMany(() => GuessEntity, (guess) => guess.guessedMovie)
+    guesses!: GuessEntity[];
 }
