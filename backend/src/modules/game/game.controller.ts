@@ -17,7 +17,6 @@ export class GameController {
     @Param('gameId') gameId: string,
     @Body() dto: CreateGuessDto
   ) {
-    
-
+    return this.gameService.createGuess(gameId, dto.movieId)
   }
 }

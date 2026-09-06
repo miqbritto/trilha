@@ -66,20 +66,33 @@ export class GameService {
 
         const isCorrect = guessedMovie.id === correctMovie.id;
 
-        const attemptNumber = gameSession.guesses.length + 1;
+        const attemptNumber = await this.guessRepository.count({
+            where: {
+                sessionId: gameSession.id
+            }
+        }) + 1;
 
         const revealedSeconds = REVEAL_STAGES[attemptNumber - 1];
 
-        const guess = await this.guessRepository.create({
+        const guess = this.guessRepository.create({
             attemptNumber,
             revealedSeconds,
-            guessedMovie,
             isCorrect,
             sessionId: gameSession.id,
             guessedMovieId: guessedMovie.id
         });
 
-        await this.guessRepository.save(guess);
+        console.log({
+            attemptNumber,
+            revealedSeconds,
+            isCorrect,
+            sessionId: gameSession.id,
+            guessedMovieId: guessedMovie.id,
+        });
+
+        const savedGuess = await this.guessRepository.save(guess);
+
+        console.log('GUESS SALVO:', savedGuess);
 
         if(isCorrect) {
             gameSession.status = GameSessionStatus.WON;
