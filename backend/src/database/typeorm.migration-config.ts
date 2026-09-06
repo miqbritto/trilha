@@ -1,4 +1,4 @@
-import  { config } from 'dotenv';
+import { config } from 'dotenv';
 import { DataSourceOptions, DataSource } from 'typeorm';
 import { ConfigService } from '@nestjs/config';
 import { MovieEntity } from './entities/movie.entity';
