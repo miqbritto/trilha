@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { GameSessionsEntity } from 'src/database/entities/gameSession.entity';
+import { GameSessionEntity } from 'src/database/entities/gameSession.entity';
 import { MusicTrackEntity } from 'src/database/entities/musicTrack.entity';
 import { Repository } from 'typeorm';
 import { GameSessionStatus } from './enums/game-session-status.enum';
@@ -12,32 +12,36 @@ import { REVEAL_STAGES } from './constants/reveal-stages.constant';
 export class GameService {
 
     constructor(
-         @InjectRepository(GameSessionsEntity)
-         private gameSessionsRepository: Repository<GameSessionsEntity>,
+         @InjectRepository(GameSessionEntity)
+         private readonly gameSessionRepo: Repository<GameSessionEntity>,
          @InjectRepository(MusicTrackEntity)
-         private musicTrackRepository: Repository<MusicTrackEntity>,
+         private readonly musicTrackRepo: Repository<MusicTrackEntity>,
          @InjectRepository(GuessEntity)
-         private guessRepository: Repository<GuessEntity>,
+         private readonly guessRepo: Repository<GuessEntity>,
          @InjectRepository(MovieEntity)
-         private movieRepository: Repository<MovieEntity>
+         private readonly movieRepo: Repository<MovieEntity>
     ) {}
 
-    async createGameSession(): Promise<GameSessionsEntity> {
-        const musicTrack = await this.musicTrackRepository.createQueryBuilder('musicTrack')
+    async createGameSession(): Promise<GameSessionEntity> {
+        const musicTrack = await this.musicTrackRepo.createQueryBuilder('musicTrack')
             .orderBy('RANDOM()')
             .getOne();
 
-        const gameSession = this.gameSessionsRepository.create({
+        if(!musicTrack) {
+            throw new NotFoundException("Trilha não encontrada");
+        }
+
+        const gameSession = this.gameSessionRepo.create({
             musicTrackId: musicTrack?.id,
             status: GameSessionStatus.IN_PROGRESS,
             score: 0,
         });
 
-        return this.gameSessionsRepository.save(gameSession);
+        return this.gameSessionRepo.save(gameSession);
     }
 
-    async createGuess(gameId: string, movieId: string) {
-        const gameSession = await this.gameSessionsRepository.findOne({
+    async createGuess(gameId: string, movieId: string): Promise<any> {
+        const gameSession = await this.gameSessionRepo.findOne({
             where: { id: gameId },
             relations: {
                 musicTrack: {
@@ -54,7 +58,7 @@ export class GameService {
             throw new BadRequestException("Jogo já terminado");
         }
 
-        const guessedMovie = await this.movieRepository.findOne({
+        const guessedMovie = await this.movieRepo.findOne({
             where: { id: movieId }
         })
 
@@ -66,7 +70,7 @@ export class GameService {
 
         const isCorrect = guessedMovie.id === correctMovie.id;
 
-        const attemptNumber = await this.guessRepository.count({
+        const attemptNumber = await this.guessRepo.count({
             where: {
                 sessionId: gameSession.id
             }
@@ -74,7 +78,7 @@ export class GameService {
 
         const revealedSeconds = REVEAL_STAGES[attemptNumber - 1];
 
-        const guess = this.guessRepository.create({
+        const guess = this.guessRepo.create({
             attemptNumber,
             revealedSeconds,
             isCorrect,
@@ -90,7 +94,7 @@ export class GameService {
             guessedMovieId: guessedMovie.id,
         });
 
-        const savedGuess = await this.guessRepository.save(guess);
+        const savedGuess = await this.guessRepo.save(guess);
 
         console.log('GUESS SALVO:', savedGuess);
 
@@ -102,7 +106,7 @@ export class GameService {
             gameSession.finishedAt = new Date()
         }
 
-        await this.gameSessionsRepository.save(gameSession);
+        await this.gameSessionRepo.save(gameSession);
 
         return {
             correct: isCorrect,
@@ -111,6 +115,17 @@ export class GameService {
             status: gameSession.status
         };
 
+    }
+
+    async findGame(gameId: string): Promise<GameSessionEntity> {
+        const game = await this.gameSessionRepo.findOne({
+            where: { id: gameId}
+        })
+        if(!game) {
+            throw new NotFoundException("Jogo não encontrado")
+        }
+
+        return game;
     }
 
     

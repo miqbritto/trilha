@@ -4,7 +4,7 @@ import { GuessEntity } from "./guess.entity";
 import { GameSessionStatus } from "src/modules/game/enums/game-session-status.enum";
 
 @Entity('game_sessions')
-export class GameSessionsEntity {
+export class GameSessionEntity {
     @PrimaryGeneratedColumn('uuid')
     id!: string;
 

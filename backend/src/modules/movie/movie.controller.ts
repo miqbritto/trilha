@@ -1,7 +1,12 @@
-import { Controller } from '@nestjs/common';
+import { Controller, Get, Query } from '@nestjs/common';
 import { MovieService } from './movie.service';
 
-@Controller('movie')
+@Controller('movies')
 export class MovieController {
   constructor(private readonly movieService: MovieService) {}
+
+  @Get()
+  searchMovies(@Query('search') search: string) {
+    return this.movieService.searchMovies(search);
+  }
 }

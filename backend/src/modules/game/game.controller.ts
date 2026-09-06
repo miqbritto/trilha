@@ -1,4 +1,4 @@
-import { Body, Controller, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { GameService } from './game.service';
 import { CreateGuessDto } from './dto/create-guess.dto';
 
@@ -18,5 +18,12 @@ export class GameController {
     @Body() dto: CreateGuessDto
   ) {
     return this.gameService.createGuess(gameId, dto.movieId)
+  }
+
+  @Get(':gameId')
+  async getGame(
+    @Param('gameId') gameId: string 
+  ) {
+    return this.gameService.findGame(gameId)
   }
 }

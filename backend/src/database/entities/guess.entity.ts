@@ -1,5 +1,5 @@
 import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
-import { GameSessionsEntity } from "./gameSession.entity";
+import { GameSessionEntity } from "./gameSession.entity";
 import { MovieEntity } from "./movie.entity";
 
 
@@ -31,7 +31,7 @@ export class GuessEntity {
     @JoinColumn({ name: 'guessed_movie_id' })
     guessedMovie!: MovieEntity;
 
-    @ManyToOne(() => GameSessionsEntity, (session) => session.guesses)
+    @ManyToOne(() => GameSessionEntity, (session) => session.guesses)
     @JoinColumn({ name: 'game_session_id' })
-    session!: GameSessionsEntity;
+    session!: GameSessionEntity;
 }
