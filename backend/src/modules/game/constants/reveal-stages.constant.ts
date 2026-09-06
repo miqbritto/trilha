@@ -1,0 +1,1 @@
+export const REVEAL_STAGES = [1, 2, 4, 8, 15]

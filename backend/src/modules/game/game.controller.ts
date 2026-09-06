@@ -1,7 +1,8 @@
-import { Controller, Post } from '@nestjs/common';
+import { Body, Controller, Param, Post } from '@nestjs/common';
 import { GameService } from './game.service';
+import { CreateGuessDto } from './dto/create-guess.dto';
 
-@Controller('game')
+@Controller('games')
 export class GameController {
   constructor(private readonly gameService: GameService) {}
 
@@ -9,5 +10,14 @@ export class GameController {
   async createGameSession() {
     const gameSession = await this.gameService.createGameSession();
     return gameSession;
+  }
+
+  @Post(':gameId/guesses')
+  createGuess(
+    @Param('gameId') gameId: string,
+    @Body() dto: CreateGuessDto
+  ) {
+    
+
   }
 }
