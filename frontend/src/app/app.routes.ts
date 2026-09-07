@@ -4,7 +4,7 @@ import { Onboarding } from './features/onboarding/onboarding';
 export const routes: Routes = [
     {
         path: "",
-        redirectTo: "onboarding",
+        redirectTo: "game",
         pathMatch: "full"
     },
     {

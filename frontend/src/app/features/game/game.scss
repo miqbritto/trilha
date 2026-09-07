@@ -1,0 +1,94 @@
+.title {
+    display: flex;
+    justify-content: flex-start;
+    width: 25em;
+}
+
+.day-movie {
+    font-family: var(--font-secondary);
+    font-size: 1em;
+    margin-top: 3em;
+}
+
+.highlight {
+    font-family: var(--font-primary);
+}
+
+.attempts {
+    display: flex;
+    gap: 8px;
+    margin: 2em;
+    width: 25em;
+}
+
+.attempt {
+    border-radius: 999px;
+    background-color: var(--color-surface);
+    height: 0.3em;
+    width: 100%;
+}
+
+.player {
+    background: var(--color-surface);
+    height: 10em;
+    width: 25em;
+    border-radius: var(--radius-xl);
+    margin-bottom: 2em;
+}
+
+.btns {
+    display: flex;
+    margin-bottom: 2em;
+    width: 25em;
+    gap: 1rem;
+}
+
+.again,
+.more {
+    flex: 1;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    background: var(--color-bg);
+    color: var(--color-text-secondary);
+    line-height: 2;
+
+    &:hover {
+        background: var(--color-surface-hover);
+        cursor: pointer;
+    }
+}
+
+.input-container {
+    display: flex;
+    width: 25em;
+}
+.input {
+    flex: 1;
+    border: none;
+    background: var(--color-surface);
+    border-radius: var(--radius-md);
+    line-height: 2;
+    color: var(--color-text-secondary);
+    outline: blue;
+    box-sizing: border-box;
+    margin-bottom: 2em;
+}
+
+.submit-container {
+    display: flex;
+    width: 25em;
+}
+
+.submit {
+    border: none;
+    background-color: var(--color-primary);
+    border-radius: var(--radius-md);
+    line-height: 2;
+    flex: 1;
+
+    &:hover {
+        background-color: var(--color-primary-hover);
+        color: var(--color-surface);
+        cursor: pointer;
+    }
+}
