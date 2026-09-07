@@ -12,13 +12,13 @@
     padding: 0 2rem;
     background-color: var(--color-bg);
     color: var(--color-text-muted);
-    font-family: var(--font-family);
+    font-family: var(--font-secondary);
     border-bottom: 0.5px solid var(--color-border-subtle);
 }
 
 .trilha {
     text-decoration: none;
-    font-family: var(--font-heading);
+    font-family: var(--font-primary);
     font-style: italic;
     font-weight: 700;
     letter-spacing: -0.1em;
@@ -33,15 +33,31 @@
     color: var(--color-text-muted);
     margin-right: 2rem;
     font-size: 1em;
+
+    &.active {
+        color: var(--color-text);
+    }
 }
 
 .shell-body {
+    position: relative;
     flex: 1;
     display: flex;
+    flex-direction: column;
     align-items: center;
-    justify-content: center;
     min-height: 0;
     background-color: var(--color-bg);
     color: var(--color-text-muted);
+}
+
+.background-video {
+    position: absolute;
+    inset: 0;
+
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+    z-index: 0;
 }
 

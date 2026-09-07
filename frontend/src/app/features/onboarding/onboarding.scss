@@ -1,6 +1,89 @@
+
 .body {
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    font-family: var(--font-secondary);
+    margin: 0;
+}
+
+.how-to-play {
+    margin: 3em;
+    display: flex;
+    flex-direction: column;
     align-items: center;
+    height: 5em;
+    gap: 16px;
+}
+
+.upr-text {
+    font-size: 2.5em;
+    color: var(--color-text);
+}
+
+.lwr-text-g {
+    font-size: 0.9em;
+    letter-spacing: 0.2em;
+}
+
+.grid {
+    margin: 3em;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.grid-card {
+    display: flex;
+    flex-direction: column;
+    background-color: var(--color-surface);
+    border-radius: var(--radius-xl);
+    padding: 2em;
+    width: 20em;
+    height: 8em;
+    gap: 16px;
+}
+
+.card-header {
+    color: var(--color-primary);
+    font-family: var(--font-primary);
+    font-style: italic;
+    font-weight: 700;
+}
+
+.card-subtle {
+    color: var(--color-text);
+    font-family: var(--font-secondary);
+    font-weight: 600;
+}
+
+.card-content {
+    color: var(--color-text-secondary);
+}
+
+.highlight {
+    font-family: var(--font-primary);
+    letter-spacing: -0.1em;
+}
+
+.play-btn {
+    background: var(--color-primary);
+    color: var(--color-bg);
+    height: 4em;
+    width: 15em;
+    border: none;
+    border-radius: var(--radius-md);
+    font-family: var(--font-secondary);
+    font-weight: 600;
+    cursor: pointer;
+
+    &:hover{
+        background: var(--color-primary-hover);
+        color: var(--color-surface);
+    }
+
+}
+
+#header-btn {
+    height: 3em;
+    width: 11em;
 }

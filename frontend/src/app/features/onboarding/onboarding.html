@@ -1,5 +1,36 @@
 <app-shell>
+
+    <button header-action class="play-btn" id="header-btn">jogar agora</button>
     <body class="body">
-        <h1>teste</h1>
+        <div class="how-to-play">
+            <span class="lwr-text-g">COMO JOGAR</span>
+            <span class="upr-text">Adivinhe o filme pela trilha sonora</span>
+            <span class="lwr-text">Um trecho novo todo dia. Quando menos você precisar ouvir pra acertar, melhor.</span>
+        </div>
+
+        <div class="grid">
+            <div class="grid-card">
+                <span class="card-header">01</span>
+                <span class="card-subtle">Ouça o trecho</span>
+                <span class="card-content">Todo dia um novo trecho de trilha sonora, começando com só <i><b class="highlight">2s</b></i>.</span>
+            </div>
+            <div class="grid-card">
+                <span class="card-header">02</span>
+                <span class="card-subtle">Tente adivinhar</span>
+                <span class="card-content">Digite o nome do filme. Errou? Mais um pedaço da trilha é liberado.</span>
+            </div>
+            <div class="grid-card">
+                <span class="card-header">03</span>
+                <span class="card-subtle"><i><b class="highlight">5 </b></i> tentativas</span>
+                <span class="card-content">O trecho cresce a cada erro: <i><b class="highlight">2s, 4s, 8s, 15s e 30s</b></i> no total.</span>
+            </div>
+            <div class="grid-card">
+                <span class="card-header">04</span>
+                <span class="card-subtle">Compartilhe o resultado</span>
+                <span class="card-content">Sem spoiler: uma grade colorida mostra em qual tentativa você acertou.</span>
+            </div>
+        </div>
+
+        <button class="play-btn">Jogar agora</button>
     </body>
 </app-shell>

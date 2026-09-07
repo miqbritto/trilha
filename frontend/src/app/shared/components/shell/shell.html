@@ -4,10 +4,15 @@
     </div>
 
     <div class="right">
-        <a class="how-to-play" href="#">como jogar</a>
+        <a class="how-to-play" routerLink="/onboarding" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">como jogar</a>
+        <ng-content select="[header-action]"></ng-content>
     </div>
 </header>
 
 <main class="shell-body">
+    <video class="background-video" src="assets/logo-animation.mp4" autoplay muted loop playsinline>
+        <source src="assets/logo-animation.mp4" type="video/mp4">
+    </video>
+
     <ng-content></ng-content>
 </main>
