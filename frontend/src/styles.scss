@@ -10,6 +10,7 @@ body {
 
 body {
     overflow: hidden;
+   font-family: var(--font-secondary);
 }
 
 app-root {
@@ -25,7 +26,9 @@ app-root {
 
   // Background
   --color-bg: #12100e;
+   --color-bg-dark: #0d0b09;
   --color-surface: #1e1b18;
+  --color-surface-subtle: #2b2723;
   --color-surface-hover: #2a2622;
 
   // Brand
@@ -56,6 +59,7 @@ app-root {
 
   --font-primary: "IBM Plex Mono", monospace;
   --font-secondary: "IBM Plex Sans", sans-serif;
+  --font-tertiary: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Georgia, serif;
   
 
   --font-size-xs: 0.75rem;    // 12px

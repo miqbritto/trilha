@@ -1,10 +1,9 @@
 import { Routes } from '@angular/router';
-import { Onboarding } from './features/onboarding/onboarding';
 
 export const routes: Routes = [
     {
         path: "",
-        redirectTo: "game",
+        redirectTo: "onboarding",
         pathMatch: "full"
     },
     {

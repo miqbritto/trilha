@@ -1,36 +1,39 @@
 <app-shell>
-    <button header-action class="play-btn" id="header-btn">jogar agora</button>
+    <button header-action class="play-btn" id="header-btn" routerLink="/game">jogar agora</button>
 
     <div class="body">
-        <div class="how-to-play">
-            <span class="lwr-text-g">COMO JOGAR</span>
-            <span class="upr-text">Adivinhe o filme pela trilha sonora</span>
-            <span class="lwr-text">Um trecho novo todo dia. Quando menos você precisar ouvir pra acertar, melhor.</span>
-        </div>
+        <header class="intro">
+            <p class="eyebrow">como jogar</p>
+            <h1 class="headline">adivinhe o filme<br>pela trilha</h1>
+            <p class="lede">um trecho novo todo dia. menos som, melhor score.</p>
+        </header>
 
-        <div class="grid">
-            <div class="grid-card">
-                <span class="card-header">01</span>
-                <span class="card-subtle">Ouça o trecho</span>
-                <span class="card-content">Todo dia um novo trecho de trilha sonora, começando com só <i><b class="highlight">2s</b></i>.</span>
-            </div>
-            <div class="grid-card">
-                <span class="card-header">02</span>
-                <span class="card-subtle">Tente adivinhar</span>
-                <span class="card-content">Digite o nome do filme. Errou? Mais um pedaço da trilha é liberado.</span>
-            </div>
-            <div class="grid-card">
-                <span class="card-header">03</span>
-                <span class="card-subtle"><i><b class="highlight">5 </b></i> tentativas</span>
-                <span class="card-content">O trecho cresce a cada erro: <i><b class="highlight">2s, 4s, 8s, 15s e 30s</b></i> no total.</span>
-            </div>
-            <div class="grid-card">
-                <span class="card-header">04</span>
-                <span class="card-subtle">Compartilhe o resultado</span>
-                <span class="card-content">Sem spoiler: uma grade colorida mostra em qual tentativa você acertou.</span>
-            </div>
-        </div>
+        <section class="rules" aria-label="Como jogar">
+            <article class="rule">
+                <span class="rule-index">01</span>
+                <div class="rule-copy">
+                    <h2>ouça</h2>
+                    <p>todo dia, um trecho novo começa em 2 segundos e cresce nos erros.</p>
+                </div>
+            </article>
 
-        <button class="play-btn">Jogar agora</button>
+            <article class="rule">
+                <span class="rule-index">02</span>
+                <div class="rule-copy">
+                    <h2>tente</h2>
+                    <p>digite o nome do filme. se errar, a trilha ganha mais trechos.</p>
+                </div>
+            </article>
+
+            <article class="rule">
+                <span class="rule-index">03</span>
+                <div class="rule-copy">
+                    <h2>acerte</h2>
+                    <p>você tem 5 tentativas e a progressão final é 2s, 4s, 8s, 15s e 30s.</p>
+                </div>
+            </article>
+        </section>
+
+        <button class="play-btn" routerLink="/game">jogar agora</button>
     </div>
 </app-shell>

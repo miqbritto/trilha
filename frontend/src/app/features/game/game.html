@@ -1,44 +1,81 @@
 <app-shell>
+  <div class="game-page">
+    <header class="game-header">
+      <div class="meta-row">
+        <span class="issue">daily cue</span>
+        <span class="issue-number">#142</span>
+      </div>
 
-    <body class="main">
-        <div class="title">
-            <span class="day-movie">FILME DO DIA <i class="highlight">#142</i></span>
-        </div>
-        <div class="attempts">
-            <span class="attempt"></span>
-            <span class="attempt"></span>
-            <span class="attempt"></span>
-            <span class="attempt"></span>
-            <span class="attempt"></span>
-        </div>
+      <h1 class="game-title">filme do dia</h1>
+    </header>
 
-        <div class="player">
+    <div class="progress" aria-label="Progresso das tentativas">
+      <span class="progress-bar is-active"></span>
+      <span class="progress-bar is-active"></span>
+      <span class="progress-bar"></span>
+      <span class="progress-bar"></span>
+      <span class="progress-bar"></span>
+    </div>
 
-        </div>
-
-        <div class="btns">
-            <button class="again">Ouvir novamente</button>
-            <button class="more">Ouvir mais</button>
-        </div>
-
-        <div class="input-container">
-        <input class="input">
-        </div>
-
-        <div class="submit-container">
-        <button class="submit">Confirmar palpite</button>
+    <main class="game-panel">
+      <section class="deck" aria-label="Reprodutor de áudio">
+        <div class="deck-labels">
+          <span>now playing</span>
+          <span>02:14</span>
         </div>
 
-        <span>TENTATIVAS</span>
-        <div class="guesses">
-            
-            <div class="guess">
-                <span>X</span>
-                <span>movie name</span>
-            </div>
+        <div class="waveform" aria-hidden="true">
+
         </div>
 
+        <div class="player-actions">
+          <button class="ghost-button" type="button">
+            <span class="button-icon" aria-hidden="true">↻</span>
+            <span>ouvir de novo</span>
+          </button>
+          <button class="ghost-button" type="button">
+            <span class="button-icon" aria-hidden="true">＋</span>
+            <span>ouvir mais</span>
+          </button>
+        </div>
+      </section>
 
-    </body>
+      <section class="guess-panel" aria-label="Palpite do filme">
+        <label class="input-label" for="movie-guess">seu palpite</label>
 
+        <div class="guess-form">
+          <input
+            id="movie-guess"
+            class="guess-input"
+            type="text"
+            placeholder="digite o nome do filme"
+            aria-label="Digite o nome do filme"
+          />
+          <button class="submit-button" type="button">confirmar</button>
+        </div>
+      </section>
+
+      <section class="history" aria-label="Histórico de tentativas">
+        <div class="history-head">
+          <span>tentativas</span>
+          <span class="history-counter">3/5</span>
+        </div>
+
+        <div class="guess-list">
+          <div class="guess-row is-wrong">
+            <span class="guess-mark">✕</span>
+            <span class="guess-name">movie name</span>
+          </div>
+          <div class="guess-row is-wrong">
+            <span class="guess-mark">✕</span>
+            <span class="guess-name">another title</span>
+          </div>
+          <div class="guess-row is-pending">
+            <span class="guess-mark">•</span>
+            <span class="guess-name">aguardando</span>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
 </app-shell>
