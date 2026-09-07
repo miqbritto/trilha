@@ -10,9 +10,18 @@
 </header>
 
 <main class="shell-body">
-    <video class="background-video" src="assets/logo-animation.mp4" autoplay muted loop playsinline>
+    <video
+        class="background-video"
+        autoplay
+        muted
+        loop
+        playsinline
+        preload="auto"
+    >
         <source src="assets/logo-animation.mp4" type="video/mp4">
     </video>
 
-    <ng-content></ng-content>
+    <div class="shell-content">
+        <ng-content></ng-content>
+    </div>
 </main>

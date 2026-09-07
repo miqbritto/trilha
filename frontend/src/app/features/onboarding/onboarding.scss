@@ -1,22 +1,30 @@
-
 .body {
-    display: flex;
-    flex-direction: column;
-    font-family: var(--font-secondary);
-    margin: 0;
-}
-
-.how-to-play {
-    margin: 3em;
+    position: relative;
+    z-index: 1;
     display: flex;
     flex-direction: column;
     align-items: center;
-    height: 5em;
-    gap: 16px;
+    justify-content: space-evenly;
+    flex: 1;
+    min-height: 0;
+    width: 100%;
+    box-sizing: border-box;
+    font-family: var(--font-secondary);
+    margin: 0;
+    padding: 1.5rem 2rem;
+}
+
+.how-to-play {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    text-align: center;
+    flex-shrink: 0;
 }
 
 .upr-text {
-    font-size: 2.5em;
+    font-size: clamp(1.5rem, 3.5vh, 2.5em);
     color: var(--color-text);
 }
 
@@ -25,11 +33,19 @@
     letter-spacing: 0.2em;
 }
 
+.lwr-text {
+    max-width: 36rem;
+}
+
 .grid {
-    margin: 3em;
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 20px;
+    gap: 1rem;
+    flex: 1;
+    min-height: 0;
+    max-width: 52rem;
+    width: 100%;
+    align-content: center;
 }
 
 .grid-card {
@@ -37,10 +53,12 @@
     flex-direction: column;
     background-color: var(--color-surface);
     border-radius: var(--radius-xl);
-    padding: 2em;
-    width: 20em;
-    height: 8em;
-    gap: 16px;
+    padding: clamp(1rem, 2vh, 1.5rem);
+    box-sizing: border-box;
+    gap: 0.8rem;
+    min-height: 0;
+    height: 10em;
+    justify-content: center;
 }
 
 .card-header {
@@ -58,6 +76,7 @@
 
 .card-content {
     color: var(--color-text-secondary);
+    font-size: clamp(0.8rem, 1.6vh, 1rem);
 }
 
 .highlight {
@@ -66,9 +85,10 @@
 }
 
 .play-btn {
+    flex-shrink: 0;
     background: var(--color-primary);
     color: var(--color-bg);
-    height: 4em;
+    height: 3.5em;
     width: 15em;
     border: none;
     border-radius: var(--radius-md);
@@ -76,11 +96,10 @@
     font-weight: 600;
     cursor: pointer;
 
-    &:hover{
+    &:hover {
         background: var(--color-primary-hover);
         color: var(--color-surface);
     }
-
 }
 
 #header-btn {
