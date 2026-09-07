@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { ɵEmptyOutletComponent } from "@angular/router";
 
 @Component({
   imports: [],

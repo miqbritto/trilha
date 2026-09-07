@@ -1,0 +1,42 @@
+:host {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+.shell-header {
+    flex: 0 0 5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 2rem;
+    background-color: var(--color-bg);
+    color: var(--color-text-muted);
+    font-family: var(--font-family);
+    border-bottom: 0.5px solid var(--color-border-subtle);
+}
+
+.trilha {
+    text-decoration: none;
+    color: var(--color-text);
+    line-height: 1.5em;
+    font-size: 3em;
+    margin-left: 2rem;
+}
+
+.how-to-play {
+    text-decoration: none;
+    color: var(--color-text-muted);
+    margin-right: 2rem;
+}
+
+.shell-body {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 0;
+    background-color: var(--color-bg);
+    color: var(--color-text-muted);
+}
+
