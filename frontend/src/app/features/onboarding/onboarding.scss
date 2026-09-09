@@ -42,6 +42,7 @@
     color: var(--color-text);
     font-weight: 600;
     text-transform: lowercase;
+    
 }
 
 .lede {
@@ -51,6 +52,12 @@
     font-size: 1rem;
     line-height: 1.6;
     text-transform: lowercase;
+}
+
+.highlight {
+    font-family: var(--font-primary);
+    letter-spacing: -0.1em;
+    font-weight: 600;
 }
 
 .rules {
@@ -113,10 +120,10 @@
 .play-btn {
     flex-shrink: 0;
     background: var(--color-primary);
-    color: var(--color-on-primary);
+    color: var(--color-bg-dark);
     height: 3.1rem;
     min-width: 11.5rem;
-    border: 1px solid var(--color-on-primary);
+    border: 2px solid var(--color-bg-dark);
     border-radius: 0.75rem;
     font-family: var(--font-secondary);
     font-weight: 700;
