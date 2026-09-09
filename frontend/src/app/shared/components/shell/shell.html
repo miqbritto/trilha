@@ -1,27 +1,32 @@
-<header class="shell-header">
-    <div class="left">
-        <a class="trilha" href="#">trilha</a>
-    </div>
+<div class="shell">
+   
 
-    <div class="right">
-        <a class="how-to-play" routerLink="/onboarding" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">como jogar</a>
-        <ng-content select="[header-action]"></ng-content>
-    </div>
-</header>
+    <header class="shell-header">
+        <div class="left">
+            <a class="trilha" href="#">trilha</a>
+        </div>
 
-<main class="shell-body">
-    <!-- <video
-        class="background-video"
-        autoplay
-        muted
-        loop
-        playsinline
-        preload="auto"
-    >
-        <source src="assets/logo-animation.mp4" type="video/mp4">
-    </video> -->
+        <div class="right">
+            <a class="how-to-play" routerLink="/onboarding" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">como jogar</a>
+            <ng-content select="[header-action]"></ng-content>
+        </div>
+    </header>
 
-    <div class="shell-content">
-        <ng-content></ng-content>
-    </div>
-</main>
+    <main class="shell-body">
+        <!-- <video
+            class="background-video"
+            autoplay
+            muted
+            loop
+            playsinline
+            preload="auto"
+        >
+            <source src="assets/logo-animation.mp4" type="video/mp4">
+        </video> -->
+
+        <div class="shell-content">
+            <ng-content></ng-content>
+        </div>
+    </main>
+
+</div>

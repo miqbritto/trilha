@@ -4,6 +4,25 @@
     height: 100vh;
 }
 
+.shell {
+    position: relative;
+}
+
+.shell::after {
+    content: '';
+    position: fixed;
+    inset: -50%;
+    pointer-events: none;
+    z-index: 60;
+    opacity: 0.05;
+
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+
+    animation: grain-drift 6s steps(6) infinite;
+}
+
+
+
 .shell-header {
     flex: 0 0 5rem;
     display: flex;
@@ -18,10 +37,10 @@
 
 .trilha {
     text-decoration: none;
-    font-family: var(--font-primary);
+    font-family: var(--font-v2-primary);
     font-style: italic;
-    font-weight: 700;
-    letter-spacing: -0.1em;
+    font-weight: 600;
+    letter-spacing: -0.025em;
     color: var(--color-text);
     line-height: 1.5em;
     font-size: 2.5em;

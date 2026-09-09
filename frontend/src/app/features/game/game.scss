@@ -23,39 +23,74 @@
 
 .game-header {
   display: flex;
-  flex-direction: column;
-  align-items: center;
+  align-items: flex-end;
+  justify-content: space-between;
   gap: 0.4rem;
-  text-align: center;
+  text-align: left;
 }
 
 .meta-row {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.6rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
   font-family: var(--font-secondary);
-  font-size: 0.68rem;
-  letter-spacing: 0.18em;
   text-transform: uppercase;
   color: var(--color-text-secondary);
+  gap: 0.5rem;
+
 }
 
 .issue-number {
-  color: var(--color-primary);
-  font-family: var(--font-primary);
-  font-style: italic;
-  letter-spacing: -0.08em;
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  font-size: 80px;
+  letter-spacing: -0.025em;
+  line-height: .8;
+  margin: 0;
+  padding: 0;
+}
+
+.issue {
+  color: var(--color-secondary);
 }
 
 .game-title {
   margin: 0;
-  font-family: var(--font-tertiary);
-  font-size: clamp(2.3rem, 5vw, 4rem);
+  font-family: var(--font-mono);
+  font-size: var(--font-size-xs);
   line-height: 0.9;
-  letter-spacing: -0.08em;
-  text-transform: lowercase;
-  color: var(--color-text);
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--color-secondary);
   font-weight: 600;
+  justify-self: flex-start;
+  align-items: flex-start;
+}
+
+.game-date {
+  display: flex;
+  flex-direction: column;
+  align-items: self-end;
+  gap: 0.4rem;
+  justify-content: self-end;
+}
+
+.game-date-label {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-text-secondary);
+  margin: 0;
+}
+
+.game-date-value {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-primary);
+  margin: 0;
 }
 
 .progress {
@@ -89,7 +124,6 @@
   position: relative;
   background: var(--color-surface);
   border: 2px solid var(--color-border-subtle);
-  border-radius: 1rem;
   box-shadow: 4px 4px 0 var(--color-bg);
 }
 
