@@ -1,16 +1,18 @@
 :host {
   display: block;
   width: 100%;
+  overflow: auto;
 }
 
 .game-page {
   position: relative;
   display: flex;
   flex-direction: column;
-  width: min(100%, 38rem);
+  width: min(100%, 44rem);
   gap: 1.2rem;
   padding: clamp(1.1rem, 2vw, 1.8rem) 1rem 2rem;
   box-sizing: border-box;
+  
 }
 
 // .game-page::before {
@@ -119,12 +121,12 @@
 }
 
 .deck,
-.guess-panel,
 .history {
   position: relative;
   background: var(--color-surface);
   border: 2px solid var(--color-border-subtle);
-  box-shadow: 4px 4px 0 var(--color-bg);
+  box-shadow: 4px 4px 0 var(--color-bg-dark);
+  border-radius: 4px;
 }
 
 .deck {
@@ -145,6 +147,60 @@
   color: var(--color-text-secondary);
 }
 
+.player,
+.revealed-seconds {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
+  gap: 0.8rem;
+}
+
+.wave {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 2px;
+  height: 100px;
+  min-width: 0;
+}
+
+.wave-bar {
+  flex: 1 1 0;
+  min-width: 0;
+  width: 6px;
+  height: 12px;
+  background: var(--color-text-disabled);
+  transform-origin: bottom center;
+  animation: 850ms ease-in-out infinite alternate;
+
+  &:nth-child(2) {
+    animation-duration: 620ms;
+    animation-delay: -300ms;
+  }
+
+  &:nth-child(3) {
+    animation-duration: 980ms;
+    animation-delay: -650ms;
+  }
+
+  &:nth-child(4) {
+    animation-duration: 740ms;
+    animation-delay: -200ms;
+  }
+
+  &:nth-child(5) {
+    animation-duration: 1100ms;
+    animation-delay: -500ms;
+  }
+}
+
+@keyframes wave-bounce {
+  0% { transform: scaleY(0.15); }
+  35% { transform: scaleY(0.65); }
+  65% { transform: scaleY(0.35); }
+  100% { transform: scaleY(1); }
+}
+
 .waveform {
   display: grid;
   grid-template-columns: repeat(32, minmax(0, 1fr));
@@ -155,6 +211,116 @@
   border-radius: 0.8rem;
   background: var(--color-surface-subtle);
   border: 1px solid var(--color-border-subtle);
+}
+
+.revealed-seconds {
+  margin-top: 0;
+}
+
+.second {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.4rem;
+  min-width: 0;
+}
+
+.second-bar{
+  width: 100%;
+  height: 0.5px;
+  background-color: var(--color-secondary);
+}
+
+.second-bar.is-active {
+  background: var(--color-primary);
+}
+
+.s {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  line-height: 1;
+  color: var(--color-text-secondary);
+}
+
+
+
+.playback-controls {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: clamp(0.75rem, 2vw, 1.4rem);
+  padding-block: 0.8rem;
+}
+
+.play-button,
+.replay-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  cursor: pointer;
+  transition-duration: 0.15s;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-property: transform, box-shadow, background-color;
+
+  &:focus-visible {
+    outline: 2px solid var(--color-text);
+    outline-offset: 5px;
+  }
+
+  &:hover {
+    filter: brightness(1.12);
+  }
+
+  &:active {
+    box-shadow: none;
+    transform: translate(3px, 3px);
+  }
+}
+
+.play-button {
+  width: clamp(3.5rem, 10vw, 5rem);
+  aspect-ratio: 1;
+  border: 1px solid #b98d36;
+  border-radius: 50%;
+  background: #edb94f;
+  color: var(--color-on-primary);
+  box-shadow: 4px 5px 0 var(--color-bg-dark);
+
+  svg {
+    margin-left: 3px;
+  }
+}
+
+.playback-copy {
+  min-width: 0;
+}
+
+.playback-title {
+  margin: 0;
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  font-size: clamp(1.25rem, 3vw, 1.75rem);
+  font-weight: 400;
+  line-height: 1.15;
+}
+
+.playback-hint {
+  margin: 0.5rem 0 0;
+  color: var(--color-text-muted);
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  line-height: 1.6;
+  letter-spacing: 0.025em;
+}
+
+.replay-button {
+  width: clamp(2.5rem, 7vw, 3rem);
+  aspect-ratio: 1;
+  border: 1px solid var(--color-border);
+  border-radius: 3px;
+  background: transparent;
+  color: var(--color-text-secondary);
 }
 
 .player-actions {
@@ -193,68 +359,100 @@
 }
 
 .guess-panel {
-  padding: 0.9rem 0.8rem 0.85rem;
+  margin-top: 0.75rem;
+  min-width: 0;
 }
 
 .input-label {
   display: block;
-  margin-bottom: 0.55rem;
-  font-size: 0.68rem;
-  letter-spacing: 0.18em;
+  margin-bottom: 0.75rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: var(--color-text-secondary);
+  color: var(--color-text-muted);
 }
 
 .guess-form {
   display: flex;
-  gap: 0.7rem;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.guess-search {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.search-icon {
+  position: absolute;
+  left: 1.125rem;
+  color: var(--color-text-muted);
+  pointer-events: none;
 }
 
 .guess-input {
-  flex: 1;
-  min-height: 3rem;
-  padding: 0.8rem 0.9rem;
-  border: 2px solid var(--color-border-subtle);
-  border-radius: 0.7rem;
-  background: var(--color-bg);
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  min-height: 4.25rem;
+  padding: 1rem 1.125rem 1rem 3rem;
+  border: 1px solid var(--color-text-disabled);
+  border-radius: 3px;
+  background: var(--color-surface);
   color: var(--color-text);
-  font-family: var(--font-secondary);
-  font-size: 1rem;
+  font-family: var(--font-sans);
+  font-size: 1.125rem;
   outline: none;
-  box-shadow: 3px 3px 0 var(--color-bg);
-  transition: border-color var(--transition-fast), box-shadow var(--transition-fast), transform var(--transition-fast);
+  transition: border-color var(--transition-fast);
 
   &::placeholder {
     color: var(--color-text-muted);
-    text-transform: lowercase;
+    font-family: var(--font-secondary);
   }
 
   &:focus {
     border-color: var(--color-primary);
-    box-shadow: 4px 4px 0 var(--color-bg);
   }
 }
 
 .submit-button {
-  min-width: 9.2rem;
-  min-height: 3rem;
-  border: 2px solid var(--color-on-primary);
-  border-radius: 0.7rem;
-  background: var(--color-primary);
-  color: var(--color-on-primary);
-  font-family: var(--font-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  width: 100%;
+  min-height: 4rem;
+  border: 1px solid var(--color-border);
+  border-radius: 3px;
+  background: var(--color-surface-subtle);
+  color: var(--color-text-muted);
+  font-family: var(--font-mono);
   font-size: 0.76rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: lowercase;
+  font-weight: 400;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
   cursor: pointer;
-  box-shadow: 4px 4px 0 var(--color-bg);
-  transition: transform var(--transition-normal), filter var(--transition-normal), box-shadow var(--transition-normal);
+  transition: background-color var(--transition-fast), color var(--transition-fast);
 
-  &:active {
-    transform: translate(2px, 2px);
-    box-shadow: 2px 2px 0 var(--color-bg);
+  &:hover {
+    background: var(--color-surface-hover);
+    color: var(--color-text-secondary);
   }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 3px;
+  }
+}
+
+.guess-hint {
+  margin: 1.125rem 0 0;
+  color: var(--color-text-muted);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  line-height: 1.6;
 }
 
 .history {
@@ -359,6 +557,11 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .wave-bar {
+    animation: none;
+    transform: scaleY(0.4);
+  }
+
   .waveform span,
   .ghost-button,
   .submit-button {

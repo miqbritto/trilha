@@ -2,8 +2,7 @@
   <div class="game-page">
     <header class="game-header">
       <div class="meta-row">
-        <!-- <span class="issue">daily cue</span>
-        <span class="issue-number">#142</span> -->
+      
         <p class="game-title">filme do dia</p>
         <p class="issue-number">
           <span class="issue">#</span>
@@ -16,16 +15,8 @@
           <p class="game-date-value">6 TENTATIVAS RESTANTES</p>
         </div>
 
-      <!-- <h1 class="game-title">filme do dia</h1> -->
     </header>
 
-    <div class="progress" aria-label="Progresso das tentativas">
-      <span class="progress-bar is-active"></span>
-      <span class="progress-bar is-active"></span>
-      <span class="progress-bar"></span>
-      <span class="progress-bar"></span>
-      <span class="progress-bar"></span>
-    </div>
 
     <main class="game-panel">
       <section class="deck" aria-label="Reprodutor de áudio">
@@ -35,69 +26,84 @@
         </div>
 
         <div class="player">
-          <div class="wave">
-            <div class="wave-bar"></div>
-            <div class="wave-bar"></div>
-            <div class="wave-bar"></div>
-            <div class="wave-bar"></div>
-            <div class="wave-bar"></div>        
-          </div>
+          @for (bar of bars; track bar) {
+            <div class="wave" aria-hidden="true">
+              @for (wave of waves; track wave) {
+                <div class="wave-bar"></div>
+              }      
+            </div>
+          }
+        </div>
 
           <div class="revealed-seconds">
-            <div class="second">
-              <div class="second-bar"></div>
-              <span class="s"></span>
-            </div>
-            <div class="second">
-              <div class="second-bar"></div>
-              <span class="s"></span>
-            </div>
-            <div class="second">
-              <div class="second-bar"></div>
-              <span class="s"></span>
-            </div>
-            <div class="second">
-              <div class="second-bar"></div>
-              <span class="s"></span>
-            </div>
-            <div class="second">
-              <div class="second-bar"></div>
-              <span class="s"></span>
-            </div>
-            <div class="second">
-              <div class="second-bar"></div>
-              <span class="s"></span>
-            </div>
+            @for (second of bars; track second; let index = $index) {
+              <div class="second">
+                <div class="second-bar" aria-hidden="true"></div>
+                <span class="s">{{ index + 1 }}S</span>
+              </div>
+            }
+            
           </div>
         
-        </div>
+        
 
 
-        <div class="player-actions">
-          <button class="ghost-button" type="button">
-            <span class="button-icon" aria-hidden="true">↻</span>
-            <span>ouvir de novo</span>
+        <div class="playback-controls">
+          <button class="play-button" type="button" aria-label="Reproduzir trilha" (click)="pressButton()">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              @if (isPressed()) {
+                <path d="M6 4h4v16H6zM14 4h4v16h-4z" />
+              } @else {
+                <path d="M6 4.8c0-1.5 1.6-2.4 2.9-1.6l11 7.2a1.9 1.9 0 0 1 0 3.2l-11 7.2C7.6 21.6 6 20.7 6 19.2Z" />
+              }
+            </svg>
           </button>
-          <button class="ghost-button" type="button">
-            <span class="button-icon" aria-hidden="true">＋</span>
-            <span>ouvir mais</span>
+          <div class="playback-copy">
+            @if (isPressed()) {
+              <p class="playback-title">Ouvindo...</p>
+            } @else {
+              <p class="playback-title">Ouça a trilha e identifique o filme.</p>
+            }
+            
+            <p class="playback-hint">Cada erro libera um segundo a mais do trecho.</p>
+          </div>
+          <button class="replay-button" type="button" aria-label="Reiniciar trilha" (click)="pressButton()">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M4 4v5h5" />
+              <path d="M4.5 9a8 8 0 1 1-.3 5M4 9l3-3" />
+            </svg>
           </button>
         </div>
+
+        
       </section>
 
       <section class="guess-panel" aria-label="Palpite do filme">
         <label class="input-label" for="movie-guess">seu palpite</label>
 
         <div class="guess-form">
+          <div class="guess-search">
+            <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true">
+              <circle cx="10.5" cy="10.5" r="7" />
+              <path d="m16 16 4.5 4.5" />
+            </svg>
           <input
             id="movie-guess"
             class="guess-input"
             type="text"
-            placeholder="digite o nome do filme"
+            placeholder="Busque um filme..."
+            aria-describedby="guess-hint"
             aria-label="Digite o nome do filme"
           />
-          <button class="submit-button" type="button">confirmar</button>
+          </div>
+          <button class="submit-button" type="button">
+            <span>Palpitar</span>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M5 12h14m-6-6 6 6-6 6" />
+            </svg>
+          </button>
         </div>
+        <p class="guess-hint" id="guess-hint">Errar não é ruim: cada erro revela mais um segundo da trilha.</p>
       </section>
 
       <section class="history" aria-label="Histórico de tentativas">
