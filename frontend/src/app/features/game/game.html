@@ -83,31 +83,61 @@
 
         <div class="guess-form">
           <div class="guess-search">
-            <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true">
-              <circle cx="10.5" cy="10.5" r="7" />
-              <path d="m16 16 4.5 4.5" />
-            </svg>
-          <input
-            #movieInput
-            id="movie-guess"
-            class="guess-input"
-            type="text"
-            placeholder="Busque um filme..."
-            aria-describedby="guess-hint"
-            aria-label="Digite o nome do filme"
-            autocomplete="off"
-            (input)="searchMovie(movieInput.value)"
-          />
-
-          @for (movie of suggestions(); track movie.id) {
+            @if (selectedMovie(); as movie) {
+              <div class="selected-movie" role="status" aria-label="Filme selecionado">
+                <div class="selected-movie-copy">
+                  <span class="selected-movie-title">{{ movie.title }}</span>
+                  <span class="selected-movie-meta">{{ movie.releaseYear }} <span aria-hidden="true">·</span> {{ directorLoading() ? 'Carregando direção...' : (movie.director ?? 'Direção indisponível') }}</span>
+                </div>
+                <button
+                  class="clear-selection"
+                  type="button"
+                  aria-label="Remover filme selecionado"
+                  (click)="clearSelectedMovie()"
+                >
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true">
+                    <path d="m7 7 10 10M17 7 7 17" />
+                  </svg>
+                </button>
+              </div>
+            } @else {
+              <div class="guess-input-wrapper">
+                <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true">
+                  <circle cx="10.5" cy="10.5" r="7" />
+                  <path d="m16 16 4.5 4.5" />
+                </svg>
+                <input
+                  #movieInput
+                  id="movie-guess"
+                  class="guess-input"
+                  type="text"
+                  placeholder="Busque um filme..."
+                  aria-describedby="guess-hint"
+                  aria-label="Digite o nome do filme"
+                  autocomplete="off"
+                  (input)="searchMovie(movieInput.value)"
+                />
+              </div>
+            }
+          @if (suggestions()?.length) {
+          <div class="suggestions-container" aria-label="Filmes sugeridos">
+          @for (movie of suggestions(); track movie.tmdbId) {
             <button
+              class="suggestions"
               type="button"
-              (click)="selectMovie(movie); movieInput.value = movie.title">
-              {{ movie.title }}
+              (click)="selectMovie(movie)">
+              <span class="suggestion-title">{{ movie.title }}</span>
+              <span class="suggestion-year">
+                 {{ movie.releaseYear ?? 'Ano indisponível' }}
+
+                  
+              </span>
             </button>
           }
           </div>
-          <button class="submit-button" type="button">
+          }
+          </div>
+          <button class="submit-button" type="button" [class.active]="selectedMovie()">
             <span>Palpitar</span>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <path d="M5 12h14m-6-6 6 6-6 6" />

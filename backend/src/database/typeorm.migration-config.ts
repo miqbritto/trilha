@@ -5,6 +5,7 @@ import { MovieEntity } from './entities/movie.entity';
 import { MusicTrackEntity } from './entities/musicTrack.entity';
 import { GameSessionEntity } from './entities/gameSession.entity';
 import { GuessEntity } from './entities/guess.entity';
+import { DailyChallengeEntity } from './entities/daily-challenge';
 
 config();
 
@@ -17,7 +18,7 @@ const dataSourceOptions: DataSourceOptions = {
     username: configService.get<string>('DB_USERNAME'),
     password: configService.get<string>('DB_PASSWORD'),
     database: configService.get<string>('DB_NAME'),
-    entities: [MovieEntity, MusicTrackEntity, GameSessionEntity, GuessEntity],
+    entities: [MovieEntity, MusicTrackEntity, GameSessionEntity, GuessEntity, DailyChallengeEntity],
     migrations: [__dirname + '/migrations/*.ts'],
     synchronize: false
 }

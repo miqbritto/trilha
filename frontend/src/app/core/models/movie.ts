@@ -1,5 +1,6 @@
 export interface Movie {
-  id: string;
+  tmdbId: number;
   title: string;
-  releaseYear: number;
+  releaseYear: number | null;
+  director: string | null;
 }

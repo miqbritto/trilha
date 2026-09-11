@@ -9,11 +9,17 @@ export class MovieEntity {
     @PrimaryGeneratedColumn('uuid')
     id!: string;
 
+    @Column({ name: "tmdb_id", nullable: true })
+    tmdbId!: number;
+
     @Column({ unique: true })
     title!: string;
 
     @Column({ name: 'release_year' })
     releaseYear!: number;
+
+    @Column({ nullable: true })
+    director!: string;
 
     @Column({ nullable: true, name: 'poster_url' })
     posterUrl!: string;

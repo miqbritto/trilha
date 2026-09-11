@@ -20,10 +20,22 @@ export class GameController {
     return this.gameService.createGuess(gameId, dto.movieId)
   }
 
+  @Get("daily")
+  getDailyChallenge() {
+    return this.gameService.getDailyChallenge()
+  }
+
+  @Get("free")
+  getFreeChallenge() {
+    return this.gameService.getFreeChallenge()
+  }
+
   @Get(':gameId')
   async getGame(
     @Param('gameId') gameId: string 
   ) {
     return this.gameService.findGame(gameId)
   }
+
+  
 }

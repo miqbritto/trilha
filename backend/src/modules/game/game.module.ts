@@ -6,6 +6,7 @@ import { GameSessionEntity } from 'src/database/entities/gameSession.entity';
 import { MovieEntity } from 'src/database/entities/movie.entity';
 import { GuessEntity } from 'src/database/entities/guess.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { DailyChallengeEntity } from 'src/database/entities/daily-challenge';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
       MusicTrackEntity,
       MovieEntity,
       GuessEntity,
+      DailyChallengeEntity
     ]),
   ],
   controllers: [GameController],

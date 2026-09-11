@@ -24,10 +24,30 @@ export class Game {
    protected readonly isPressed  = signal(false);
    readonly suggestions          = signal<Movie[] | null>(null);
    readonly selectedMovie        = signal<Movie | null>(null);
+   readonly directorLoading = signal(false);
+   private readonly directorSelection$ = new Subject<Movie | null>();
    private readonly searchTerms$ = new Subject<string>();
 
    // Constructor — initialize the search subscription in the injection context
    constructor() {
+      this.directorSelection$.pipe(
+         switchMap(movie => {
+            if (!movie) return of(null);
+
+            return this.movieService.getDirector(movie.tmdbId).pipe(
+               catchError(() => of({ director: null })),
+            );
+         }),
+         takeUntilDestroyed(),
+      ).subscribe(result => {
+         this.directorLoading.set(false);
+         if (result) {
+            this.selectedMovie.update(movie => movie
+               ? { ...movie, director: result.director }
+               : null);
+         }
+      });
+
       this.searchTerms$.pipe(
          debounceTime(200),
          distinctUntilChanged(),
@@ -59,14 +79,22 @@ export class Game {
    }
 
    searchMovie(search: string) {
-      this.selectedMovie.set(null);
+      this.clearSelectedMovie();
       this.suggestions.set([]);
       this.searchTerms$.next(search.trim());
+      console.log("suggestions", this.suggestions)
    }
 
    selectMovie(movie: Movie) {
       this.selectedMovie.set(movie);
       this.suggestions.set([]);
+      this.directorLoading.set(true);
+      this.directorSelection$.next(movie);
+   }
+
+   clearSelectedMovie() {
+      this.selectedMovie.set(null);
+      this.directorSelection$.next(null);
    }
 
 }

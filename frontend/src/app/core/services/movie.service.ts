@@ -8,6 +8,12 @@ export class MovieService {
     private readonly http = inject(HttpClient)
     private readonly apiUrl = "http://localhost:3000/movies"
 
+    getDirector(tmdbId: number) {
+        return this.http.get<{ director: string | null }>(
+            `${this.apiUrl}/${tmdbId}/director`,
+        );
+    }
+
     searchMovie(search: string) {
         return this.http.get<Movie[]>(this.apiUrl, {
             params: { search }

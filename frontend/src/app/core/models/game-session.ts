@@ -1,3 +1,6 @@
+import { GameChallenge } from "./game-challenge"
+import { GameGuess } from "./game-guess"
+
 export enum GameSessionStatus {
     IN_PROGRESS = "in_progress",
     WON = "won",
@@ -5,8 +8,7 @@ export enum GameSessionStatus {
 }
 
 export interface GameSession {
-    id: string,
-    status: GameSessionStatus,
-    score: number,
-    musicTrackId: string
+    version: 1;
+    challenge: GameChallenge;
+    guesses: GameGuess[];
 }
