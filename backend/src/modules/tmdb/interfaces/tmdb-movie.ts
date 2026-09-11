@@ -2,8 +2,9 @@ export interface TmdbMovie {
     id: number;
     title: string;
     original_title: string;
-    director?: string;
-    release_date?: string;
+    director: string | null;
+    release_date: string | null;
+    poster_path: string | null
 }
 
 export interface TmdbMovieSearchResponse {

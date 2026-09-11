@@ -9,6 +9,7 @@ export interface MovieSuggestion {
     title: string;
     releaseYear: number | null;
     director: string | null;
+    posterUrl: string | null;
 }
 
 @Injectable()
@@ -52,6 +53,9 @@ export class MovieService {
                     ? Number(movie.release_date.slice(0, 4))
                     : null,
                 director: null,
+                posterUrl: movie.poster_path
+                    ? `https://image.tmdb.org/t/p/w92${movie.poster_path}`
+                    : null,
                 };
             });
     }

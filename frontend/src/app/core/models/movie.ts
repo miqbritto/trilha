@@ -3,4 +3,5 @@ export interface Movie {
   title: string;
   releaseYear: number | null;
   director: string | null;
+  posterUrl: string | null;
 }

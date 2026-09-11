@@ -126,6 +126,24 @@
               class="suggestions"
               type="button"
               (click)="selectMovie(movie)">
+              <span class="suggestion-poster" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <rect x="4" y="3" width="16" height="18" rx="2" />
+                  <path d="M8 3v18M16 3v18M4 8h4m8 0h4M4 16h4m8 0h4" />
+                </svg>
+                @if (movie.posterUrl) {
+                  <img
+                    #poster
+                    [src]="movie.posterUrl"
+                    alt=""
+                    width="36"
+                    height="54"
+                    loading="lazy"
+                    decoding="async"
+                    (error)="poster.hidden = true"
+                  />
+                }
+              </span>
               <span class="suggestion-title">{{ movie.title }}</span>
               <span class="suggestion-year">
                  {{ movie.releaseYear ?? 'Ano indisponível' }}
