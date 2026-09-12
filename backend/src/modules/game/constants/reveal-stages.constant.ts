@@ -1,1 +1,1 @@
-export const REVEAL_STAGES = [1, 2, 4, 8, 15]
+export const REVEAL_STAGES = [1, 2, 4, 6, 8]

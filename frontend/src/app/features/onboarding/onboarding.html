@@ -1,5 +1,5 @@
 <app-shell>
-    <button header-action class="play-btn" id="header-btn" routerLink="/game">jogar agora</button>
+    <button header-action class="play-btn" id="header-btn" (click)="play()">jogar agora</button>
 
     <div class="body">
         <header class="intro">
@@ -34,6 +34,6 @@
             </article>
         </section>
 
-        <button class="play-btn" routerLink="/game">jogar agora</button>
+        <button class="play-btn" (click)="play()">jogar agora</button>
     </div>
 </app-shell>

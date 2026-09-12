@@ -24,7 +24,7 @@ export class Game {
    protected readonly isPressed  = signal(false);
    readonly suggestions          = signal<Movie[] | null>(null);
    readonly selectedMovie        = signal<Movie | null>(null);
-   readonly directorLoading = signal(false);
+   readonly directorLoading      = signal(false);
    private readonly directorSelection$ = new Subject<Movie | null>();
    private readonly searchTerms$ = new Subject<string>();
 
@@ -95,6 +95,10 @@ export class Game {
    clearSelectedMovie() {
       this.selectedMovie.set(null);
       this.directorSelection$.next(null);
+   }
+
+   makeGuess() {
+      if(this.selectedMovie )
    }
 
 }
