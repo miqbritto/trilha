@@ -98,4 +98,8 @@ export class Game {
    }
 
 
+   makeGuess() {
+      
+   }
+
 }
