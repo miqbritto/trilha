@@ -1,0 +1,166 @@
+.instructions-dialog {
+    box-sizing: border-box;
+    width: min(30rem, calc(100% - 2rem));
+    max-height: calc(100dvh - 2rem);
+    margin: auto;
+    padding: 2rem;
+    overflow-y: auto;
+    border: 1px solid var(--color-border);
+    border-radius: 3px;
+    background: var(--color-surface);
+    color: var(--color-text);
+    font-family: var(--font-secondary);
+    box-shadow: 0 24px 80px rgb(0 0 0 / 45%);
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+    transition:
+        opacity 180ms ease,
+        transform 180ms ease,
+        overlay 180ms allow-discrete,
+        display 180ms allow-discrete;
+
+    &[open] {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+
+    &::backdrop {
+        background: rgb(0 0 0 / 65%);
+        opacity: 0;
+        transition:
+            opacity 180ms ease,
+            overlay 180ms allow-discrete,
+            display 180ms allow-discrete;
+    }
+
+    &[open]::backdrop {
+        opacity: 1;
+    }
+
+    h2 {
+        margin: 0 2.5rem 1.75rem 0;
+        font-family: var(--font-sans);
+        font-size: 2rem;
+        font-weight: 400;
+        line-height: 0.95;
+        letter-spacing: -0.035em;
+    }
+}
+
+@starting-style {
+    .instructions-dialog[open] {
+        opacity: 0;
+        transform: translateY(8px) scale(0.98);
+    }
+
+    .instructions-dialog[open]::backdrop {
+        opacity: 0;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .instructions-dialog,
+    .instructions-dialog::backdrop {
+        transition: none;
+    }
+}
+
+.instructions-close {
+    position: absolute;
+    top: 2rem;
+    right: 2rem;
+    display: grid;
+    place-items: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    padding: 0;
+    border: 1px solid var(--color-border-subtle);
+    border-radius: 3px;
+    background: transparent;
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    transition: color 0.15s ease, background-color 0.15s ease;
+
+    &:hover {
+        color: var(--color-text);
+        background: var(--color-surface-hover);
+    }
+}
+
+.instructions-close:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 3px;
+}
+
+.instructions-label {
+    margin: 0 3rem 0.75rem 0;
+    color: var(--color-primary);
+    font-family: var(--font-mono);
+    font-size: 0.625rem;
+    text-transform: uppercase;
+    letter-spacing: 0.22em;
+}
+
+.instructions-steps {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    counter-reset: instruction;
+
+    li {
+        position: relative;
+        padding-left: 2.25rem;
+        counter-increment: instruction;
+
+        & + li {
+            margin-top: 1.25rem;
+        }
+
+        &::before {
+            content: counter(instruction, decimal-leading-zero);
+            position: absolute;
+            top: 0.25rem;
+            left: 0;
+            color: var(--color-primary);
+            font-family: var(--font-mono);
+            font-size: 0.625rem;
+            letter-spacing: 0.18em;
+        }
+    }
+
+    h3 {
+        margin: 0 0 0.25rem;
+        font-size: 1rem;
+        font-weight: 600;
+        line-height: 1.5;
+    }
+
+    p {
+        margin: 0;
+        color: var(--color-text-secondary);
+        font-size: 0.9375rem;
+        line-height: 1.5;
+    }
+}
+
+.instructions-footer {
+    margin: 1.875rem 0 0;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--color-border-subtle);
+    color: var(--color-text-muted);
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    line-height: 1.8;
+}
+
+@media (max-width: 400px) {
+    .instructions-dialog {
+        padding: 1.5rem;
+    }
+
+    .instructions-close {
+        top: 1.5rem;
+        right: 1.5rem;
+    }
+}
+

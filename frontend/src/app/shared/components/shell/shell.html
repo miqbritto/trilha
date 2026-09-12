@@ -2,15 +2,41 @@
    
 
     <header class="shell-header">
-        <div class="left">
-            <a class="trilha" href="#">trilha</a>
-        </div>
+        <div class="center-header">
+            <div class="left">
+                <a class="trilha" href="#">trilha</a>
+            </div>
 
-        <div class="right">
-            <a class="how-to-play" routerLink="/onboarding" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">como jogar</a>
-            <ng-content select="[header-action]"></ng-content>
+            <div class="right">
+                
+                <button class="how-to-play" type="button" aria-haspopup="dialog" (click)="howToPlayDialog.open()">
+                    <svg
+                        class="how-to-play-icon"
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        aria-hidden="true"
+                        focusable="false"
+                    >
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                        <path d="M12 17h.01"></path>
+                    </svg>
+                    como jogar
+                </button>
+                
+            </div>
         </div>
+        
     </header>
+
+    <app-how-to-play-dialog #howToPlayDialog></app-how-to-play-dialog>
 
     <main class="shell-body">
         <!-- <video

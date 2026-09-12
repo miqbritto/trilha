@@ -1,0 +1,38 @@
+<dialog
+    #dialog
+    class="instructions-dialog"
+    aria-labelledby="instructions-title"
+    (click)="closeOnBackdrop($event)"
+>
+    <button
+        class="instructions-close"
+        type="button"
+        aria-label="Fechar instruções"
+        autofocus
+        (click)="close()"
+    >
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true" focusable="false">
+            <path d="m6 6 12 12M18 6 6 18"></path>
+        </svg>
+    </button>
+
+    <p class="instructions-label">Como jogar</p>
+    <h2 id="instructions-title">Um filme por dia,<br>escondido na trilha.</h2>
+
+    <ol class="instructions-steps">
+        <li>
+            <h3>Ouça o trecho</h3>
+            <p>O dia começa com apenas 1 segundo da trilha sonora do filme secreto.</p>
+        </li>
+        <li>
+            <h3>Identifique o filme</h3>
+            <p>Busque um título e envie seu palpite. Vale confiar na atmosfera, não só na melodia.</p>
+        </li>
+        <li>
+            <h3>Siga a trilha</h3>
+            <p>Cada erro libera um segundo a mais. Quanto menos você precisar ouvir, melhor o resultado.</p>
+        </li>
+    </ol>
+
+    <p class="instructions-footer">5 tentativas por dia. Uma trilha nova à meia-noite.</p>
+</dialog>

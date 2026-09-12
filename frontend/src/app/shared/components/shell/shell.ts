@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
-import { ɵEmptyOutletComponent, RouterLinkActive, RouterLink } from "@angular/router";
+import { HowToPlayDialog } from './components/how-to-play-dialog/how-to-play-dialog';
 
 @Component({
-  imports: [RouterLinkActive, RouterLink],
+  imports: [HowToPlayDialog],
   selector: 'app-shell',
   styleUrl: './shell.scss',
   templateUrl: './shell.html',
