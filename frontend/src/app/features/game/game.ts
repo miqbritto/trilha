@@ -97,8 +97,5 @@ export class Game {
       this.directorSelection$.next(null);
    }
 
-   makeGuess() {
-      if(this.selectedMovie )
-   }
 
 }
