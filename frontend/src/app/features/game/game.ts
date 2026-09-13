@@ -2,7 +2,7 @@ import { Component, inject, OnInit, signal } from '@angular/core';
 import { Shell } from '../../shared/components/shell/shell';
 import { MovieService } from '../../core/services/movie.service';
 import { Movie } from '../../core/models/movie';
-import { catchError, debounceTime, distinctUntilChanged, of, Subject, switchMap } from 'rxjs';
+import { catchError, debounceTime, distinctUntilChanged, firstValueFrom, of, Subject, switchMap } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { GameSession } from '../../core/models/game-session';
 import { GameSessionStorage } from '../../core/services/game-session-storage.service';
@@ -20,7 +20,7 @@ import { GameService } from '../../core/services/game.service';
 export class Game implements OnInit {
    // Static metadata & constants
    readonly bars  = Array.from({ length: 5 }, (_, i) => i);
-   readonly waves = Array.from({ length: 12 }, (_, i) => i);
+   readonly waves = Array.from({ length: 18 }, (_, i) => i);
 
    // Dependencies — services
    private readonly movieService = inject(MovieService);
@@ -78,29 +78,30 @@ export class Game implements OnInit {
       });
    }
 
-   ngOnInit(): void {
+   async ngOnInit() {
       
-      // const state = this.location.getState() as {
-      //    challenge?: GameChallenge
-      // }
+      const challenge = await firstValueFrom(
+         this.gameService.getDailyChallenge()
+      )
 
-      // const challenge = state.challenge
+      const savedSession = this.storage.load()
 
-      // if (challenge) {
-      //    this.startNewGame(challenge)
-      //    return;
-      // }
+      if(savedSession) {
+         this.session.set(savedSession)
+         return;
+      }
 
-      // const savedSession = this.storage.load()
+      if (challenge) {
+         this.startNewGame(challenge)
 
-      // if(savedSession) {
-      //    this.session.set(savedSession)
-      // }
+      }
+
+      console.log("Sessão salva: ", savedSession);
+      console.log("Sessão signal: ", this.session());
+      console.log("Desafio do dia: ", challenge);
+
+      
    }
-
-
-
-   
 
    // Actions — public API used by the template
    pressButton() {
@@ -132,6 +133,8 @@ export class Game implements OnInit {
 
 
    makeGuess() {
+      const movie = this.selectedMovie();
+      
       
    }
 
