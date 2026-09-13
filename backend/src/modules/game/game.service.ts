@@ -210,6 +210,28 @@ export class GameService {
         }
     }
 
+    async checkGuess(challengeId: string, tmdbId: number) {
+        const challenge = await this.dailyChallengeRepo.findOne({
+            where: { id: challengeId },
+            relations: { 
+                musicTrack: {
+                    movie: true
+                }
+            }
+        })
+
+        if (!challenge) {
+            throw new NotFoundException("Desafio não encontrado")
+        }
+
+        const correctMovie = challenge.musicTrack.movie;
+        const isCorrect = correctMovie.tmdbId === tmdbId
+
+        return {
+            correct: isCorrect
+        }
+    }
+
     
 
 }

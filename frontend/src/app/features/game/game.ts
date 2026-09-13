@@ -132,10 +132,15 @@ export class Game implements OnInit {
    }
 
 
-   makeGuess() {
+   async makeGuess() {
       const movie = this.selectedMovie();
-      
-      
+      const challenge = this.session()?.challenge;
+
+      if(!movie || !challenge) return;
+
+      const response = await firstValueFrom( this.gameService.sendGuess(challenge.id, movie.tmdbId))
+   
+      console.log("Resultade do Palpite", response)
    }
 
    private startNewGame(challenge: GameChallenge) {

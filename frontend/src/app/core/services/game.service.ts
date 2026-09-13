@@ -14,4 +14,11 @@ export class GameService {
             `${this.apiUrl}/daily`
         )
     }
+
+    sendGuess(challengeId: string, tmdbId: number) {
+        return this.hhtp.post(`${this.apiUrl}/guesses`, {
+            challengeId,
+            tmdbId
+        })
+    }
 }

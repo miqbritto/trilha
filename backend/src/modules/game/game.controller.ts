@@ -1,6 +1,7 @@
 import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { GameService } from './game.service';
 import { CreateGuessDto } from './dto/create-guess.dto';
+import { CheckDailyGuessDto } from './dto/check-daily-guesses.dto';
 
 @Controller('games')
 export class GameController {
@@ -10,14 +11,6 @@ export class GameController {
   async createGameSession() {
     const gameSession = await this.gameService.createGameSession();
     return gameSession;
-  }
-
-  @Post(':gameId/guesses')
-  createGuess(
-    @Param('gameId') gameId: string,
-    @Body() dto: CreateGuessDto
-  ) {
-    return this.gameService.createGuess(gameId, dto.movieId)
   }
 
   @Get("daily")
@@ -35,6 +28,13 @@ export class GameController {
     @Param('gameId') gameId: string 
   ) {
     return this.gameService.findGame(gameId)
+  }
+
+  @Post("guesses")
+  async checkGuess(
+    @Body() dto: CheckDailyGuessDto
+  ) {
+    return this.gameService.checkGuess(dto.challengeId, dto.tmdbId)
   }
 
   
