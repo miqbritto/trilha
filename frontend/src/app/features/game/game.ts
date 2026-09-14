@@ -102,11 +102,6 @@ export class Game implements OnInit {
 
       }
 
-      console.log("Sessão salva: ", savedSession);
-      console.log("Sessão signal: ", this.session());
-      console.log("Desafio do dia: ", challenge);
-
-      
    }
 
    // Actions — public API used by the template
