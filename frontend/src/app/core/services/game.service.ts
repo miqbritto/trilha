@@ -1,6 +1,7 @@
 import { inject, Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http"
 import { DailyGameChallenge } from "../models/game-challenge";
+import { ValidateGuessResponse } from "../models/game-guess";
 
 
 
@@ -16,7 +17,7 @@ export class GameService {
     }
 
     sendGuess(challengeId: string, tmdbId: number) {
-        return this.hhtp.post(`${this.apiUrl}/guesses`, {
+        return this.hhtp.post<ValidateGuessResponse>(`${this.apiUrl}/guesses`, {
             challengeId,
             tmdbId
         })

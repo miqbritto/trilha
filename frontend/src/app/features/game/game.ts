@@ -9,6 +9,7 @@ import { GameSessionStorage } from '../../core/services/game-session-storage.ser
 import { GameChallenge } from '../../core/models/game-challenge';
 import { Location } from '@angular/common';
 import { GameService } from '../../core/services/game.service';
+import { GameGuess } from '../../core/models/game-guess';
 
 
 @Component({
@@ -30,10 +31,12 @@ export class Game implements OnInit {
 
    // State — local state
    protected readonly isPressed  = signal(false);
+   readonly isCorrect            = signal<boolean | null>(null);
    readonly suggestions          = signal<Movie[] | null>(null);
    readonly selectedMovie        = signal<Movie | null>(null);
    readonly directorLoading      = signal(false);
    readonly session              = signal<GameSession | null>(null)
+   readonly lastGuessedMovie     = signal<Movie | undefined>(undefined)
    private readonly directorSelection$ = new Subject<Movie | null>();
    private readonly searchTerms$ = new Subject<string>();
 
@@ -86,8 +89,11 @@ export class Game implements OnInit {
 
       const savedSession = this.storage.load()
 
-      if(savedSession) {
+      if(savedSession && savedSession.challenge.id === challenge.id) {
          this.session.set(savedSession)
+         const lastGuess = savedSession.guesses.at(-1);
+         this.isCorrect.set(lastGuess?.correct ?? null);
+         this.lastGuessedMovie.set(lastGuess?.movie);
          return;
       }
 
@@ -134,13 +140,33 @@ export class Game implements OnInit {
 
    async makeGuess() {
       const movie = this.selectedMovie();
-      const challenge = this.session()?.challenge;
+      const session = this.session();
 
-      if(!movie || !challenge) return;
+      if(!movie || !session) return;
 
-      const response = await firstValueFrom( this.gameService.sendGuess(challenge.id, movie.tmdbId))
+      try {
+         const response = await firstValueFrom( this.gameService.sendGuess(session.challenge.id, movie.tmdbId))
+         const updatedSession: GameSession = {
+            ...session,
+            guesses: [...session.guesses, { movie, correct: response.correct }]
+         };
+         this.storage.save(updatedSession);
+         this.session.set(updatedSession);
+         this.isCorrect.set(response.correct)
+         this.clearSelectedMovie();
+
+         const guesses = this.session()?.guesses;
+         const lastGuess = guesses?.at(-1)?.movie
+         this.lastGuessedMovie.set(lastGuess)
+         
+
+
+
+         
+      } catch (error) {
+         console.error("Erro ao verificar palpite: ", error);
+      }
    
-      console.log("Resultade do Palpite", response)
    }
 
    private startNewGame(challenge: GameChallenge) {

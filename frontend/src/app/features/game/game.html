@@ -79,10 +79,10 @@
       </section>
 
       <section class="guess-panel" aria-label="Palpite do filme">
-        @if (selectedMovie()) {
+        @if (lastGuessedMovie()) {
         <div class="wrong-guess">
           <p class="wrong-movie">
-            <span class="wrong-serif">Não é {{selectedMovie()?.title}}.</span>
+            <span class="wrong-serif">Não é {{lastGuessedMovie()?.title}}.</span>
             <span class="wrong-mono">+1s de trilha liberado</span>
           </p>
         </div>
