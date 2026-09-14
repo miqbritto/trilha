@@ -363,6 +363,33 @@
   min-width: 0;
 }
 
+.wrong-guess {
+  display: flex;
+  flex-direction: row;
+  height: 1.5em;
+  margin-bottom: 2em;
+  border-color: var(--color-primary);
+  border-left-width: 2px;
+  border-left: 2px solid var(--color-primary);
+  align-items: center;
+  padding-left: 1em;
+}
+
+.wrong-movie {
+  display: flex;
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  font-size: 1.25em;
+  gap: 1em;
+  align-items: center;
+}
+
+.wrong-mono {
+  font-family: var(--font-mono);
+  color: var(--color-text-muted);
+  font-size: 0.5em;
+}
+
 .input-label {
   display: block;
   margin-bottom: 0.75rem;

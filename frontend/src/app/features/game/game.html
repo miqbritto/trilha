@@ -79,6 +79,15 @@
       </section>
 
       <section class="guess-panel" aria-label="Palpite do filme">
+        @if (selectedMovie()) {
+        <div class="wrong-guess">
+          <p class="wrong-movie">
+            <span class="wrong-serif">Não é {{selectedMovie()?.title}}.</span>
+            <span class="wrong-mono">+1s de trilha liberado</span>
+          </p>
+        </div>
+      }
+
         <label class="input-label" for="movie-guess">seu palpite</label>
 
         <div class="guess-form">
