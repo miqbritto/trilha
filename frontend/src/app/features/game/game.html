@@ -177,14 +177,18 @@
 
       <section class="history" aria-label="Histórico de tentativas">
         <div class="tries">
-
+          <h2 class="tries-title">a trilha até aqui</h2>
+          <p class="tries-title">{{session()?.guesses.length}}/{{bars.length}}</p>
         </div>
         <ol class="tries-list">
-          <li class="tries-item"></li>
-          <li class="tries-item"></li>
-          <li class="tries-item"></li>
-          <li class="tries-item"></li>
-          <li class="tries-item"></li>
+          @for (guess of bars; track $index ) {
+            <li class="tries-item">
+              <span class="number-try">{{$index + 1}}</span>
+              <span class="line-try"></span>
+              <span class="number-try">{{$index + 1}}s</span>
+            </li>
+          }
+          
         </ol>
       </section>
     </main>

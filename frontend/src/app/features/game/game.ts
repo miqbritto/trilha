@@ -6,7 +6,7 @@ import { catchError, debounceTime, distinctUntilChanged, firstValueFrom, of, Sub
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { GameSession } from '../../core/models/game-session';
 import { GameSessionStorage } from '../../core/services/game-session-storage.service';
-import { GameChallenge } from '../../core/models/game-challenge';
+import { DailyGameChallenge, GameChallenge } from '../../core/models/game-challenge';
 import { Location } from '@angular/common';
 import { GameService } from '../../core/services/game.service';
 import { GameGuess } from '../../core/models/game-guess';
@@ -37,6 +37,7 @@ export class Game implements OnInit {
    readonly directorLoading      = signal(false);
    readonly session              = signal<GameSession | null>(null)
    readonly lastGuessedMovie     = signal<Movie | undefined>(undefined)
+   readonly revealStages       = signal<DailyGameChallenge | null>(null)
    private readonly directorSelection$ = new Subject<Movie | null>();
    private readonly searchTerms$ = new Subject<string>();
 
@@ -86,6 +87,7 @@ export class Game implements OnInit {
       const challenge = await firstValueFrom(
          this.gameService.getDailyChallenge()
       )
+
 
       const savedSession = this.storage.load()
 

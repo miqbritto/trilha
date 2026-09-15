@@ -120,13 +120,20 @@
   gap: 1rem;
 }
 
-.deck,
-.history {
+.deck {
   position: relative;
   background: var(--color-surface);
   border: 2px solid var(--color-border-subtle);
   box-shadow: 4px 4px 0 var(--color-bg-dark);
   border-radius: 4px;
+}
+
+.history { 
+  position: relative;
+  justify-content: center;
+  align-items: center;
+  box-sizing: content-box;
+  margin-top: 2em;
 }
 
 .deck {
@@ -645,27 +652,6 @@
   line-height: 1.6;
 }
 
-.history {
-  padding: 0.8rem 0.8rem 0.9rem;
-}
-
-.history-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 0.7rem;
-  font-size: 0.68rem;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--color-text-secondary);
-}
-
-.history-counter {
-  color: var(--color-primary);
-  font-family: var(--font-primary);
-  letter-spacing: -0.06em;
-}
-
 .guess-list {
   display: flex;
   flex-direction: column;
@@ -717,6 +703,49 @@
 
 .is-pending .guess-mark {
   color: var(--color-text-muted);
+}
+
+.tries {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  color: var(--color-text-disabled);
+}
+
+.tries-title {
+  text-transform: uppercase;
+  font-family: var(--font-mono);
+  letter-spacing: .18rem;
+  font-size: 0.6875rem;
+  line-height: 1;
+}
+
+.tries-list{
+  list-style: none;
+  width: 100%;
+  padding: 0;
+  
+}
+
+.tries-item {
+  display: flex;
+  padding-top: .625rem;
+  padding-bottom: .625rem;
+  gap: 1rem;
+  align-items: center;
+}
+
+.number-try {
+  color: var(--color-text-disabled);
+  font-family: var(--font-mono);
+  font-size: 11px;
+}
+
+.line-try {
+  flex: 1 1 0%;
+  height: 1px;
+  background-color: var(--color-border-subtle);
+
 }
 
 @keyframes pulse {
