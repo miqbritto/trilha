@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { Shell } from '../../shared/components/shell/shell';
 import { MovieService } from '../../core/services/movie.service';
 import { Movie } from '../../core/models/movie';
@@ -22,6 +22,11 @@ export class Game implements OnInit {
    // Static metadata & constants
    readonly bars  = Array.from({ length: 5 }, (_, i) => i);
    readonly waves = Array.from({ length: 18 }, (_, i) => i);
+   readonly MAX_GUESSES = 5;
+   readonly guessSlots = Array.from(
+      { length: this.MAX_GUESSES },
+      (_, index) => index + 1,
+   )
 
    // Dependencies — services
    private readonly movieService = inject(MovieService);
@@ -37,9 +42,24 @@ export class Game implements OnInit {
    readonly directorLoading      = signal(false);
    readonly session              = signal<GameSession | null>(null)
    readonly lastGuessedMovie     = signal<Movie | undefined>(undefined)
-   readonly revealStages       = signal<DailyGameChallenge | null>(null)
    private readonly directorSelection$ = new Subject<Movie | null>();
    private readonly searchTerms$ = new Subject<string>();
+   readonly guessesMade          = computed(
+      () => this.session()?.guesses.length ?? 0,
+   )
+   readonly remainingGuesses     = computed(
+      () => Math.max(0, this.MAX_GUESSES - this.guessesMade())
+   )
+   readonly hasWon               = computed(
+      () => this.session()?.guesses.some(guess => guess.correct) ?? false
+   )
+   readonly currentGuess         = computed(() => {
+      if(!this.session() || this.hasWon() || this.remainingGuesses() === 0) {
+         return null;
+      }
+
+      return this.guessesMade() + 1;
+   })
 
    // Constructor — initialize the search subscription in the injection context
    constructor() {

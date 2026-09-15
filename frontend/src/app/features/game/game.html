@@ -181,7 +181,7 @@
           <p class="tries-title">{{session()?.guesses.length}}/{{bars.length}}</p>
         </div>
         <ol class="tries-list">
-          @for (guess of bars; track $index ) {
+          @for (guess of guessSlots; track $index ) {
             <li class="tries-item">
               <span class="number-try">{{$index + 1}}</span>
               <span class="line-try"></span>
