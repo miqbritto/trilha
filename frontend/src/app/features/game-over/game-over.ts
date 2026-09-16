@@ -2,10 +2,11 @@ import { Component, inject, OnInit, signal } from '@angular/core';
 import { Shell } from '../../shared/components/shell/shell';
 import { DatePipe } from '@angular/common';
 import { GameSessionStorage } from '../../core/services/game-session-storage.service';
-import { GameSession } from '../../core/models/game-session';
+import { GameResult, GameSession } from '../../core/models/game-session';
 import { GameService } from '../../core/services/game.service';
 import { DailyGameChallenge } from '../../core/models/game-challenge';
 import { firstValueFrom } from 'rxjs';
+import { Movie } from '../../core/models/movie';
 
 @Component({
   selector: 'app-game-over',
@@ -20,6 +21,7 @@ export class GameOver implements OnInit{
 
   protected readonly session = signal<GameSession | null>(null)
   protected readonly challenge = signal<DailyGameChallenge | null>(null)
+  protected readonly result = signal<GameResult | null>(null);
 
   readonly today = new Date()
 
@@ -28,16 +30,23 @@ export class GameOver implements OnInit{
   }
 
   async getChallenge() {
-    const challenge = await firstValueFrom(
-      this.game.getDailyChallenge()
-    )
+    
 
-    const session = this.gameStorage.load()
+    try {
+      const session = this.gameStorage.load()
+      this.session.set(session)
+      if(!session) {
+        return;
+      }
+      const result = await firstValueFrom(
+        this.game.getDailyResult(session.challenge.id)
+      );
 
-    this.challenge.set(challenge)
-    this.session.set(session)
-
-    return challenge;
+      this.result.set(result); 
+    } catch (error) {
+      console.error("Erro ao carregar resultado", error)
+    }
+    
   }
 
 }

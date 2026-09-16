@@ -2,6 +2,8 @@ import { inject, Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http"
 import { DailyGameChallenge } from "../models/game-challenge";
 import { ValidateGuessResponse } from "../models/game-guess";
+import { Movie } from "../models/movie";
+import { GameResult } from "../models/game-session";
 
 
 
@@ -21,5 +23,11 @@ export class GameService {
             challengeId,
             tmdbId
         })
+    }
+
+    getDailyResult(challengeId: string) {
+        return this.hhtp.get<GameResult>(
+            `${this.apiUrl}/daily/${challengeId}/result`
+        )
     }
 }

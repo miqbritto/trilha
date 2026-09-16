@@ -21,3 +21,7 @@ export interface TmdbMovieCredits {
         job: string
     }[];
 }
+
+export interface TmdbMovieDetails extends Pick<TmdbMovie, 'id' | 'title' | 'release_date' | 'poster_path'> {
+    credits: TmdbMovieCredits;
+}

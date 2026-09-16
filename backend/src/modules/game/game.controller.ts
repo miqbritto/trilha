@@ -13,6 +13,8 @@ export class GameController {
     return gameSession;
   }
 
+  
+
   @Get("daily")
   getDailyChallenge() {
     return this.gameService.getDailyChallenge()
@@ -35,6 +37,13 @@ export class GameController {
     @Body() dto: CheckDailyGuessDto
   ) {
     return this.gameService.checkGuess(dto.challengeId, dto.tmdbId)
+  }
+
+  @Get("daily/:challengeId/result")
+  getDailyResult(
+    @Param("challengeId") challengeId: string
+  ) {
+    return this.gameService.getDailyResult(challengeId);
   }
 
   

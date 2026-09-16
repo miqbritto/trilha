@@ -7,9 +7,11 @@ import { MovieEntity } from 'src/database/entities/movie.entity';
 import { GuessEntity } from 'src/database/entities/guess.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DailyChallengeEntity } from 'src/database/entities/daily-challenge';
+import { TmdbModule } from '../tmdb/tmdb.module';
 
 @Module({
   imports: [
+    TmdbModule,
     TypeOrmModule.forFeature([
       GameSessionEntity,
       MusicTrackEntity,

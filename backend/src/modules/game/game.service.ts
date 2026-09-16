@@ -1,4 +1,4 @@
-import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ConflictException, Injectable, Logger, NotFoundException, ServiceUnavailableException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { GameSessionEntity } from 'src/database/entities/gameSession.entity';
 import { MusicTrackEntity } from 'src/database/entities/musicTrack.entity';
@@ -10,9 +10,11 @@ import { REVEAL_STAGES } from './constants/reveal-stages.constant';
 import { DailyChallengeEntity } from 'src/database/entities/daily-challenge';
 import { getGameDate } from './utils/game-date';
 import { DailyChallengeResponse, FreeChallengeResponse } from './dto/challenge-response.dto';
+import { TmdbService } from '../tmdb/tmdb.service';
 
 @Injectable()
 export class GameService {
+    private readonly logger = new Logger(GameService.name);
 
     constructor(
          @InjectRepository(GameSessionEntity)
@@ -24,7 +26,8 @@ export class GameService {
          @InjectRepository(MovieEntity)
          private readonly movieRepo: Repository<MovieEntity>,
          @InjectRepository(DailyChallengeEntity)
-         private readonly dailyChallengeRepo: Repository<DailyChallengeEntity>
+         private readonly dailyChallengeRepo: Repository<DailyChallengeEntity>,
+         private readonly tmdbService: TmdbService,
     ) {}
 
     async createGameSession(): Promise<GameSessionEntity> {
@@ -248,15 +251,26 @@ export class GameService {
 
         const { musicTrack } = daily;
         const { movie } = musicTrack;
-        
+
+        let tmdbMovie: Awaited<ReturnType<TmdbService['getMovieDetails']>> | null = null;
+        if (Number.isSafeInteger(movie.tmdbId) && movie.tmdbId > 0) {
+            try {
+                tmdbMovie = await this.tmdbService.getMovieDetails(movie.tmdbId);
+            } catch (error) {
+                if (!(error instanceof ServiceUnavailableException)) {
+                    throw error;
+                }
+                this.logger.warn(`TMDB indisponível para o filme ${movie.tmdbId}; usando dados locais.`);
+            }
+        }
 
         return {
             movie: {
                 tmdbId: movie.tmdbId,
-                title: movie.title,
-                releaseYear: movie.releaseYear,
-                director: movie.director,
-                posterUrl: movie.posterUrl
+                title: tmdbMovie?.title || movie.title,
+                releaseYear: tmdbMovie?.releaseYear ?? movie.releaseYear,
+                director: tmdbMovie?.director ?? movie.director,
+                posterUrl: tmdbMovie?.posterUrl ?? movie.posterUrl
             },
             track: {
                 title: musicTrack.title,
