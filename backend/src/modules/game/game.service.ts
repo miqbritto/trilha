@@ -232,6 +232,39 @@ export class GameService {
         }
     }
 
+    async getDailyResult(challengeId: string) {
+        const daily = await this.dailyChallengeRepo.findOne({
+            where: { id: challengeId },
+            relations: {
+                musicTrack: {
+                    movie: true
+                }
+            }
+        })
+
+        if(!daily) {
+            throw new NotFoundException("Desafio não encontrado");
+        }
+
+        const { musicTrack } = daily;
+        const { movie } = musicTrack;
+        
+
+        return {
+            movie: {
+                tmdbId: movie.tmdbId,
+                title: movie.title,
+                releaseYear: movie.releaseYear,
+                director: movie.director,
+                posterUrl: movie.posterUrl
+            },
+            track: {
+                title: musicTrack.title,
+                artist: musicTrack.artist,
+            },
+        }
+    }
+
     
 
 }
