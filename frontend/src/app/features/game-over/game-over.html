@@ -1,1 +1,61 @@
-<p>game-over works!</p>
+<app-shell>
+    <div class="game-page">
+        <header class="game-header">
+            <div class="meta-row">
+            
+                <p class="game-title">filme do dia</p>
+                <p class="issue-number">
+                <span class="issue">#</span>
+                142
+                </p>
+            </div>
+
+                <div class="game-date">
+                <p class="game-date-label">{{today | date:'mediumDate'}}</p>
+                <p class="game-date-value">RESOLVIDO</p>
+                </div>
+
+    </header>
+
+    <section class="movie-section">
+        <div class="movie-poster">
+            <img src="https://cdn.magicpatterns.com/patterns/generated-images/132668a7-f7c6-435a-9573-9a39535ee54a.jpg">
+        </div>
+        <div class="movie-info">
+            <p>VOCÊ SEGUIU A TRILHA</p>
+            <h2>Star Wars</h2>
+            <dl>
+                <div class="line">
+                    <dt class="term">DIREÇÃO</dt>
+                    <dd class="desc">George Lucas</dd>
+                </div>
+                <div class="line">
+                    <dt class="term">ANO</dt>
+                    <dd class="desc">1978</dd>
+                </div>
+                <div class="line">
+                    <dt class="term">TRILHA SONORA</dt>
+                    <dd class="desc">John Williams</dd>
+                </div>
+                <div class="line">
+                    <dt class="term">FAIXA DO DIA</dt>
+                    <dd class="desc">Star Wars (Main Title)</dd>
+                </div> 
+            </dl>
+            <span class="note">Antes de contratar John Williams, o diretor George Lucas queria usar músicas clássicas já existentes (no estilo de 2001: Uma Odisseia no Espaço) para o filme de 1977. Williams convenceu Lucas a apostar em uma trilha orquestral inédita.</span>
+            <div class="results">
+                <div class="result-trie">
+                    <span class="result-num">1</span>
+                    <span class="result-text">TENTATIVA</span>
+                </div>                   
+
+                <div class="result-listen">
+                    <span class="result-num">1S</span>
+                    <span class="result-text">DE TRILHA OUVIDA</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    </div>
+</app-shell>
