@@ -11,8 +11,8 @@
       </div>
 
         <div class="game-date">
-          <p class="game-date-label">08 SET 26</p>
-          <p class="game-date-value">5 TENTATIVAS RESTANTES</p>
+          <p class="game-date-label">{{today | date:'mediumDate'}}</p>
+          <p class="game-date-value">{{remainingGuesses().valueOf()}} TENTATIVAS RESTANTES</p>
         </div>
 
     </header>
@@ -79,7 +79,7 @@
       </section>
 
       <section class="guess-panel" aria-label="Palpite do filme">
-        @if (lastGuessedMovie()) {
+        @if (hasGuessed() && !isCorrect()) {
         <div class="wrong-guess">
           <p class="wrong-movie">
             <span class="wrong-serif">Não é {{lastGuessedMovie()?.title}}.</span>
@@ -178,24 +178,30 @@
       <section class="history" aria-label="Histórico de tentativas">
         <div class="tries">
           <h2 class="tries-title">a trilha até aqui</h2>
-          <p class="tries-title">{{guessesMade()}}/{{guessSlots.length}}</p>
+          <p class="tries-title"><span class="g">{{guessesMade()}}</span>/{{guessSlots.length}}</p>
         </div>
         <ol class="tries-list">
           @for (guess of guessSlots; track $index ) {
             <li class="tries-item">
-              <span class="number-try">{{$index + 1}}</span>
               @if (session()?.guesses?.[$index]; as attempt) {
-                <span class="movie-try">{{ attempt.movie.title }}
-                  @if (attempt.correct) {
+                @if(attempt.correct){
+                  <span class="number-try c" >◆</span>
+                  <span class="movie-try">{{ attempt.movie.title }}
                     <span class="try-response">acertou</span>
-                  } @else {
-                    <span class="try-response">não é esse</span>
-                  }
-                </span>
+                  </span>
+                  <span class="number-try c">{{$index + 1}}s</span>
+                } @else {
+                    <span class="number-try g" >◇</span>
+                    <span class="movie-try">{{ attempt.movie.title }}
+                      <span class="try-response">não é esse</span>
+                    </span>
+                    <span class="number-try g">{{$index + 1}}s</span>
+                }
               } @else {
+                <span class="number-try">{{$index + 1}}</span>
                 <span class="line-try"></span>
+                <span class="number-try">{{$index + 1}}s</span>
               }
-              <span class="number-try">{{$index + 1}}s</span>
             </li>
           }
           

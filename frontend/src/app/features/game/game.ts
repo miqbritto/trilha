@@ -6,15 +6,15 @@ import { catchError, debounceTime, distinctUntilChanged, firstValueFrom, of, Sub
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { GameSession } from '../../core/models/game-session';
 import { GameSessionStorage } from '../../core/services/game-session-storage.service';
-import { DailyGameChallenge, GameChallenge } from '../../core/models/game-challenge';
-import { Location } from '@angular/common';
 import { GameService } from '../../core/services/game.service';
-import { GameGuess } from '../../core/models/game-guess';
+import { DatePipe } from '@angular/common';
+import { Router } from '@angular/router';
+
 
 
 @Component({
   selector: 'app-game',
-  imports: [Shell],
+  imports: [Shell, DatePipe],
   templateUrl: './game.html',
   styleUrl: './game.scss',
 })
@@ -31,10 +31,12 @@ export class Game implements OnInit {
    // Dependencies — services
    private readonly movieService = inject(MovieService);
    private readonly storage      = inject(GameSessionStorage)
-   private readonly location     = inject(Location)
    private readonly gameService  = inject(GameService)
+   private readonly router = inject(Router);
+   readonly submitting = signal(false);
 
    // State — local state
+   readonly today                = new Date()
    protected readonly isPressed  = signal(false);
    readonly isCorrect            = signal<boolean | null>(null);
    readonly suggestions          = signal<Movie[] | null>(null);
@@ -145,7 +147,9 @@ export class Game implements OnInit {
       const movie = this.selectedMovie();
       const session = this.session();
 
-      if(!movie || !session) return;
+      if(!movie || !session || this.submitting() || this.hasWon() || !this.remainingGuesses()) return;
+
+      this.submitting.set(true);
 
       try {
          const response = await firstValueFrom( this.gameService.sendGuess(session.challenge.id, movie.tmdbId))
@@ -161,9 +165,14 @@ export class Game implements OnInit {
          const guesses = this.session()?.guesses;
          const lastGuess = guesses?.at(-1)?.movie
          this.lastGuessedMovie.set(lastGuess)
+         if (this.hasWon() || this.remainingGuesses() === 0) {
+            await this.router.navigate(['/game-over']);
+         }
          
       } catch (error) {
          console.error("Erro ao verificar palpite: ", error);
+      } finally {
+         this.submitting.set(false);
       }
    
    }
@@ -180,6 +189,9 @@ export class Game implements OnInit {
          const lastGuess = savedSession.guesses.at(-1);
          this.isCorrect.set(lastGuess?.correct ?? null);
          this.lastGuessedMovie.set(lastGuess?.movie);
+         if (this.hasWon() || this.remainingGuesses() === 0) {
+            await this.router.navigate(['/game-over']);
+         }
          return;
       }
 

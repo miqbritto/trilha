@@ -763,6 +763,14 @@
 
 }
 
+.g {
+  color: var(--color-text-secondary);
+}
+
+.c {
+  color: var(--color-primary);
+}
+
 @keyframes pulse {
   0% {
     transform: scaleY(0.56);
