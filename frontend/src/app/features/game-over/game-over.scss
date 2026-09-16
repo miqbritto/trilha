@@ -91,9 +91,11 @@
     max-width: 240px;
 
     img {
+        display: block;
         width: 100%;
+        box-sizing: border-box;
         border-radius: 3px;
-        border-width: 1px;
+        //border: 8px solid #E2D5C1;
         box-shadow: 10px 10px 0 0 var(--color-bg-dark);
     }
 }
