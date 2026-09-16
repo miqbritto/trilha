@@ -178,13 +178,23 @@
       <section class="history" aria-label="Histórico de tentativas">
         <div class="tries">
           <h2 class="tries-title">a trilha até aqui</h2>
-          <p class="tries-title">{{session()?.guesses.length}}/{{bars.length}}</p>
+          <p class="tries-title">{{guessesMade()}}/{{guessSlots.length}}</p>
         </div>
         <ol class="tries-list">
           @for (guess of guessSlots; track $index ) {
             <li class="tries-item">
               <span class="number-try">{{$index + 1}}</span>
-              <span class="line-try"></span>
+              @if (session()?.guesses?.[$index]; as attempt) {
+                <span class="movie-try">{{ attempt.movie.title }}
+                  @if (attempt.correct) {
+                    <span class="try-response">acertou</span>
+                  } @else {
+                    <span class="try-response">não é esse</span>
+                  }
+                </span>
+              } @else {
+                <span class="line-try"></span>
+              }
               <span class="number-try">{{$index + 1}}s</span>
             </li>
           }

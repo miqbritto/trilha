@@ -14,15 +14,15 @@ export class GameSessionStorage {
     }
 
     load(): GameSession | null {
-         if (!isPlatformBrowser(this.platformId)) return null;
-       const session = sessionStorage.getItem(this.storageKey);
+        if (!isPlatformBrowser(this.platformId)) return null;
+        const session = sessionStorage.getItem(this.storageKey);
 
-       if(!session) {
+        if(!session) {
             return null;
-       }
-       const parsedSession = JSON.parse(session);
+        }
+        const parsedSession = JSON.parse(session);
 
-       return parsedSession;
+        return parsedSession;
     }
 
     clear() {

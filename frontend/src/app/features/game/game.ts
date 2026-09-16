@@ -60,6 +60,12 @@ export class Game implements OnInit {
 
       return this.guessesMade() + 1;
    })
+   readonly hasGuessed           = computed(() => {
+      if(this.guessesMade() > 0) {
+         return true;
+      }
+      return false;
+   })
 
    // Constructor — initialize the search subscription in the injection context
    constructor() {
@@ -102,28 +108,8 @@ export class Game implements OnInit {
       });
    }
 
-   async ngOnInit() {
-      
-      const challenge = await firstValueFrom(
-         this.gameService.getDailyChallenge()
-      )
-
-
-      const savedSession = this.storage.load()
-
-      if(savedSession && savedSession.challenge.id === challenge.id) {
-         this.session.set(savedSession)
-         const lastGuess = savedSession.guesses.at(-1);
-         this.isCorrect.set(lastGuess?.correct ?? null);
-         this.lastGuessedMovie.set(lastGuess?.movie);
-         return;
-      }
-
-      if (challenge) {
-         this.startNewGame(challenge)
-
-      }
-
+   ngOnInit() {
+      this.startNewGame()
    }
 
    // Actions — public API used by the template
@@ -176,17 +162,27 @@ export class Game implements OnInit {
          const lastGuess = guesses?.at(-1)?.movie
          this.lastGuessedMovie.set(lastGuess)
          
-
-
-
-         
       } catch (error) {
          console.error("Erro ao verificar palpite: ", error);
       }
    
    }
 
-   private startNewGame(challenge: GameChallenge) {
+   private async startNewGame() {
+      const challenge = await firstValueFrom(
+         this.gameService.getDailyChallenge()
+      )
+
+      const savedSession = this.storage.load()
+
+      if(savedSession && savedSession.challenge.id === challenge.id) {
+         this.session.set(savedSession)
+         const lastGuess = savedSession.guesses.at(-1);
+         this.isCorrect.set(lastGuess?.correct ?? null);
+         this.lastGuessedMovie.set(lastGuess?.movie);
+         return;
+      }
+
       const newSession: GameSession = {
          version: 1,
          challenge,
