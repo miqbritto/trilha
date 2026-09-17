@@ -221,3 +221,56 @@
     border-left: 0.5px solid var(--color-border-subtle);
     padding-left: 2rem;
 }
+
+.deck {
+  position: relative;
+  background: var(--color-surface);
+  border: 2px solid var(--color-border-subtle);
+  box-shadow: 4px 4px 0 var(--color-bg-dark);
+  border-radius: 4px;
+  margin-top: 2rem;
+}
+
+.deck {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  padding: 0.9rem 0.8rem 0.8rem;
+}
+
+.share {
+    display: flex;
+    justify-content: space-between;
+}
+
+.share-button {
+    display: inline-flex;
+    background-color: var(--color-primary);
+    color: var(--color-bg-dark);
+    border: 1px solid var(--color-border-on-primary);
+    box-shadow: 4px 4px 0 0 var(--color-bg-dark);
+    font-family: var(--font-mono);
+    font-size: .6875rem;
+    letter-spacing: .18rem;
+    line-height: 1;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    transition-timing-function: cubic-bezier(.23, 1, .32, 1);
+    transition-duration: .15s;
+    transition-property: transform, box-shadow, background-color, color, border-color;
+    padding-left: 1.25rem;
+    padding-right: 1.25rem;
+    cursor: pointer;
+    gap: .5rem;
+    height: 3rem;
+
+    &:hover {
+        background-color: var(--color-primary-hover);
+    }
+
+    &:active {
+        box-shadow: none;
+        transform: translate(3px, 3px);
+    }
+}
