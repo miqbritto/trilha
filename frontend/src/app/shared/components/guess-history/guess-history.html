@@ -1,0 +1,32 @@
+<section class="history" aria-label="Histórico de tentativas">
+        <div class="tries">
+          <h2 class="tries-title">a trilha até aqui</h2>
+          <p class="tries-title"><span class="g">{{guesses().length}}</span>/{{guessSlots().length}}</p>
+        </div>
+        <ol class="tries-list">
+          @for (guess of guessSlots(); track $index ) {
+            <li class="tries-item">
+              @if (guesses()[$index]; as attempt) {
+                @if(attempt.correct){
+                  <span class="number-try c" >◆</span>
+                  <span class="movie-try">{{ attempt.movie.title }}
+                    <span class="try-response">acertou</span>
+                  </span>
+                  <span class="number-try c">{{$index + 1}}s</span>
+                } @else {
+                    <span class="number-try g" >◇</span>
+                    <span class="movie-try">{{ attempt.movie.title }}
+                      <span class="try-response">não é esse</span>
+                    </span>
+                    <span class="number-try g">{{$index + 1}}s</span>
+                }
+              } @else {
+                <span class="number-try">{{$index + 1}}</span>
+                <span class="line-try"></span>
+                <span class="number-try">{{$index + 1}}s</span>
+              }
+            </li>
+          }
+          
+        </ol>
+</section>

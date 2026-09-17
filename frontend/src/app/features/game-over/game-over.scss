@@ -1,3 +1,9 @@
+:host {
+    display: block;
+    width: 100%;
+    overflow: auto;
+}
+
 .game-page {
   position: relative;
   display: flex;
@@ -100,6 +106,8 @@
     }
 }
 
+
+
 .movie-info {
     display: flex;
     flex-direction: column;
@@ -110,6 +118,10 @@
         letter-spacing: .18em;
         font-size: .6875rem;
         line-height: 1;
+    }
+
+    .game-over {
+        color: #c4623d
     }
 
     h2 {
@@ -131,6 +143,8 @@
 
     
 }
+
+
 
 .line {
     display: flex;

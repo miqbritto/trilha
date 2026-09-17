@@ -12,63 +12,77 @@
 
                 <div class="game-date">
                 <p class="game-date-label">{{today | date:'mediumDate'}}</p>
-                <p class="game-date-value">RESOLVIDO</p>
-                </div>
-
-    </header>
-
-    <section class="movie-section">
-        <div class="movie-poster">
-            @if(result(); as data) {
-                @if(data.movie.posterUrl; as posterUrl) {
-                    <img [src]="posterUrl" [alt]="'Pôster de ' + data.movie.title">
+                @if (gameStatus() === "won") {
+                    <p class="game-date-value">RESOLVIDO</p>
                 } @else {
-                    <p>Pôster indisponível</p>
+                    <p class="game-date-value">ENCERRADO</p>
                 }
-            }
-        </div>
-        <div class="movie-info">
-            <p>VOCÊ SEGUIU A TRILHA</p>
-            @if(result(); as data) {
-                <h2>{{data.movie.title}}</h2>
-                <dl>
-                    <div class="line">
-                        <dt class="term">DIREÇÃO</dt>
-                        <dd class="desc">{{data.movie.director || 'Não informado'}}</dd>
-                    </div>
-                    <div class="line">
-                        <dt class="term">ANO</dt>
-                        <dd class="desc">{{data.movie.releaseYear ?? 'Não informado'}}</dd>
-                    </div>
-                    <div class="line">
-                        <dt class="term">TRILHA SONORA</dt>
-                        <dd class="desc">{{data.track.artist}}</dd>
-                    </div>
-                    <div class="line">
-                        <dt class="term">FAIXA DO DIA</dt>
-                        <dd class="desc">{{data.track.title}}</dd>
-                    </div> 
-                </dl>
-                <span class="note">Antes de contratar John Williams, o diretor George Lucas queria usar músicas clássicas já existentes (no estilo de 2001: Uma Odisseia no Espaço) para o filme de 1977. Williams convenceu Lucas a apostar em uma trilha orquestral inédita.</span>
-            }
-            <div class="results">
-                <div class="result-trie">
-                    <span class="result-num">1</span>
-                    <span class="result-text">TENTATIVA</span>
-                </div>                   
-
-                <div class="result-listen">
-                    <span class="result-num">1S</span>
-                    <span class="result-text">DE TRILHA OUVIDA</span>
                 </div>
+
+        </header>
+
+        <section class="movie-section">
+            <div class="movie-poster">
+                @if(result(); as data) {
+                    @if(data.movie.posterUrl; as posterUrl) {
+                        <img [src]="posterUrl" [alt]="'Pôster de ' + data.movie.title">
+                    } @else {
+                        <p>Pôster indisponível</p>
+                    }
+                }
+            </div>
+            <div class="movie-info">
+                @if (gameStatus() === "won") {
+                    <p>VOCÊ SEGUIU A TRILHA</p>
+                } @else {
+                    <p class="game-over">A TRILHA ACABA AQUI</p>
+                }
+                @if(result(); as data) {
+                    <h2>{{data.movie.title}}</h2>
+                    <dl>
+                        <div class="line">
+                            <dt class="term">DIREÇÃO</dt>
+                            <dd class="desc">{{data.movie.director || 'Não informado'}}</dd>
+                        </div>
+                        <div class="line">
+                            <dt class="term">ANO</dt>
+                            <dd class="desc">{{data.movie.releaseYear ?? 'Não informado'}}</dd>
+                        </div>
+                        <div class="line">
+                            <dt class="term">TRILHA SONORA</dt>
+                            <dd class="desc">{{data.track.artist}}</dd>
+                        </div>
+                        <div class="line">
+                            <dt class="term">FAIXA DO DIA</dt>
+                            <dd class="desc">{{data.track.title}}</dd>
+                        </div> 
+                    </dl>
+                    <span class="note">Antes de contratar John Williams, o diretor George Lucas queria usar músicas clássicas já existentes (no estilo de 2001: Uma Odisseia no Espaço) para o filme de 1977. Williams convenceu Lucas a apostar em uma trilha orquestral inédita.</span>
+                }
+                <div class="results">
+                    <div class="result-trie">
+                        <span class="result-num">1</span>
+                        <span class="result-text">TENTATIVA</span>
+                    </div>                   
+
+                    <div class="result-listen">
+                        <span class="result-num">1S</span>
+                        <span class="result-text">DE TRILHA OUVIDA</span>
+                    </div>
+                    
+                </div>
+
                 
             </div>
 
             
-        </div>
+        </section>
 
-        
-    </section>
+        <app-player-card [guessSlots]="guessSlots" />
+
+        <app-guess-history
+            [guesses]="session()?.guesses ?? []"
+            [guessSlots]="guessSlots" />
 
     </div>
 </app-shell>

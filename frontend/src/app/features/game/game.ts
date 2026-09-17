@@ -9,22 +9,22 @@ import { GameSessionStorage } from '../../core/services/game-session-storage.ser
 import { GameService } from '../../core/services/game.service';
 import { DatePipe } from '@angular/common';
 import { Router } from '@angular/router';
+import { MAX_GUESSES } from '../../shared/utils/constants';
+import { GuessHistory } from '../../shared/components/guess-history/guess-history';
+import { PlayerCard } from '../../shared/components/player-card/player-card';
 
 
 
 @Component({
   selector: 'app-game',
-  imports: [Shell, DatePipe],
+  imports: [Shell, DatePipe, GuessHistory, PlayerCard],
   templateUrl: './game.html',
   styleUrl: './game.scss',
 })
 export class Game implements OnInit {
    // Static metadata & constants
-   readonly bars  = Array.from({ length: 5 }, (_, i) => i);
-   readonly waves = Array.from({ length: 18 }, (_, i) => i);
-   readonly MAX_GUESSES = 5;
    readonly guessSlots = Array.from(
-      { length: this.MAX_GUESSES },
+      { length: MAX_GUESSES },
       (_, index) => index + 1,
    )
 
@@ -37,7 +37,6 @@ export class Game implements OnInit {
 
    // State — local state
    readonly today                = new Date()
-   protected readonly isPressed  = signal(false);
    readonly isCorrect            = signal<boolean | null>(null);
    readonly suggestions          = signal<Movie[] | null>(null);
    readonly selectedMovie        = signal<Movie | null>(null);
@@ -50,7 +49,7 @@ export class Game implements OnInit {
       () => this.session()?.guesses.length ?? 0,
    )
    readonly remainingGuesses     = computed(
-      () => Math.max(0, this.MAX_GUESSES - this.guessesMade())
+      () => Math.max(0, MAX_GUESSES - this.guessesMade())
    )
    readonly hasWon               = computed(
       () => this.session()?.guesses.some(guess => guess.correct) ?? false
@@ -115,19 +114,10 @@ export class Game implements OnInit {
    }
 
    // Actions — public API used by the template
-   pressButton() {
-      this.isPressed.set(true);
-
-      setTimeout(() => {
-         this.isPressed.set(false);
-      }, 1000);
-   }
-
    searchMovie(search: string) {
       this.clearSelectedMovie();
       this.suggestions.set([]);
       this.searchTerms$.next(search.trim());
-      console.log("suggestions", this.suggestions)
    }
 
    selectMovie(movie: Movie) {
