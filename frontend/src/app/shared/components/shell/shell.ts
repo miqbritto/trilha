@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { afterNextRender, Component, input, viewChild } from '@angular/core';
 import { HowToPlayDialog } from './components/how-to-play-dialog/how-to-play-dialog';
 
 @Component({
@@ -7,4 +7,15 @@ import { HowToPlayDialog } from './components/how-to-play-dialog/how-to-play-dia
   styleUrl: './shell.scss',
   templateUrl: './shell.html',
 })
-export class Shell {}
+export class Shell {
+  readonly openInstructionsOnInit = input(false);
+  private readonly instructions = viewChild.required(HowToPlayDialog);
+
+  constructor() {
+    afterNextRender(() => {
+      if (this.openInstructionsOnInit()) {
+        this.instructions().open();
+      }
+    });
+  }
+}

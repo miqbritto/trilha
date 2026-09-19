@@ -3,14 +3,13 @@ import { Routes } from '@angular/router';
 export const routes: Routes = [
     {
         path: "",
-        redirectTo: "onboarding",
+        redirectTo: "game",
         pathMatch: "full"
     },
     {
         path: "onboarding",
-        loadComponent: () => 
-            import("./features/onboarding/onboarding")
-                .then(m => m.Onboarding)
+        redirectTo: "game",
+        pathMatch: "full"
     },
     {
         path: "game",
