@@ -48,6 +48,11 @@ export class Game implements OnInit {
    readonly guessesMade          = computed(
       () => this.session()?.guesses.length ?? 0,
    )
+   readonly revealStages = computed(() => this.session()?.challenge.rules.revealStages ?? []);
+   readonly playbackLimit = computed(() => {
+      const stages = this.revealStages();
+      return stages[Math.min(this.guessesMade(), stages.length - 1)] ?? 0;
+   });
    readonly remainingGuesses     = computed(
       () => Math.max(0, MAX_GUESSES - this.guessesMade())
    )
@@ -175,7 +180,9 @@ export class Game implements OnInit {
       const savedSession = this.storage.load()
 
       if(savedSession && savedSession.challenge.id === challenge.id) {
-         this.session.set(savedSession)
+         const restoredSession = { ...savedSession, challenge };
+         this.session.set(restoredSession)
+         this.storage.save(restoredSession)
          const lastGuess = savedSession.guesses.at(-1);
          this.isCorrect.set(lastGuess?.correct ?? null);
          this.lastGuessedMovie.set(lastGuess?.movie);

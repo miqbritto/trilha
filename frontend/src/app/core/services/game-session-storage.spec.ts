@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { GameSessionStorage } from './game-session-storage';
+import { GameSessionStorage } from './game-session-storage.service';
 
 describe('GameSessionStorage', () => {
   let service: GameSessionStorage;

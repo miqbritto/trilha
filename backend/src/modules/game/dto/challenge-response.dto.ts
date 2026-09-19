@@ -7,6 +7,7 @@ export interface DailyChallengeResponse {
   mode: 'daily';
   date: string;
   rules: ChallengeRules;
+  audioUrl?: string;
 }
 
 export interface FreeChallengeResponse {

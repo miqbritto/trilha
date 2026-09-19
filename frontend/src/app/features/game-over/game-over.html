@@ -87,7 +87,10 @@
             }
         }
 
-        <app-player-card [guessSlots]="guessSlots" />
+        @if (session()?.challenge?.audioUrl; as audioUrl) {
+            <app-player-card [guessSlots]="guessSlots" [audioUrl]="audioUrl"
+                [revealStages]="session()?.challenge?.rules?.revealStages ?? []" />
+        }
 
         <section class="deck">
             <div class="share">

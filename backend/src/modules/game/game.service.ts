@@ -2,7 +2,7 @@ import { BadRequestException, ConflictException, Injectable, Logger, NotFoundExc
 import { InjectRepository } from '@nestjs/typeorm';
 import { GameSessionEntity } from 'src/database/entities/gameSession.entity';
 import { MusicTrackEntity } from 'src/database/entities/musicTrack.entity';
-import { Repository } from 'typeorm';
+import { Not, Repository } from 'typeorm';
 import { GameSessionStatus } from './enums/game-session-status.enum';
 import { GuessEntity } from 'src/database/entities/guess.entity';
 import { MovieEntity } from 'src/database/entities/movie.entity';
@@ -168,7 +168,8 @@ export class GameService {
         const date = getGameDate();
 
         const todayChallenge = await this.dailyChallengeRepo.findOne({
-            where: { date }
+            where: { date },
+            relations: { musicTrack: true}
         })
 
         if(!todayChallenge) {
@@ -181,13 +182,20 @@ export class GameService {
     async getDailyChallenge(): Promise<DailyChallengeResponse> {
         const challenge = await this.findDailyChallenge();
 
+        const audioUrl = challenge.musicTrack?.previewUrl?.trim();
+
+        if(!audioUrl) {
+            throw new NotFoundException("Audio indisponível para o desafio de hoje")
+        }
+
         return {
             id: challenge.id,
             mode: "daily",
             date: challenge.date,
             rules: {
                 revealStages: [...REVEAL_STAGES]
-            }
+            },
+            audioUrl
         }
     }
 
