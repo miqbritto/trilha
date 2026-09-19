@@ -116,4 +116,122 @@ describe('PlayerCard playback limits', () => {
     expect(paused).toBe(true);
     expect(fixture.nativeElement.querySelector('.play-button').disabled).toBe(true);
   });
+
+  describe('audio visualization', () => {
+    let spectrum: Uint8Array;
+    let context: {
+      sampleRate: number;
+      destination: object;
+      createAnalyser: ReturnType<typeof vi.fn>;
+      createMediaElementSource: ReturnType<typeof vi.fn>;
+      resume: ReturnType<typeof vi.fn>;
+      close: ReturnType<typeof vi.fn>;
+    };
+    let reducedMotion: boolean;
+
+    beforeEach(() => {
+      spectrum = new Uint8Array(2048);
+      reducedMotion = false;
+      context = {
+        sampleRate: 48000,
+        destination: {},
+        createAnalyser: vi.fn(() => ({
+          frequencyBinCount: 2048,
+          getByteFrequencyData: (data: Uint8Array) => data.set(spectrum),
+          connect: vi.fn(),
+          disconnect: vi.fn(),
+        })),
+        createMediaElementSource: vi.fn(() => ({ connect: vi.fn(), disconnect: vi.fn() })),
+        resume: vi.fn().mockResolvedValue(undefined),
+        close: vi.fn().mockResolvedValue(undefined),
+      };
+      vi.stubGlobal('AudioContext', class { constructor() { return context; } });
+      vi.stubGlobal('matchMedia', () => ({ get matches() { return reducedMotion; } }));
+    });
+
+    afterEach(() => vi.unstubAllGlobals());
+
+    const levels = () => Array.from(
+      fixture.nativeElement.querySelectorAll('.wave-bar') as NodeListOf<HTMLElement>,
+      bar => Number(bar.style.getPropertyValue('--level') || '0.12'),
+    );
+
+    it('responds to real frequency data and returns to baseline in silence', async () => {
+      fixture.componentRef.setInput('maxSeconds', null);
+      fixture.detectChanges();
+      spectrum.fill(255, 0, 32);
+      await player.play();
+      expect(levels()[0]).toBe(1);
+      expect(levels().at(-1)).toBe(0.12);
+
+      spectrum.fill(0);
+      vi.advanceTimersByTime(32);
+      expect(levels().every(level => level === 0.12)).toBe(true);
+
+      spectrum.fill(255, 500);
+      vi.advanceTimersByTime(32);
+      expect(levels()[0]).toBe(0.12);
+      expect(levels().at(-1)).toBe(1);
+      expect(audio.crossOrigin).toBe('anonymous');
+    });
+
+    it('animates only unlocked slots as the listening allowance changes', async () => {
+      spectrum.fill(255);
+      for (const [limit, unlockedCount] of [[1, 1], [4, 3], [1, 1], [null, 5]] as const) {
+        fixture.componentRef.setInput('maxSeconds', limit);
+        fixture.detectChanges();
+        await player.play();
+        fixture.detectChanges();
+        vi.advanceTimersByTime(32);
+
+        const activeBars = unlockedCount * player.waveBars.length;
+        expect(levels().slice(0, activeBars).every(level => level === 1)).toBe(true);
+        expect(levels().slice(activeBars).every(level => level === 0.12)).toBe(true);
+        expect(fixture.nativeElement.querySelectorAll('.wave.is-unlocked').length).toBe(unlockedCount);
+        expect(fixture.nativeElement.querySelectorAll('.second-bar.is-active').length).toBe(unlockedCount);
+      }
+    });
+
+    it('stops during buffering and at the playback limit, and reuses the audio graph', async () => {
+      spectrum.fill(255);
+      await player.play();
+      audio.dispatchEvent(new Event('waiting'));
+      vi.advanceTimersByTime(32);
+      expect(levels().every(level => level === 0.12)).toBe(true);
+
+      audio.dispatchEvent(new Event('playing'));
+      expect(levels()[0]).toBe(1);
+      audio.currentTime = 1;
+      audio.dispatchEvent(new Event('timeupdate'));
+      vi.advanceTimersByTime(32);
+      expect(levels().every(level => level === 0.12)).toBe(true);
+
+      await player.replay();
+      expect(levels()[0]).toBe(1);
+      expect(context.createMediaElementSource).toHaveBeenCalledTimes(1);
+    });
+
+    it('honors reduced motion while still playing the audio', async () => {
+      reducedMotion = true;
+      spectrum.fill(255);
+      await player.play();
+      vi.advanceTimersByTime(32);
+      expect(paused).toBe(false);
+      expect(levels().every(level => level === 0.12)).toBe(true);
+    });
+
+    it('releases the audio graph and animation when destroyed', async () => {
+      const cancelFrame = vi.spyOn(window, 'cancelAnimationFrame');
+      await player.play();
+      const analyser = context.createAnalyser.mock.results[0].value;
+      const readSpectrum = vi.spyOn(analyser, 'getByteFrequencyData');
+      fixture.destroy();
+      expect(paused).toBe(true);
+      expect(context.close).toHaveBeenCalledTimes(1);
+      expect(analyser.disconnect).toHaveBeenCalledTimes(1);
+      expect(cancelFrame).toHaveBeenCalled();
+      vi.advanceTimersByTime(2000);
+      expect(readSpectrum).not.toHaveBeenCalled();
+    });
+  });
 });

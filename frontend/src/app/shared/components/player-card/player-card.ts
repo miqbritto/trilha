@@ -1,4 +1,4 @@
-import { Component, computed, effect, ElementRef, input, OnDestroy, signal, viewChild } from '@angular/core';
+import { Component, computed, effect, ElementRef, input, OnDestroy, signal, viewChild, viewChildren } from '@angular/core';
 
 @Component({
   selector: 'app-player-card',
@@ -11,6 +11,10 @@ export class PlayerCard implements OnDestroy {
   readonly maxSeconds = input<number | null>(null);
   readonly revealStages = input<number[]>([]);
   readonly stages = computed(() => this.revealStages().length ? this.revealStages() : this.guessSlots());
+  readonly unlockedStages = computed(() => {
+    const limit = this.maxSeconds();
+    return this.stages().map(second => limit === null || second <= limit);
+  });
   readonly duration = signal(0);
   readonly durationLabel = computed(() => {
     const seconds = Math.floor(this.duration());
@@ -22,6 +26,12 @@ export class PlayerCard implements OnDestroy {
   readonly playbackError = signal('');
 
   private readonly audioRef = viewChild<ElementRef<HTMLAudioElement>>('audio')
+  private readonly barRefs = viewChildren<ElementRef<HTMLDivElement>>('waveBar');
+  private audioContext?: AudioContext;
+  private audioSource?: MediaElementAudioSourceNode;
+  private analyser?: AnalyserNode;
+  private frequencyData?: Uint8Array<ArrayBuffer>;
+  private animationFrame?: number;
 
   constructor() {
     effect(() => {
@@ -57,10 +67,13 @@ export class PlayerCard implements OnDestroy {
 
     this.playbackError.set("")
     try {
-      await audio.play()
+      this.prepareAnalyser(audio);
+      // Both calls start within the user's gesture, including on mobile browsers.
+      await Promise.all([this.audioContext?.resume(), audio.play()]);
     } catch (error) {
       if (error instanceof DOMException && error.name === 'AbortError') return;
-      this.isPressed.set(false)
+      audio.pause();
+      this.onPause();
       this.playbackError.set('Não foi possível reproduzir a trilha.');
     }
 
@@ -69,11 +82,78 @@ export class PlayerCard implements OnDestroy {
   onPlaying() {
     this.isPressed.set(true);
     this.scheduleLimit();
+    this.startVisualization();
   }
 
   onPause() {
     clearTimeout(this.playbackTimeout);
     this.isPressed.set(false);
+    this.stopVisualization();
+  }
+
+  private prepareAnalyser(audio: HTMLAudioElement) {
+    if (this.audioContext || typeof AudioContext === 'undefined') return;
+
+    const context = new AudioContext();
+    this.audioContext = context;
+    const analyser = context.createAnalyser();
+    analyser.fftSize = 4096;
+    analyser.smoothingTimeConstant = 0.75;
+    analyser.minDecibels = -90;
+    analyser.maxDecibels = -20;
+
+    // Reuse this graph on replay: a media element can only have one source node.
+    this.audioSource = context.createMediaElementSource(audio);
+    this.audioSource.connect(analyser);
+    analyser.connect(context.destination);
+    this.analyser = analyser;
+    this.frequencyData = new Uint8Array(analyser.frequencyBinCount);
+  }
+
+  private startVisualization() {
+    this.stopVisualization();
+    const analyser = this.analyser;
+    const data = this.frequencyData;
+    const context = this.audioContext;
+    if (!analyser || !data || !context || !this.isPressed()) return;
+
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const unlocked = this.unlockedStages();
+    const bars = this.barRefs()
+      .filter((_, index) => unlocked[Math.floor(index / this.waveBars.length)])
+      .map(ref => ref.nativeElement);
+    const binWidth = context.sampleRate / analyser.fftSize;
+    const minFrequency = 60;
+    const maxFrequency = Math.min(14000, context.sampleRate / 2);
+    // Spread bass, mids and treble across the unlocked slots on a logarithmic scale.
+    const bands = bars.map((_, index) => {
+      const start = Math.floor(minFrequency * (maxFrequency / minFrequency) ** (index / bars.length) / binWidth);
+      const end = Math.ceil(minFrequency * (maxFrequency / minFrequency) ** ((index + 1) / bars.length) / binWidth);
+      return { start, end: Math.min(data.length, Math.max(start + 1, end)) };
+    });
+
+    const draw = () => {
+      if (!this.isPressed() || reducedMotion.matches) return;
+      analyser.getByteFrequencyData(data);
+      bars.forEach((bar, index) => {
+        const { start, end } = bands[index];
+        let energy = 0;
+        for (let bin = start; bin < end; bin++) energy += data[bin];
+        const level = energy / (end - start) / 255;
+        // Silence stays low; only energy from the actual audio raises a bar.
+        bar.style.setProperty('--level', String(0.12 + 0.88 * level ** 1.5));
+      });
+      this.animationFrame = requestAnimationFrame(draw);
+    };
+    draw();
+  }
+
+  private stopVisualization() {
+    if (this.animationFrame !== undefined) {
+      cancelAnimationFrame(this.animationFrame);
+      this.animationFrame = undefined;
+    }
+    this.barRefs().forEach(ref => ref.nativeElement.style.removeProperty('--level'));
   }
 
   onMetadata() {
@@ -118,5 +198,8 @@ export class PlayerCard implements OnDestroy {
     this.onPause();
     const audio = this.audioRef()?.nativeElement;
     if (audio && typeof audio.pause === 'function') audio.pause();
+    this.audioSource?.disconnect();
+    this.analyser?.disconnect();
+    void this.audioContext?.close().catch(() => {});
   }
 }

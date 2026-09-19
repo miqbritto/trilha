@@ -4,11 +4,11 @@
           <span>{{ maxSeconds() === null ? durationLabel() : maxSeconds() + 's liberados' }}</span>
         </div>
 
-        <div class="player">
-          @for (bar of guessSlots(); track bar) {
-            <div class="wave" aria-hidden="true">
+        <div class="player" [class.is-playing]="isPressed()">
+          @for (second of stages(); track $index) {
+            <div class="wave" [class.is-unlocked]="unlockedStages()[$index]" aria-hidden="true">
               @for (wave of waveBars; track wave) {
-                <div class="wave-bar"></div>
+                <div #waveBar class="wave-bar"></div>
               }      
             </div>
           }
@@ -17,7 +17,7 @@
           <div class="revealed-seconds">
             @for (second of stages(); track $index) {
               <div class="second">
-                <div class="second-bar" [class.is-active]="maxSeconds() === null || second <= maxSeconds()!" aria-hidden="true"></div>
+                <div class="second-bar" [class.is-active]="unlockedStages()[$index]" aria-hidden="true"></div>
                 <span class="s">{{ second }}S</span>
               </div>
             }
@@ -27,6 +27,7 @@
         <div class="playback-controls">
           <audio
             #audio
+            crossorigin="anonymous"
             [src]="audioUrl()"
             preload="metadata"
             (playing)="onPlaying()"

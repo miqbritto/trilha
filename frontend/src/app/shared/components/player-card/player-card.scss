@@ -49,37 +49,20 @@
   flex: 1 1 0;
   min-width: 0;
   width: 6px;
-  height: 12px;
+  height: 100%;
   background: var(--color-text-disabled);
   transform-origin: bottom center;
-  animation: 850ms ease-in-out infinite alternate;
-
-  &:nth-child(2) {
-    animation-duration: 620ms;
-    animation-delay: -300ms;
-  }
-
-  &:nth-child(3) {
-    animation-duration: 980ms;
-    animation-delay: -650ms;
-  }
-
-  &:nth-child(4) {
-    animation-duration: 740ms;
-    animation-delay: -200ms;
-  }
-
-  &:nth-child(5) {
-    animation-duration: 1100ms;
-    animation-delay: -500ms;
-  }
+  transform: scaleY(var(--level, 0.12));
 }
 
-@keyframes wave-bounce {
-  0% { transform: scaleY(0.15); }
-  35% { transform: scaleY(0.65); }
-  65% { transform: scaleY(0.35); }
-  100% { transform: scaleY(1); }
+.player.is-playing .wave.is-unlocked .wave-bar {
+  background: var(--color-primary);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .player:not(.is-playing) .wave.is-unlocked .wave-bar {
+    transition: transform 450ms cubic-bezier(0.22, 1, 0.36, 1), background-color 300ms ease-out;
+  }
 }
 
 .waveform {
@@ -246,8 +229,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .wave-bar {
-    animation: none;
+  .player.is-playing .wave.is-unlocked .wave-bar {
     transform: scaleY(0.4);
   }
 
