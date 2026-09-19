@@ -2,7 +2,6 @@
     <div class="game-page">
         <header class="game-header">
             <div class="meta-row">
-            
                 <p class="game-title">filme do dia</p>
                 <p class="issue-number">
                 <span class="issue">#</span>
@@ -57,16 +56,16 @@
                             <dd class="desc">{{data.track.title}}</dd>
                         </div> 
                     </dl>
-                    <span class="note">Antes de contratar John Williams, o diretor George Lucas queria usar músicas clássicas já existentes (no estilo de 2001: Uma Odisseia no Espaço) para o filme de 1977. Williams convenceu Lucas a apostar em uma trilha orquestral inédita.</span>
+                    <span class="note">{{data.track.note}}</span>
                 }
                 <div class="results">
                     <div class="result-trie">
-                        <span class="result-num">1</span>
-                        <span class="result-text">TENTATIVA</span>
+                        <span class="result-num">{{ attemptCount() }}</span>
+                        <span class="result-text">{{ attemptCount() === 1 ? 'TENTATIVA' : 'TENTATIVAS' }}</span>
                     </div>                   
 
                     <div class="result-listen">
-                        <span class="result-num">1S</span>
+                        <span class="result-num">{{ revealedSeconds() === null ? '—' : revealedSeconds() + 'S' }}</span>
                         <span class="result-text">DE TRILHA OUVIDA</span>
                     </div>
                     
@@ -77,12 +76,39 @@
 
        
 
+        @if (result(); as data) {
+            @if (data.movie.quote?.trim(); as quote) {
+                <figure class="movie-quote">
+                    <blockquote>
+                        <p><span class="movie-quote-mark" aria-hidden="true">“</span>{{ quote }}<span class="movie-quote-close" aria-hidden="true">”</span></p>
+                    </blockquote>
+                    <figcaption>— <cite>{{ data.movie.title }}</cite></figcaption>
+                </figure>
+            }
+        }
+
         <app-player-card [guessSlots]="guessSlots" />
 
         <section class="deck">
             <div class="share">
-                <div class="share-results"></div>
-                <button class="share-button">
+                <div class="share-results">
+                    <p class="share-title">TRILHA #142</p>
+                    <ol class="share-attempts" aria-label="Resultado de cada tentativa">
+                        @for (attempt of attempts(); track $index) {
+                            <li class="share-attempt"
+                                [attr.aria-label]="'Tentativa ' + ($index + 1) + (attempt.correct ? ': acerto' : ': erro')">
+                                @if (attempt.correct) {
+                                    <span class="share-diamond" aria-hidden="true"></span>
+                                } @else {
+                                    <span class="share-bar" [style.height.px]="2 + $index * 5" aria-hidden="true"></span>
+                                }
+                            </li>
+                        }
+                    </ol>
+                    <p class="share-summary">{{ resultSummary() }}</p>
+                </div>
+                <button class="share-button" type="button" (click)="shareResults()"
+                    [disabled]="!attemptCount() || isSharing()">
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
                         width="24"
@@ -104,7 +130,7 @@
                     COMPARTILHAR
                 </button>
             </div>
-
+            <p class="share-feedback" role="status">{{ shareFeedback() }}</p>
         </section>
 
         <app-guess-history

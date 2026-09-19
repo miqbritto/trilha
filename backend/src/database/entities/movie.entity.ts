@@ -24,6 +24,9 @@ export class MovieEntity {
     @Column({ nullable: true, name: 'poster_url' })
     posterUrl!: string;
 
+    @Column({ nullable: true })
+    quote!: string;
+
     @OneToMany(() => MusicTrackEntity, (musicTrack) => musicTrack.movie)
     musicTracks!: MusicTrackEntity[];
 

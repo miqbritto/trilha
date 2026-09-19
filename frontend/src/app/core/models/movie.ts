@@ -4,4 +4,5 @@ export interface Movie {
   releaseYear: number | null;
   director: string | null;
   posterUrl: string | null;
+  quote: string | null;
 }

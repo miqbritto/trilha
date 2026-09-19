@@ -1,7 +1,7 @@
 export type GameMode = "free" | "daily";
 
 interface GameRules {
-    reavealStages: number[];
+    revealStages: number[];
 }
 
 interface BaseGameChallenge {

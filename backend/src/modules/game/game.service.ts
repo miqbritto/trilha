@@ -270,11 +270,13 @@ export class GameService {
                 title: tmdbMovie?.title || movie.title,
                 releaseYear: tmdbMovie?.releaseYear ?? movie.releaseYear,
                 director: tmdbMovie?.director ?? movie.director,
-                posterUrl: tmdbMovie?.posterUrl ?? movie.posterUrl
+                posterUrl: tmdbMovie?.posterUrl ?? movie.posterUrl,
+                quote: movie.quote
             },
             track: {
                 title: musicTrack.title,
                 artist: musicTrack.artist,
+                note: musicTrack.note
             },
         }
     }

@@ -22,6 +22,9 @@ export class MusicTrackEntity {
     @Column()
     source!: string;
 
+    @Column({ nullable: true })
+    note!: string;
+
     @Column({ name: 'movie_id' })
     movieId!: string;
 
