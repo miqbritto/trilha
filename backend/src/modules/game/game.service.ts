@@ -6,7 +6,7 @@ import { Repository } from 'typeorm';
 import { REVEAL_STAGES } from './constants/reveal-stages.constant';
 import { DailyChallengeEntity } from 'src/database/entities/daily-challenge';
 import { getGameDate } from './utils/game-date';
-import { DailyChallengeResponse, FreeChallengeResponse } from './dto/challenge-response.dto';
+import { ChallengeHistoryResponse, DailyChallengeResponse, FreeChallengeResponse } from './dto/challenge-response.dto';
 import { TmdbService } from '../tmdb/tmdb.service';
 
 
@@ -66,6 +66,22 @@ export class GameService {
         return todayChallenge;
     }
 
+    async getAllChallenges(): Promise<ChallengeHistoryResponse[]> {
+        const challenges = await this.dailyChallengeRepo.find({
+            order: { date: 'DESC' }
+        })
+
+        if(!challenges) {
+            return [];
+        }
+
+        return challenges.map(challenge => ({
+            id: challenge.id,
+            number: challenge.number,
+            date: challenge.date,
+        }))
+    }
+
     async getDailyChallenge(): Promise<DailyChallengeResponse> {
         const challenge = await this.findDailyChallenge();
 
@@ -78,6 +94,7 @@ export class GameService {
         return {
             id: challenge.id,
             mode: "daily",
+            number: challenge.number,
             date: challenge.date,
             rules: {
                 revealStages: [...REVEAL_STAGES]

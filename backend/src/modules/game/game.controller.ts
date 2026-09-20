@@ -15,6 +15,11 @@ export class GameController {
     return this.gameService.getDailyChallenge()
   }
 
+  @Get("history")
+  getAllChallenges() {
+    return this.gameService.getAllChallenges()
+  }
+
   @Get("free")
   getFreeChallenge() {
     return this.gameService.getFreeChallenge()

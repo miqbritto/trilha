@@ -7,11 +7,6 @@ export const routes: Routes = [
         pathMatch: "full"
     },
     {
-        path: "onboarding",
-        redirectTo: "game",
-        pathMatch: "full"
-    },
-    {
         path: "game",
         loadComponent: () => 
             import("./features/game/game")
@@ -22,5 +17,12 @@ export const routes: Routes = [
         loadComponent: () => 
             import("./features/game-over/game-over")
                 .then(m => m.GameOver)
+    },
+    {
+        path: "history",
+        loadComponent: () => 
+            import("./features/history/history")
+                .then(m => m.History)
     }
+
 ];

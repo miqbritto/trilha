@@ -13,6 +13,9 @@ export class DailyChallengeEntity {
   @PrimaryGeneratedColumn('uuid')
   id!: string;
 
+  @Column({ type: 'integer', unique: true })
+  number!: number;
+
   @Column({ type: 'date', unique: true })
   date!: string;
 

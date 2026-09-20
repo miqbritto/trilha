@@ -1,0 +1,17 @@
+<article
+  class="challenge-card"
+  [class.challenge-card--highlighted]="highlighted()"
+  [attr.aria-label]="'Desafio ' + number() + ', ' + dateLabel() + ', ' + attempts() + ' de ' + maxAttempts() + ' tentativas'"
+>
+  <div class="challenge-card__header">
+    <span class="challenge-card__number">
+      <span class="challenge-card__hash" aria-hidden="true">#</span>{{ number() }}
+    </span>
+    <span class="challenge-card__dot" aria-hidden="true"></span>
+  </div>
+
+  <div class="challenge-card__footer">
+    <span class="challenge-card__date">{{ dateLabel() }}</span>
+    <span class="challenge-card__attempts">{{ attempts() }}/{{ maxAttempts() }}</span>
+  </div>
+</article>

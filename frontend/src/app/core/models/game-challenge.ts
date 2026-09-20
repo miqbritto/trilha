@@ -8,6 +8,7 @@ interface BaseGameChallenge {
     id: string;
     audioUrl?: string;
     rules: GameRules;
+    number: number;
 }
 
 export interface DailyGameChallenge extends BaseGameChallenge {
@@ -21,3 +22,9 @@ export interface FreeGameChallenge extends BaseGameChallenge {
 }
 
 export type GameChallenge = DailyGameChallenge | FreeGameChallenge;
+
+export interface GameChallengeHistory {
+    id: string;
+    number: number;
+    date: string;
+}

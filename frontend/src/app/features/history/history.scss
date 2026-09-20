@@ -1,0 +1,78 @@
+:host {
+  display: block;
+  width: 100%;
+  overflow: auto;
+}
+
+
+.history-page {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: min(100%, 44rem);
+  gap: 1.2rem;
+  padding: clamp(1.1rem, 2vw, 1.8rem) 1rem 2rem;
+  box-sizing: border-box;
+  
+}
+
+.history-header {
+  color: var(--color-text);
+
+  > p {
+    margin: 0 0 0.5rem;
+    color: var(--color-text-muted);
+    font-family: var(--font-mono);
+    font-size: 0.625rem;
+    font-weight: 400;
+    line-height: 1.5;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+  }
+
+  .header-title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem 2rem;
+
+    h1 {
+      margin: 0;
+      font-family: var(--font-sans);
+      font-size: clamp(3rem, 6vw, 4rem);
+      font-weight: 400;
+      line-height: 1;
+      letter-spacing: -0.025em;
+    }
+
+    p {
+      margin: 0;
+      color: var(--color-text-secondary);
+      font-family: var(--font-mono);
+      font-size: 0.625rem;
+      font-weight: 400;
+      line-height: 1.8;
+      letter-spacing: 0.2em;
+      text-align: right;
+      text-transform: uppercase;
+    }
+  }
+
+  > hr {
+    height: 0;
+    margin: 1.25rem 0 0;
+    border: 0;
+    border-top: 1px solid var(--color-border-subtle);
+  }
+}
+
+@media (max-width: 36rem) {
+  .history-header .header-title {
+    flex-direction: column;
+    align-items: flex-start;
+
+    p {
+      text-align: left;
+    }
+  }
+}
