@@ -7,9 +7,11 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { DailyChallengeEntity } from 'src/database/entities/daily-challenge';
 import { TmdbModule } from '../tmdb/tmdb.module';
 import { StorageModule } from '../storage/storage.module';
+import { AdminAuthModule } from '../admin-auth/admin-auth.module';
 
 @Module({
   imports: [
+    AdminAuthModule,
     TmdbModule,
     StorageModule,
     TypeOrmModule.forFeature([

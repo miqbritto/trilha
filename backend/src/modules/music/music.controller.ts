@@ -1,4 +1,5 @@
-import { Body, Controller, FileTypeValidator, ParseFilePipe, Post, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, FileTypeValidator, ParseFilePipe, Post, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import { AdminApiKeyGuard } from '../admin-auth/admin-api-key.guard';
 import { MusicService } from './music.service';
 import { CreateMusicDto } from './dto/create-music.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -13,6 +14,7 @@ export class MusicController {
   }
 
   @Post()
+  @UseGuards(AdminApiKeyGuard)
   @UseInterceptors(
     FileInterceptor('file', {
       limits: {

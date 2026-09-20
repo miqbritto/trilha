@@ -77,6 +77,39 @@ Gere novas migrations no ambiente de desenvolvimento com
 com `npm run migration:run:neon`. Para reverter a última migration no Neon existe
 `npm run migration:revert:neon`; isso executa o `down()` e pode remover dados.
 
+## Chave administrativa
+
+As rotas `POST /music` (upload de áudio) e `POST /games/daily` (cadastro de
+desafio) exigem o cabeçalho `X-Admin-Key`. As rotas dos jogadores continuam
+públicas. Sem chave, com chave incorreta ou sem `ADMIN_API_KEY` configurada no
+servidor, essas operações retornam `401 Unauthorized`, antes do processamento
+do upload ou do cadastro.
+
+Gere uma chave aleatória de 32 bytes no seu terminal privado:
+
+```bash
+node -e "console.log(require('node:crypto').randomBytes(32).toString('hex'))"
+```
+
+Salve o valor em `ADMIN_API_KEY` no `backend/.env` (ignorado pelo Git). O comando
+`start:dev:neon` também lê essa configuração do `.env`. Em produção, configure
+essa variável nos segredos do provedor do backend e utilize HTTPS. Reinicie o
+backend após configurar ou substituir a chave.
+
+No Postman, em **Authorization**, selecione **API Key**:
+
+- **Key:** `X-Admin-Key`
+- **Value:** o valor de `ADMIN_API_KEY` (prefira uma variável secreta local)
+- **Add to:** `Header`
+
+Para `POST /games/daily`, envie JSON com `musicTrackId` e `date` (`YYYY-MM-DD`).
+Para `POST /music`, use `form-data` com `file` (arquivo), `movieId`, `title` e,
+opcionalmente, `artist` e `note`. Deixe o Postman gerar o `Content-Type` do upload.
+
+Nunca inclua a chave no Angular, na URL, em logs ou em coleções compartilhadas.
+Para revogar uma chave, substitua a variável no backend, reinicie o processo e
+atualize seu cliente administrativo. Não há necessidade de conta para jogadores.
+
 ## Run tests
 
 ```bash

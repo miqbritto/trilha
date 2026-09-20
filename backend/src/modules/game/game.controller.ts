@@ -1,4 +1,5 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
+import { AdminApiKeyGuard } from '../admin-auth/admin-api-key.guard';
 import { GameService } from './game.service';
 import { CreateGuessDto } from './dto/create-guess.dto';
 import { CheckDailyGuessDto } from './dto/check-daily-guesses.dto';
@@ -34,6 +35,7 @@ export class GameController {
   }
 
   @Post('daily')
+  @UseGuards(AdminApiKeyGuard)
   createDailyChallenge(
     @Body() dto: CreateDailyChallengeDto
   ) {
