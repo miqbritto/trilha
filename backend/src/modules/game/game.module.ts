@@ -19,6 +19,7 @@ import { AdminAuthModule } from '../admin-auth/admin-auth.module';
       MovieEntity,
       DailyChallengeEntity,
     ]),
+    
   ],
   controllers: [GameController],
   providers: [GameService],

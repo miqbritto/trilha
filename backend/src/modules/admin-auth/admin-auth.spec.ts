@@ -88,7 +88,7 @@ describe('Administrative API authentication', () => {
     it('rejects repeated key headers', async () => {
       await request(app.getHttpServer())
         .post(path)
-        .set('X-Admin-Key', [key, key])
+        .set({ 'x-admin-key': [key, key] })
         .send({})
         .expect(401);
     });

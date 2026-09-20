@@ -94,7 +94,7 @@ export class Game implements OnInit {
       });
 
       this.searchTerms$.pipe(
-         debounceTime(200),
+         debounceTime(350),
          distinctUntilChanged(),
          switchMap(search => {
             if (search.length < 2) {

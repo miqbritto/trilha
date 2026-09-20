@@ -90,7 +90,6 @@ export class GameOver implements OnInit{
 
   ngOnInit(): void {
     this.getChallenge()
-    console.log(this.gameStatus())
   }
 
   async getChallenge() {

@@ -9,6 +9,7 @@ import { TmdbModule } from './modules/tmdb/tmdb.module';
 import { StorageModule } from './modules/storage/storage.module';
 import { MusicModule } from './modules/music/music.module';
 
+
 @Module({
   imports: [
     DbModule,
@@ -19,7 +20,7 @@ import { MusicModule } from './modules/music/music.module';
     ConfigModule.forRoot({
       isGlobal: true,
     }),
-    StorageModule,
+    StorageModule
   ],
   controllers: [AppController],
   providers: [AppService],
