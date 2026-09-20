@@ -405,12 +405,20 @@
         cursor: default;
     }
 
-    &:hover {
+    &:hover:not(:disabled) {
         background-color: var(--color-primary-hover);
     }
 
-    &:active {
+    &:active:not(:disabled) {
         box-shadow: none;
         transform: translate(3px, 3px);
+    }
+
+    &.is-copied {
+        min-width: 10rem;
+        background-color: var(--color-surface);
+        color: var(--color-text);
+        border-color: var(--color-border-subtle);
+        opacity: 1;
     }
 }

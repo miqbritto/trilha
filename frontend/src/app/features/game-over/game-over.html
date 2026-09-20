@@ -111,7 +111,9 @@
                     <p class="share-summary">{{ resultSummary() }}</p>
                 </div>
                 <button class="share-button" type="button" (click)="shareResults()"
-                    [disabled]="!attemptCount() || isSharing()">
+                    [class.is-copied]="isCopied()"
+                    [disabled]="!attemptCount() || isSharing() || isCopied()"
+                    aria-live="polite" aria-atomic="true">
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
                         width="24"
@@ -122,15 +124,16 @@
                         stroke-width="2"
                         stroke-linecap="round"
                         stroke-linejoin="round"
-                        class="lucide lucide-copy h-4 w-4"
                         aria-hidden="true"
-                        data-id="element-118"
-                        data-mp="2ps119633ohpq"
                         >
-                        <rect width="14" height="14" x="8" y="8" rx="2" ry="2"></rect>
-                        <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path>
+                        @if (isCopied()) {
+                            <path d="m5 12 4 4L19 6"></path>
+                        } @else {
+                            <rect width="14" height="14" x="8" y="8" rx="2" ry="2"></rect>
+                            <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path>
+                        }
                     </svg>
-                    COMPARTILHAR
+                    {{ isCopied() ? 'COPIADO' : 'COMPARTILHAR' }}
                 </button>
             </div>
             <p class="share-feedback" role="status">{{ shareFeedback() }}</p>

@@ -1,4 +1,4 @@
-import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, DestroyRef, inject, OnInit, signal } from '@angular/core';
 import { Shell } from '../../shared/components/shell/shell';
 import { DatePipe } from '@angular/common';
 import { GameSessionStorage } from '../../core/services/game-session-storage.service';
@@ -38,6 +38,13 @@ export class GameOver implements OnInit{
   });
   protected readonly shareFeedback = signal('');
   protected readonly isSharing = signal(false);
+  protected readonly isCopied = signal(false);
+  private readonly destroyRef = inject(DestroyRef);
+  private copiedTimeout?: ReturnType<typeof setTimeout>;
+
+  constructor() {
+    this.destroyRef.onDestroy(() => clearTimeout(this.copiedTimeout));
+  }
 
   protected readonly gameStatus = computed(() => {
     const session = this.session();
@@ -58,7 +65,7 @@ export class GameOver implements OnInit{
   });
 
   async shareResults() {
-    if (this.isSharing() || !this.attemptCount()) return;
+    if (this.isSharing() || this.isCopied() || !this.attemptCount()) return;
     this.isSharing.set(true);
     this.shareFeedback.set('');
     const bars = ['▁', '▂', '▄', '▆', '█'];
@@ -68,7 +75,12 @@ export class GameOver implements OnInit{
 
     try {
       await navigator.clipboard.writeText(`TRILHA #142\n${attempts}\n${this.resultSummary()}`);
-      this.shareFeedback.set('Resultado copiado!');
+      if (this.destroyRef.destroyed) return;
+      this.isCopied.set(true);
+      this.copiedTimeout = setTimeout(() => {
+        this.isCopied.set(false);
+        this.copiedTimeout = undefined;
+      }, 2000);
     } catch {
       this.shareFeedback.set('Não foi possível copiar. Tente novamente.');
     } finally {
