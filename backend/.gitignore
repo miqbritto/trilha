@@ -1,6 +1,7 @@
 # Compiled output
 /dist
 /build
+/backups/
 *.tsbuildinfo
 
 # Dependencies

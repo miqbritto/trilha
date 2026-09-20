@@ -8,13 +8,6 @@ import { CreateDailyChallengeDto } from './dto/create-daily-challenge.dto';
 export class GameController {
   constructor(private readonly gameService: GameService) {}
 
-  @Post()
-  async createGameSession() {
-    const gameSession = await this.gameService.createGameSession();
-    return gameSession;
-  }
-
-  
 
   @Get("daily")
   getDailyChallenge() {
@@ -24,13 +17,6 @@ export class GameController {
   @Get("free")
   getFreeChallenge() {
     return this.gameService.getFreeChallenge()
-  }
-
-  @Get(':gameId')
-  async getGame(
-    @Param('gameId') gameId: string 
-  ) {
-    return this.gameService.findGame(gameId)
   }
 
   @Post("guesses")

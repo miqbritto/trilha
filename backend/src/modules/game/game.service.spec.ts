@@ -2,8 +2,7 @@ import { Logger, NotFoundException, ServiceUnavailableException } from '@nestjs/
 import { Test } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { DailyChallengeEntity } from '../../database/entities/daily-challenge';
-import { GameSessionEntity } from '../../database/entities/gameSession.entity';
-import { GuessEntity } from '../../database/entities/guess.entity';
+
 import { MovieEntity } from '../../database/entities/movie.entity';
 import { MusicTrackEntity } from '../../database/entities/musicTrack.entity';
 import { TmdbService } from '../tmdb/tmdb.service';
@@ -32,7 +31,7 @@ describe('GameService.getDailyResult', () => {
       providers: [
         GameService,
         { provide: getRepositoryToken(DailyChallengeEntity), useValue: dailyRepo },
-        ...[GameSessionEntity, MusicTrackEntity, GuessEntity, MovieEntity].map(entity => ({
+        ... [MusicTrackEntity, MovieEntity].map(entity => ({
           provide: getRepositoryToken(entity), useValue: {},
         })),
         { provide: TmdbService, useValue: tmdb },

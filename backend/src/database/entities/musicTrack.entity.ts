@@ -1,6 +1,6 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, OneToMany } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from "typeorm";
 import { MovieEntity } from "./movie.entity";
-import { GameSessionEntity } from "./gameSession.entity";
+
 
 @Entity('music_tracks')
 export class MusicTrackEntity {
@@ -31,10 +31,5 @@ export class MusicTrackEntity {
     @ManyToOne(() => MovieEntity, (movie) => movie.musicTracks)
     @JoinColumn({ name: 'movie_id' })
     movie!: MovieEntity;
-
-    @OneToMany(() => GameSessionEntity, (gameSession) => gameSession.musicTrack)
-    games!: GameSessionEntity[];
-
-
 
 }

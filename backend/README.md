@@ -44,6 +44,39 @@ $ npm run start:dev
 $ npm run start:prod
 ```
 
+## Banco local e Neon
+
+Execute os comandos na pasta `backend`:
+
+```bash
+# Postgres configurado pelas variáveis DB_* do .env
+npm run start:dev
+
+# Neon: lê NEON_DATABASE_URL do arquivo ignorado .env.neon.local
+npm run start:dev:neon
+
+# Consultar migrations aplicadas e pendentes no Neon
+npm run migration:show:neon
+
+# Aplicar migrations pendentes no Neon
+npm run migration:run:neon
+```
+
+Os comandos sem `:neon` continuam usando a configuração habitual. Se
+`DATABASE_URL` estiver definida no ambiente ou no `.env`, ela tem prioridade
+sobre `DB_*` tanto na aplicação quanto nas migrations e exige TLS com certificado
+válido. Para um deploy, configure `DATABASE_URL` no provedor do backend.
+
+Os comandos `:neon` definem `DATABASE_URL` somente no processo iniciado; não
+alteram o `.env`. As demais configurações (R2, TMDB etc.) continuam vindo do
+`.env`. Sem `NEON_DATABASE_URL` válida, o comando para sem conectar ao banco local.
+
+O backend não sincroniza o schema nem executa migrations automaticamente.
+Gere novas migrations no ambiente de desenvolvimento com
+`npm run migration:generate -- NomeDaMigration`, revise o SQL e aplique no Neon
+com `npm run migration:run:neon`. Para reverter a última migration no Neon existe
+`npm run migration:revert:neon`; isso executa o `down()` e pode remover dados.
+
 ## Run tests
 
 ```bash

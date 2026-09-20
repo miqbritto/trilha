@@ -1,6 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
 import { MusicTrackEntity } from './musicTrack.entity';
-import { GuessEntity } from './guess.entity';
 
 
 @Entity('movies')
@@ -29,7 +28,4 @@ export class MovieEntity {
 
     @OneToMany(() => MusicTrackEntity, (musicTrack) => musicTrack.movie)
     musicTracks!: MusicTrackEntity[];
-
-    @OneToMany(() => GuessEntity, (guess) => guess.guessedMovie)
-    guesses!: GuessEntity[];
 }
