@@ -8,16 +8,19 @@ import { GuessEntity } from 'src/database/entities/guess.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DailyChallengeEntity } from 'src/database/entities/daily-challenge';
 import { TmdbModule } from '../tmdb/tmdb.module';
+import { StorageModule } from '../storage/storage.module';
 
 @Module({
   imports: [
     TmdbModule,
+    StorageModule,
     TypeOrmModule.forFeature([
       GameSessionEntity,
       MusicTrackEntity,
       MovieEntity,
       GuessEntity,
-      DailyChallengeEntity
+      DailyChallengeEntity,
+  
     ]),
   ],
   controllers: [GameController],

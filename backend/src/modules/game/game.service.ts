@@ -11,6 +11,7 @@ import { DailyChallengeEntity } from 'src/database/entities/daily-challenge';
 import { getGameDate } from './utils/game-date';
 import { DailyChallengeResponse, FreeChallengeResponse } from './dto/challenge-response.dto';
 import { TmdbService } from '../tmdb/tmdb.service';
+import { StorageService } from '../storage/storage.service';
 
 @Injectable()
 export class GameService {
@@ -28,6 +29,7 @@ export class GameService {
          @InjectRepository(DailyChallengeEntity)
          private readonly dailyChallengeRepo: Repository<DailyChallengeEntity>,
          private readonly tmdbService: TmdbService,
+         private readonly storageService: StorageService
     ) {}
 
     async createGameSession(): Promise<GameSessionEntity> {

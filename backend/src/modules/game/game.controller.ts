@@ -2,6 +2,7 @@ import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { GameService } from './game.service';
 import { CreateGuessDto } from './dto/create-guess.dto';
 import { CheckDailyGuessDto } from './dto/check-daily-guesses.dto';
+import { CreateDailyChallengeDto } from './dto/create-daily-challenge.dto';
 
 @Controller('games')
 export class GameController {
@@ -46,5 +47,10 @@ export class GameController {
     return this.gameService.getDailyResult(challengeId);
   }
 
-  
+  @Post('daily')
+  createDailyChallenge(
+    @Body() dto: CreateDailyChallengeDto
+  ) {
+    return this.gameService.createDailyChallenge(dto.musicTrackId, dto.date)
+  }
 }

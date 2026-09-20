@@ -25,6 +25,7 @@
     "migration:revert": "npm run typeorm migration:revert -- -d src/database/typeorm.migration-config.ts"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.1136.0",
     "@nestjs/axios": "^12.0.0",
     "@nestjs/common": "^11.0.1",
     "@nestjs/config": "^12.0.0",
@@ -47,6 +48,7 @@
     "@nestjs/testing": "^11.0.1",
     "@types/express": "^5.0.0",
     "@types/jest": "^30.0.0",
+    "@types/multer": "^2.2.0",
     "@types/node": "^24.13.3",
     "@types/supertest": "^7.0.0",
     "eslint": "^9.18.0",
