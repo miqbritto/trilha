@@ -15,7 +15,7 @@ import { firstValueFrom } from 'rxjs';
 export class History implements OnInit {
   private readonly gameService = inject(GameService)
 
-  protected readonly challenges = signal<GameChallengeHistory | null>(null)
+  protected readonly challenges = signal<GameChallengeHistory[] | null>(null)
 
   ngOnInit(): void {
     this.getAllChallenges();

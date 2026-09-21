@@ -11,6 +11,15 @@
 
     <body class="history-body">
 
+        <div class="challenge-items">
+            @for (challenge of challenges(); track $index) {
+                <app-challenge-card
+                    [dateLabel]="challenge.date"
+                    [number]="challenge.number"
+                />
+            }
+        </div>
+
     </body>
     
 

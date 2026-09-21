@@ -32,7 +32,7 @@ export class GameService {
     }
 
     getAllChallenges() {
-        return this.hhtp.get<GameChallengeHistory>(
+        return this.hhtp.get<GameChallengeHistory[]>(
             `${this.apiUrl}/history`
         )
     }
