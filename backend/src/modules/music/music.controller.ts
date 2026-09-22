@@ -14,7 +14,6 @@ export class MusicController {
   }
 
   @Post()
-  @UseGuards(AdminApiKeyGuard)
   @UseInterceptors(
     FileInterceptor('file', {
       limits: {

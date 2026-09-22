@@ -5,7 +5,6 @@ import { MusicTrackEntity } from 'src/database/entities/musicTrack.entity';
 import { Repository } from 'typeorm';
 import { StorageService } from '../storage/storage.service';
 import { CreateMusicDto } from './dto/create-music.dto';
-import { randomUUID } from 'crypto';
 
 @Injectable()
 export class MusicService {
@@ -46,7 +45,14 @@ export class MusicService {
             throw new NotFoundException('Filme não encontrado.');
         }
 
-        const key = `audios/${randomUUID()}.${extension}`
+        const slugify = (name: string): string => name
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '')
+            .toLowerCase()
+            .replace(/[^a-z0-9]+/g, '-')
+            .replace(/^-+|-+$/g, '');
+
+        const key = `audios/${slugify(movie.title)}_${slugify(dto.title)}.${extension}`
         const contentType =
             extension === 'wav' ? 'audio/wav' : 'audio/mpeg'
 
