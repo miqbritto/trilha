@@ -1,7 +1,7 @@
 <article
   class="challenge-card"
   [class.challenge-card--highlighted]="highlighted()"
-  [attr.aria-label]="'Desafio ' + number() + ', ' + dateLabel() + ', ' + attempts() + ' de ' + maxAttempts() + ' tentativas'"
+  [attr.aria-label]="'Desafio ' + number() + ', ' + dateLabel()"
 >
   <div class="challenge-card__header">
     <span class="challenge-card__number">
@@ -12,6 +12,6 @@
 
   <div class="challenge-card__footer">
     <span class="challenge-card__date">{{ dateLabel() }}</span>
-    <span class="challenge-card__attempts">{{ attempts() }}/{{ maxAttempts() }}</span>
+    <!-- <span class="challenge-card__attempts">{{ attempts() }}/{{ maxAttempts() }}</span> -->
   </div>
 </article>

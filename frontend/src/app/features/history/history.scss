@@ -66,6 +66,11 @@
   }
 }
 
+.challenge-items {
+  display: flex;
+  gap: .6875rem;
+}
+
 @media (max-width: 36rem) {
   .history-header .header-title {
     flex-direction: column;
