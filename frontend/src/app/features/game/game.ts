@@ -8,7 +8,7 @@ import { GameSession } from '../../core/models/game-session';
 import { GameSessionStorage } from '../../core/services/game-session-storage.service';
 import { GameService } from '../../core/services/game.service';
 import { DatePipe } from '@angular/common';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { MAX_GUESSES } from '../../shared/utils/constants';
 import { GuessHistory } from '../../shared/components/guess-history/guess-history';
 import { PlayerCard } from '../../shared/components/player-card/player-card';
@@ -33,6 +33,7 @@ export class Game implements OnInit {
    private readonly storage      = inject(GameSessionStorage)
    private readonly gameService  = inject(GameService)
    private readonly router = inject(Router);
+   private readonly route  = inject(ActivatedRoute)
    readonly submitting = signal(false);
 
    // State — local state
@@ -173,8 +174,12 @@ export class Game implements OnInit {
    }
 
    private async startNewGame() {
+      const challengeId = this.route.snapshot.paramMap.get("challengeId")
+
       const challenge = await firstValueFrom(
-         this.gameService.getDailyChallenge()
+         challengeId 
+            ?  this.gameService.getChallenge(challengeId)
+            :  this.gameService.getDailyChallenge()
       )
 
       const savedSession = this.storage.load()

@@ -1,0 +1,14 @@
+{
+  "name": "trilha",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently --kill-others --names frontend,backend \"npm run dev:frontend\" \"npm run dev:backend\"",
+    "dev:neon": "concurrently --kill-others --names frontend,backend \"npm run dev:frontend\" \"npm run dev:backend:neon\"",
+    "dev:frontend": "npm --prefix frontend start",
+    "dev:backend": "npm --prefix backend run start:dev",
+    "dev:backend:neon": "npm --prefix backend run start:dev:neon"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  }
+}

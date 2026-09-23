@@ -9,30 +9,36 @@ import { GameResult } from "../models/game-session";
 
 @Injectable({ providedIn: 'root'})
 export class GameService {
-    private hhtp = inject(HttpClient);
+    private http = inject(HttpClient);
     private readonly apiUrl = "http://localhost:3000/games"
 
     getDailyChallenge() {
-        return this.hhtp.get<DailyGameChallenge>(
+        return this.http.get<DailyGameChallenge>(
             `${this.apiUrl}/daily`
         )
     }
 
+    getChallenge(challengeId: string) {
+        return this.http.get<DailyGameChallenge>(
+            `${this.apiUrl}/daily/${challengeId}`
+        )
+    }
+
     sendGuess(challengeId: string, tmdbId: number) {
-        return this.hhtp.post<ValidateGuessResponse>(`${this.apiUrl}/guesses`, {
+        return this.http.post<ValidateGuessResponse>(`${this.apiUrl}/guesses`, {
             challengeId,
             tmdbId
         })
     }
 
     getDailyResult(challengeId: string) {
-        return this.hhtp.get<GameResult>(
+        return this.http.get<GameResult>(
             `${this.apiUrl}/daily/${challengeId}/result`
         )
     }
 
     getAllChallenges() {
-        return this.hhtp.get<GameChallengeHistory[]>(
+        return this.http.get<GameChallengeHistory[]>(
             `${this.apiUrl}/history`
         )
     }

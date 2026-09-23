@@ -15,6 +15,13 @@ export class GameController {
     return this.gameService.getDailyChallenge()
   }
 
+  @Get("daily/:challengeId")
+  getChallenge(
+    @Param("challengeId") challengeId: string
+  ) {
+    return this.gameService.getChallenge(challengeId);
+  }
+
   @Get("history")
   getAllChallenges() {
     return this.gameService.getAllChallenges()

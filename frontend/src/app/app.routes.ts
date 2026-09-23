@@ -13,6 +13,12 @@ export const routes: Routes = [
                 .then(m => m.Game)
     },
     {
+        path: "game/:challengeId",
+        loadComponent: () =>
+            import("./features/game/game")
+                .then(m => m.Game)
+    },
+    {
         path: "game-over",
         loadComponent: () => 
             import("./features/game-over/game-over")

@@ -4,19 +4,45 @@
             <p>arquivo de desafios</p>
             <div class="header-title">
                 <h1>Histórico</h1>
-                <p>x desafios · #x ao #x</p>
+                @if(challenges(); as items){
+                    @if (items.length > 0) {
+                         <p>
+                            {{items.length}} desafios · 
+                            #{{items[items.length - 1].number}} ao 
+                            #{{items[0].number}}</p>
+                    }
+                }
             </div>
             <hr>
         </header>
 
     <body class="history-body">
+        <div class="history-months">
+            @for (month of challengesByMonth(); track month.key) {
+                <section class="history-month">
+                    <div class="month-divider">
+                        <hr>
 
-        <div class="challenge-items">
-            @for (challenge of challenges(); track $index) {
-                <app-challenge-card
-                    [dateLabel]="challenge.date"
-                    [number]="challenge.number"
-                />
+                        <div class="month-divider__info">
+                            <span>{{ month.label }}</span>
+                            <span>{{ month.challenges.length }}</span>
+                        </div>
+                    </div>
+
+                    <div class="challenge-items">
+                        @for (challenge of month.challenges; track challenge.id) {
+                            <a 
+                                class="challenge-link"
+                                [routerLink]="['/game', challenge.id]"
+                            >
+                                <app-challenge-card
+                                    [dateLabel]="challenge.date"
+                                    [number]="challenge.number"
+                                />
+                            </a>
+                        }
+                    </div>
+            </section>
             }
         </div>
 

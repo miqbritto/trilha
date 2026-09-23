@@ -66,9 +66,63 @@
   }
 }
 
+.history-months,
+.history-month {
+  display: flex;
+  flex-direction: column;
+}
+
+.history-months {
+  gap: 2rem;
+}
+
+.history-month {
+  gap: 1.25rem;
+}
+
+.month-divider {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+
+  hr {
+    width: 100%;
+    margin: 0;
+    border: 0;
+    border-top: 1px solid var(--color-border-subtle);
+  }
+}
+
+.month-divider__info {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  span {
+    color: var(--color-text-muted);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 400;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+  }
+
+  span:last-child {
+    color: var(--color-text-secondary);
+    letter-spacing: normal;
+  }
+}
+
 .challenge-items {
   display: flex;
+  flex-wrap: wrap;
   gap: .6875rem;
+}
+
+.challenge-link {
+  display: block;
+  color: inherit;
+  text-decoration: none;
 }
 
 @media (max-width: 36rem) {

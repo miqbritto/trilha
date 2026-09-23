@@ -82,6 +82,34 @@ export class GameService {
         }))
     }
 
+    async getChallenge(challengeId: string): Promise<DailyChallengeResponse> {
+        const challenge = await this.dailyChallengeRepo.findOne({
+            where: { id: challengeId},
+            relations: { musicTrack: true }
+        })
+
+        if (!challenge) {
+            throw new NotFoundException("Desafio não encontrado");
+        }
+        
+        const audioUrl = challenge.musicTrack?.previewUrl?.trim();
+
+        if(!audioUrl) {
+            throw new NotFoundException("Audio indisponível para o desafio de hoje")
+        }
+
+        return {
+            id: challenge.id,
+            mode: "daily",
+            number: challenge.number,
+            date: challenge.date,
+            rules: {
+                revealStages: [...REVEAL_STAGES]
+            },
+            audioUrl
+        }
+    }
+
     async getDailyChallenge(): Promise<DailyChallengeResponse> {
         const challenge = await this.findDailyChallenge();
 
