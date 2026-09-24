@@ -1,12 +1,13 @@
 import { HttpClient } from "@angular/common/http";
 import { inject, Injectable } from "@angular/core";
-import { Movie } from "../models/movie";
+import { Movie, MovieOption } from "../models/movie";
+import { environment } from '../../../environments/environment.development';
 
 
 @Injectable({ providedIn: 'root' })
 export class MovieService {
     private readonly http = inject(HttpClient)
-    private readonly apiUrl = "http://localhost:3000/movies"
+    private readonly apiUrl = `${environment.apiUrl.replace(/\/+$/, '')}/movies`;
 
     getDirector(tmdbId: number) {
         return this.http.get<{ director: string | null }>(
@@ -18,6 +19,11 @@ export class MovieService {
         return this.http.get<Movie[]>(this.apiUrl, {
             params: { search }
         })
+    }
 
+    getMovieOptions(search: string) {
+        return this.http.get<MovieOption[]>(`${this.apiUrl}/options`, {
+            params: { search }
+        })
     }
 }

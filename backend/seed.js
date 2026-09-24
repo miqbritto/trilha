@@ -27,51 +27,27 @@ async function seed() {
     const movies = [
         {
             title: 'Interstellar',
-            releaseYear: 2014,
-            posterUrl:
-                'https://image.tmdb.org/t/p/w500/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg',
         },
         {
             title: 'The Dark Knight',
-            releaseYear: 2008,
-            posterUrl:
-                'https://image.tmdb.org/t/p/w500/qJ2tW6WMUDux911r6m7haRef0WH.jpg',
         },
         {
             title: 'Inception',
-            releaseYear: 2010,
-            posterUrl:
-                'https://image.tmdb.org/t/p/w500/9gk7adHYeDvHkCSEqAvQNLV5Uge.jpg',
         },
         {
             title: 'Harry Potter and the Philosopher\'s Stone',
-            releaseYear: 2001,
-            posterUrl:
-                'https://image.tmdb.org/t/p/w500/4rwpv5tC4bqJQXQWQzYV5W5KXkQ.jpg',
         },
         {
             title: 'The Lord of the Rings: The Fellowship of the Ring',
-            releaseYear: 2001,
-            posterUrl:
-                'https://image.tmdb.org/t/p/w500/6oom5QYQ2yQTMJIbnvbkBL9cHo6.jpg',
         },
         {
             title: 'Jurassic Park',
-            releaseYear: 1993,
-            posterUrl:
-                'https://image.tmdb.org/t/p/w500/fjTU1Bgh3KJu4lR2xHN5V2Z5z3W.jpg',
         },
         {
             title: 'Jaws',
-            releaseYear: 1975,
-            posterUrl:
-                'https://image.tmdb.org/t/p/w500/lxM6kqilAdpdhqUl2biYp5frUxE.jpg',
         },
         {
             title: 'Star Wars: A New Hope',
-            releaseYear: 1977,
-            posterUrl:
-                'https://image.tmdb.org/t/p/w500/6FfCtAuVAW8XJjZ7F1q5H3V5r6D.jpg',
         },
     ];
 

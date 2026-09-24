@@ -13,9 +13,9 @@ describe('GameService.getDailyResult', () => {
   const dailyRepo = { findOne: jest.fn() };
   const tmdb = { getMovieDetails: jest.fn() };
   const localMovie = {
-    tmdbId: 11, title: 'Título local', releaseYear: 1978,
-    director: 'Diretor local', posterUrl: '/local.jpg',
+    tmdbId: 11, title: 'Título local',
   };
+  const missingMetadata = { releaseYear: null, director: null, posterUrl: null };
   const remoteMovie = {
     tmdbId: 11, title: 'Guerra nas Estrelas', releaseYear: 1977,
     director: 'George Lucas', posterUrl: 'https://image.tmdb.org/t/p/w500/poster.jpg',
@@ -52,22 +52,26 @@ describe('GameService.getDailyResult', () => {
 
   it('keeps the result available when TMDB fails', async () => {
     tmdb.getMovieDetails.mockRejectedValue(new ServiceUnavailableException());
-    await expect(service.getDailyResult('challenge-id')).resolves.toEqual({ movie: localMovie, track });
+    await expect(service.getDailyResult('challenge-id')).resolves.toEqual({
+      movie: { ...localMovie, ...missingMetadata }, track,
+    });
   });
 
-  it('fills missing TMDB metadata with local values', async () => {
+  it('returns null for missing TMDB metadata', async () => {
     tmdb.getMovieDetails.mockResolvedValue({
       ...remoteMovie, releaseYear: null, director: null, posterUrl: null,
     });
     await expect(service.getDailyResult('challenge-id')).resolves.toEqual({
-      movie: { ...localMovie, title: remoteMovie.title }, track,
+      movie: { ...localMovie, ...missingMetadata, title: remoteMovie.title }, track,
     });
   });
 
   it.each([null, 0, -1])('skips TMDB when the stored ID is %s', async tmdbId => {
     const movie = { ...localMovie, tmdbId };
     dailyRepo.findOne.mockResolvedValue({ musicTrack: { ...track, movie } });
-    await expect(service.getDailyResult('challenge-id')).resolves.toEqual({ movie, track });
+    await expect(service.getDailyResult('challenge-id')).resolves.toEqual({
+      movie: { ...movie, ...missingMetadata }, track,
+    });
     expect(tmdb.getMovieDetails).not.toHaveBeenCalled();
   });
 

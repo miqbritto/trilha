@@ -9,6 +9,33 @@
     position: relative;
 }
 
+.shell--wide {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: 0;
+
+    .center-header { width: min(100%, 66rem); padding-inline: 1.5rem; }
+}
+
+.studio-link {
+    display: inline-block;
+    padding: .5rem;
+    color: var(--color-text-secondary);
+    font: .6875rem var(--font-mono);
+    text-transform: uppercase;
+    text-decoration: none;
+    letter-spacing: .12em;
+
+    &:hover, &.active { color: var(--color-primary); }
+    &:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 3px; }
+}
+
+@media (max-width: 480px) {
+    .center-header { flex-wrap: wrap; padding-bottom: .5rem; }
+    .right { display: flex; flex-wrap: wrap; gap: .25rem; }
+}
+
 .shell::after {
     content: '';
     position: fixed;

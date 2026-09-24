@@ -14,15 +14,6 @@ export class MovieEntity {
     @Column({ unique: true })
     title!: string;
 
-    @Column({ name: 'release_year' })
-    releaseYear!: number;
-
-    @Column({ nullable: true })
-    director!: string;
-
-    @Column({ nullable: true, name: 'poster_url' })
-    posterUrl!: string;
-
     @Column({ nullable: true })
     quote!: string;
 

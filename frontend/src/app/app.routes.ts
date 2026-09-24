@@ -2,6 +2,13 @@ import { Routes } from '@angular/router';
 
 export const routes: Routes = [
     {
+        path: "studio",
+        title: "Estúdio | trilha",
+        loadComponent: () =>
+            import("./features/studio/studio")
+                .then(m => m.Studio)
+    },
+    {
         path: "",
         redirectTo: "game",
         pathMatch: "full"

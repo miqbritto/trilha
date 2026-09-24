@@ -13,10 +13,20 @@
                     }
                 }
             </div>
-            <hr>
+            
         </header>
 
-    <body class="history-body">
+    <main class="history-body">
+        @if (loading()) {
+            <div class="request-state" role="status">Carregando histórico...</div>
+        } @else if (loadError()) {
+            <div class="request-state">
+                <p role="alert">{{ loadError() }}</p>
+                <button type="button" (click)="getAllChallenges()">Tentar novamente</button>
+            </div>
+        } @else if (challenges()?.length === 0) {
+            <div class="request-state" role="status">Ainda não há desafios no histórico.</div>
+        } @else {
         <div class="history-months">
             @for (month of challengesByMonth(); track month.key) {
                 <section class="history-month">
@@ -46,7 +56,8 @@
             }
         </div>
 
-    </body>
+        }
+    </main>
     
 
    </div>

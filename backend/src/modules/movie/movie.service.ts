@@ -3,6 +3,11 @@ import {
     BadRequestException
 } from '@nestjs/common';
 import { TmdbService } from '../tmdb/tmdb.service';
+import { ILike, Like, Repository } from 'typeorm';
+import { MovieEntity } from 'src/database/entities/movie.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { title } from 'process';
+import { MovieOption } from './interfaces/movie-option';
 
 export interface MovieSuggestion {
     tmdbId: number;
@@ -15,7 +20,10 @@ export interface MovieSuggestion {
 @Injectable()
 export class MovieService {
     constructor(
-        private readonly tmdbService: TmdbService
+        private readonly tmdbService: TmdbService,
+
+        @InjectRepository(MovieEntity)
+        private readonly movieRepo: Repository<MovieEntity>
     ) {}
 
     async searchMovies(search: unknown) {
@@ -66,6 +74,32 @@ export class MovieService {
         }
 
         return { director: await this.tmdbService.getMovieDirector(tmdbId) };
+    }
+
+    async getMovies(search: string): Promise<MovieOption[]> {
+        
+        if (search === undefined ){
+            return [];
+        }
+
+        const query = search.trim();
+
+        if (!query) return [];
+
+        const movies = await this.movieRepo.find({
+            select: { id: true, title: true },
+            where: { title: ILike(`%${query}%`)},
+            take: 10,
+            order: { title: 'ASC' }
+        })
+
+        return movies.map((movie): MovieOption => {
+            return {
+                id: movie.id,
+                title: movie.title,
+            }
+        })
+        
     }
 
 }

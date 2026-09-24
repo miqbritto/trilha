@@ -14,4 +14,9 @@ export class MovieController {
   searchMovies(@Query('search') search: unknown) {
     return this.movieService.searchMovies(search);
   }
+
+  @Get("options")
+  getMovies(@Query('search') search: string) {
+    return this.movieService.getMovies(search)
+  }
 }

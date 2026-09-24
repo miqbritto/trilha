@@ -5,7 +5,8 @@ import { GameSessionStorage } from '../../core/services/game-session-storage.ser
 import { GameResult, GameSession } from '../../core/models/game-session';
 import { GameService } from '../../core/services/game.service';
 import { DailyGameChallenge } from '../../core/models/game-challenge';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, timeout } from 'rxjs';
+import { RouterLink } from '@angular/router';
 import { getGameStatus } from '../../shared/utils/helpers';
 import { MAX_GUESSES, guessSlots } from '../../shared/utils/constants';
 import { GuessHistory } from '../../shared/components/guess-history/guess-history';
@@ -13,7 +14,7 @@ import { PlayerCard } from '../../shared/components/player-card/player-card';
 
 @Component({
   selector: 'app-game-over',
-  imports: [Shell, DatePipe, GuessHistory, PlayerCard],
+  imports: [Shell, DatePipe, GuessHistory, PlayerCard, RouterLink],
   templateUrl: './game-over.html',
   styleUrl: './game-over.scss',
 })
@@ -30,6 +31,8 @@ export class GameOver implements OnInit{
   protected readonly session = signal<GameSession | null>(null)
   protected readonly challenge = signal<DailyGameChallenge | null>(null)
   protected readonly result = signal<GameResult | null>(null);
+  protected readonly loading = signal(false);
+  protected readonly loadError = signal('');
   protected readonly attempts = computed(() => this.session()?.guesses ?? []);
   protected readonly attemptCount = computed(() => this.attempts().length);
   protected readonly revealedSeconds = computed(() => {
@@ -54,7 +57,14 @@ export class GameOver implements OnInit{
       : null;
   })
 
-  readonly today = new Date()
+  protected readonly challengeDate = computed(() => {
+    const challenge = this.session()?.challenge;
+    return challenge?.mode === 'daily' ? challenge.date : null;
+  });
+  protected readonly shareTitle = computed(() => {
+    const challenge = this.session()?.challenge;
+    return challenge ? `TRILHA #${challenge.number}` : 'TRILHA';
+  });
 
   protected readonly resultSummary = computed(() => {
     const count = this.attemptCount();
@@ -74,7 +84,7 @@ export class GameOver implements OnInit{
       .join(' ');
 
     try {
-      await navigator.clipboard.writeText(`TRILHA #142\n${attempts}\n${this.resultSummary()}`);
+      await navigator.clipboard.writeText(`${this.shareTitle()}\n${attempts}\n${this.resultSummary()}`);
       if (this.destroyRef.destroyed) return;
       this.isCopied.set(true);
       this.copiedTimeout = setTimeout(() => {
@@ -93,7 +103,9 @@ export class GameOver implements OnInit{
   }
 
   async getChallenge() {
-    
+    if (this.loading()) return;
+    this.loading.set(true);
+    this.loadError.set('');
 
     try {
       const session = this.gameStorage.load()
@@ -102,12 +114,15 @@ export class GameOver implements OnInit{
         return;
       }
       const result = await firstValueFrom(
-        this.game.getDailyResult(session.challenge.id)
+        this.game.getDailyResult(session.challenge.id).pipe(timeout(15000))
       );
 
       this.result.set(result); 
     } catch (error) {
+      this.loadError.set('Não foi possível carregar o resultado. Tente novamente.');
       console.error("Erro ao carregar resultado", error)
+    } finally {
+      this.loading.set(false);
     }
     
   }

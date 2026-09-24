@@ -2,7 +2,8 @@ import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { Shell } from '../../shared/components/shell/shell';
 import { MovieService } from '../../core/services/movie.service';
 import { Movie } from '../../core/models/movie';
-import { catchError, debounceTime, distinctUntilChanged, firstValueFrom, of, Subject, switchMap } from 'rxjs';
+import { catchError, firstValueFrom, of, Subject, switchMap, timer, timeout } from 'rxjs';
+import { HttpErrorResponse } from '@angular/common/http';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { GameSession } from '../../core/models/game-session';
 import { GameSessionStorage } from '../../core/services/game-session-storage.service';
@@ -35,9 +36,18 @@ export class Game implements OnInit {
    private readonly router = inject(Router);
    private readonly route  = inject(ActivatedRoute)
    readonly submitting = signal(false);
+   readonly loading = signal(false);
+   readonly loadError = signal('');
+   readonly guessError = signal('');
+   readonly searchError = signal('');
+   readonly searching = signal(false);
+   readonly searchQuery = signal('');
 
    // State — local state
-   readonly today                = new Date()
+   readonly challengeDate = computed(() => {
+      const challenge = this.session()?.challenge;
+      return challenge?.mode === 'daily' ? challenge.date : null;
+   });
    readonly isCorrect            = signal<boolean | null>(null);
    readonly suggestions          = signal<Movie[] | null>(null);
    readonly selectedMovie        = signal<Movie | null>(null);
@@ -81,6 +91,7 @@ export class Game implements OnInit {
             if (!movie) return of(null);
 
             return this.movieService.getDirector(movie.tmdbId).pipe(
+               timeout(15000),
                catchError(() => of({ director: null })),
             );
          }),
@@ -95,22 +106,25 @@ export class Game implements OnInit {
       });
 
       this.searchTerms$.pipe(
-         debounceTime(350),
-         distinctUntilChanged(),
          switchMap(search => {
+            this.searchError.set('');
+            this.searching.set(search.length >= 2);
             if (search.length < 2) {
                return of<Movie[]>([]);
             }
 
-            return this.movieService.searchMovie(search).pipe(
-               catchError(error => {
-                  console.error('Erro ao buscar filmes: ', error);
+            return timer(350).pipe(
+               switchMap(() => this.movieService.searchMovie(search)),
+               timeout(15000),
+               catchError(() => {
+                  this.searchError.set('Não foi possível buscar filmes. Tente novamente.');
                   return of<Movie[]>([]);
                })
             );
          }),
          takeUntilDestroyed()
       ).subscribe(movies => {
+         this.searching.set(false);
          this.suggestions.set(movies);
       });
    }
@@ -123,10 +137,18 @@ export class Game implements OnInit {
    searchMovie(search: string) {
       this.clearSelectedMovie();
       this.suggestions.set([]);
+      this.searchQuery.set(search.trim());
       this.searchTerms$.next(search.trim());
    }
 
+   retrySearch() {
+      this.searchTerms$.next(this.searchQuery());
+   }
+
    selectMovie(movie: Movie) {
+      this.searchTerms$.next('');
+      this.searchQuery.set('');
+      this.guessError.set('');
       this.selectedMovie.set(movie);
       this.suggestions.set([]);
       this.directorLoading.set(true);
@@ -146,9 +168,10 @@ export class Game implements OnInit {
       if(!movie || !session || this.submitting() || this.hasWon() || !this.remainingGuesses()) return;
 
       this.submitting.set(true);
+      this.guessError.set('');
 
       try {
-         const response = await firstValueFrom( this.gameService.sendGuess(session.challenge.id, movie.tmdbId))
+         const response = await firstValueFrom(this.gameService.sendGuess(session.challenge.id, movie.tmdbId).pipe(timeout(15000)))
          const updatedSession: GameSession = {
             ...session,
             guesses: [...session.guesses, { movie, correct: response.correct }]
@@ -166,6 +189,7 @@ export class Game implements OnInit {
          }
          
       } catch (error) {
+         this.guessError.set('Não foi possível confirmar o palpite. Tente novamente.');
          console.error("Erro ao verificar palpite: ", error);
       } finally {
          this.submitting.set(false);
@@ -173,38 +197,49 @@ export class Game implements OnInit {
    
    }
 
-   private async startNewGame() {
+   async startNewGame() {
+      if (this.loading()) return;
+      this.loading.set(true);
+      this.loadError.set('');
       const challengeId = this.route.snapshot.paramMap.get("challengeId")
 
-      const challenge = await firstValueFrom(
-         challengeId 
-            ?  this.gameService.getChallenge(challengeId)
-            :  this.gameService.getDailyChallenge()
-      )
+      try {
+         const challenge = await firstValueFrom(
+            (challengeId
+               ? this.gameService.getChallenge(challengeId)
+               : this.gameService.getDailyChallenge()).pipe(timeout(15000))
+         );
 
-      const savedSession = this.storage.load()
+         const savedSession = this.storage.load();
 
-      if(savedSession && savedSession.challenge.id === challenge.id) {
-         const restoredSession = { ...savedSession, challenge };
-         this.session.set(restoredSession)
-         this.storage.save(restoredSession)
-         const lastGuess = savedSession.guesses.at(-1);
-         this.isCorrect.set(lastGuess?.correct ?? null);
-         this.lastGuessedMovie.set(lastGuess?.movie);
-         if (this.hasWon() || this.remainingGuesses() === 0) {
-            await this.router.navigate(['/game-over']);
+         if (savedSession && savedSession.challenge.id === challenge.id) {
+            const restoredSession = { ...savedSession, challenge };
+            this.session.set(restoredSession);
+            this.storage.save(restoredSession);
+            const lastGuess = savedSession.guesses.at(-1);
+            this.isCorrect.set(lastGuess?.correct ?? null);
+            this.lastGuessedMovie.set(lastGuess?.movie);
+            if (this.hasWon() || this.remainingGuesses() === 0) {
+               await this.router.navigate(['/game-over']);
+            }
+            return;
          }
-         return;
-      }
 
-      const newSession: GameSession = {
-         version: 1,
-         challenge,
-         guesses: []
-      }
+         const newSession: GameSession = {
+            version: 1,
+            challenge,
+            guesses: []
+         };
 
-      this.session.set(newSession)
-      this.storage.save(newSession)
+         this.session.set(newSession);
+         this.storage.save(newSession);
+      } catch (error) {
+         this.loadError.set(error instanceof HttpErrorResponse && error.status === 404
+            ? (challengeId ? 'Este desafio não está disponível.' : 'O desafio de hoje ainda não está disponível. Volte daqui a pouco.')
+            : 'Não foi possível carregar o desafio. Tente novamente.');
+      } finally {
+         this.loading.set(false);
+      }
    }
 
 }

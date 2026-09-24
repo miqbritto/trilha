@@ -4,13 +4,14 @@ import { DailyGameChallenge, GameChallengeHistory } from "../models/game-challen
 import { ValidateGuessResponse } from "../models/game-guess";
 import { Movie } from "../models/movie";
 import { GameResult } from "../models/game-session";
+import { environment } from '../../../environments/environment.development';
 
 
 
 @Injectable({ providedIn: 'root'})
 export class GameService {
     private http = inject(HttpClient);
-    private readonly apiUrl = "http://localhost:3000/games"
+    private readonly apiUrl = `${environment.apiUrl.replace(/\/+$/, '')}/games`;
 
     getDailyChallenge() {
         return this.http.get<DailyGameChallenge>(

@@ -1,4 +1,4 @@
-<div class="shell">
+<div class="shell" [class.shell--wide]="wide()">
    
 
     <header class="shell-header">
@@ -8,6 +8,8 @@
             </div>
 
             <div class="right">
+
+                <a class="studio-link" routerLink="/studio" routerLinkActive="active" ariaCurrentWhenActive="page">estúdio</a>
 
                 <button class="how-to-play" type="button" aria-haspopup="dialog" routerLink="/history">
                     <svg 

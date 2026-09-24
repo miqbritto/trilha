@@ -2,7 +2,7 @@ import { ConflictException, Injectable, Logger, NotFoundException, ServiceUnavai
 import { InjectRepository } from '@nestjs/typeorm';
 
 import { MusicTrackEntity } from 'src/database/entities/musicTrack.entity';
-import { Repository } from 'typeorm';
+import { LessThanOrEqual, Repository } from 'typeorm';
 import { REVEAL_STAGES } from './constants/reveal-stages.constant';
 import { DailyChallengeEntity } from 'src/database/entities/daily-challenge';
 import { getGameDate } from './utils/game-date';
@@ -68,6 +68,7 @@ export class GameService {
 
     async getAllChallenges(): Promise<ChallengeHistoryResponse[]> {
         const challenges = await this.dailyChallengeRepo.find({
+            where: { date:  LessThanOrEqual(getGameDate())},
             order: { date: 'DESC' }
         })
 
@@ -200,7 +201,7 @@ export class GameService {
                 if (!(error instanceof ServiceUnavailableException)) {
                     throw error;
                 }
-                this.logger.warn(`TMDB indisponível para o filme ${movie.tmdbId}; usando dados locais.`);
+                this.logger.warn(`TMDB indisponível para o filme ${movie.tmdbId}; resultado sem metadados adicionais.`);
             }
         }
 
@@ -208,9 +209,9 @@ export class GameService {
             movie: {
                 tmdbId: movie.tmdbId,
                 title: tmdbMovie?.title || movie.title,
-                releaseYear: tmdbMovie?.releaseYear ?? movie.releaseYear,
-                director: tmdbMovie?.director ?? movie.director,
-                posterUrl: tmdbMovie?.posterUrl ?? movie.posterUrl,
+                releaseYear: tmdbMovie?.releaseYear ?? null,
+                director: tmdbMovie?.director ?? null,
+                posterUrl: tmdbMovie?.posterUrl ?? null,
                 quote: movie.quote
             },
             track: {

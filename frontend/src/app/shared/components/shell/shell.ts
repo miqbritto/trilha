@@ -9,6 +9,7 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
   templateUrl: './shell.html',
 })
 export class Shell {
+  readonly wide = input(false);
   readonly openInstructionsOnInit = input(false);
   private readonly instructions = viewChild.required(HowToPlayDialog);
 

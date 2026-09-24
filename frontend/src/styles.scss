@@ -127,3 +127,45 @@ app-root {
   --transition-normal: 200ms ease;
   --transition-slow: 300ms ease;
 }
+
+.request-state,
+.request-feedback {
+  color: var(--color-text-secondary);
+  font-family: var(--font-secondary);
+  line-height: 1.6;
+
+  p { margin: 0; }
+
+  button,
+  a {
+    display: inline-block;
+    margin-top: var(--space-4);
+    padding: var(--space-3) var(--space-4);
+    border: 1px solid var(--color-border-on-primary);
+    border-radius: var(--radius-sm);
+    background: var(--color-surface);
+    color: var(--color-primary);
+    font: inherit;
+    text-decoration: none;
+    cursor: pointer;
+
+    &:hover { background: var(--color-surface-hover); }
+    &:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 3px; }
+    &:disabled { opacity: 0.5; cursor: wait; }
+  }
+}
+
+.request-state {
+  padding: var(--space-8) var(--space-5);
+  margin-block: var(--space-6);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  text-align: center;
+}
+
+.request-feedback {
+  margin-block: var(--space-4);
+  padding-left: var(--space-3);
+  border-left: 2px solid var(--color-primary);
+}

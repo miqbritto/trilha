@@ -6,3 +6,8 @@ export interface Movie {
   posterUrl: string | null;
   quote: string | null;
 }
+
+export interface MovieOption {
+  id: string;
+  title: string;
+}

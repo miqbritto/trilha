@@ -1,0 +1,319 @@
+<app-shell [wide]="true">
+  <div class="studio-page">
+    <header class="page-heading">
+      <div>
+        <p class="eyebrow">Nos bastidores da trilha</p>
+        <h1>Estúdio<span>.</span></h1>
+        <p class="intro">Uma nova música. Um novo dia de descobertas.</p>
+      </div>
+      <span class="demo-badge"><span aria-hidden="true"></span> Modo demonstração</span>
+    </header>
+
+    <div class="workspace-nav" aria-label="Seções do estúdio">
+      <button
+        type="button"
+        [class.active]="tab() === 'music'"
+        [attr.aria-pressed]="tab() === 'music'"
+        (click)="switchTab('music')"
+      >
+        <span aria-hidden="true">01</span> Músicas
+      </button>
+      <button
+        type="button"
+        [class.active]="tab() === 'challenge'"
+        [attr.aria-pressed]="tab() === 'challenge'"
+        (click)="switchTab('challenge')"
+      >
+        <span aria-hidden="true">02</span> Desafios diários
+      </button>
+    </div>
+
+    <p class="demo-note">
+      Explore o cadastro com dados de exemplo. Os rascunhos duram apenas enquanto esta página
+      estiver aberta.
+    </p>
+    <div class="feedback" role="status" aria-live="polite">{{ feedback() }}</div>
+
+    @if (tab() === 'music') {
+      <div class="editor-grid">
+        <section class="editor" aria-labelledby="music-heading">
+          <div class="section-heading">
+            <p class="eyebrow">Catálogo de trilhas</p>
+            <h2 id="music-heading">Adicionar música</h2>
+            <p>Escolha o áudio e conte de qual filme ele faz parte.</p>
+          </div>
+          <form #musicForm="ngForm" (ngSubmit)="saveMusic(musicForm)">
+            <label class="field-label" for="audio-file">Arquivo de áudio <span>*</span></label>
+            <div
+              class="drop-zone"
+              [class.dragging]="dragging()"
+              (dragover)="dragOver($event)"
+              (dragleave)="dragging.set(false)"
+              (drop)="dropFile($event)"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                width="32"
+                height="32"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.4"
+                aria-hidden="true"
+              >
+                <path
+                  d="M7 17H5a4 4 0 0 1-.5-7.97 7.5 7.5 0 0 1 14.7-1.48A4.8 4.8 0 0 1 19 17h-2M12 21V11m-4 4 4-4 4 4"
+                />
+              </svg>
+              <strong>{{ audioFile() ? audioFile()!.name : 'Uma boa trilha começa aqui' }}</strong>
+              <p>
+                {{
+                  audioFile()
+                    ? 'Arquivo selecionado para prévia local'
+                    : 'Arraste seu áudio ou selecione um arquivo'
+                }}
+              </p>
+              <input
+                #fileInput
+                id="audio-file"
+                class="file-input"
+                type="file"
+                accept=".mp3,.wav,.ogg,.m4a"
+                (change)="selectFile($event)"
+                aria-describedby="file-hint file-error"
+              />
+              <button class="button secondary" type="button" (click)="fileInput.click()">
+                {{ audioFile() ? 'Trocar arquivo' : 'Selecionar arquivo' }}
+              </button>
+              <small id="file-hint">MP3, WAV, OGG ou M4A · até 20 MB nesta prévia</small>
+            </div>
+            <p class="error" id="file-error" role="alert">{{ fileError() }}</p>
+            @if (audioUrl()) {
+              <div class="audio-preview">
+                <audio
+                  controls
+                  [src]="audioUrl()"
+                  preload="metadata"
+                  aria-label="Ouvir áudio selecionado"
+                ></audio>
+                <button class="text-button" type="button" (click)="removeFile()">Remover</button>
+              </div>
+            }
+            <div class="fields">
+              <label
+                >Título da música <span>*</span>
+                <input
+                  name="title"
+                  [(ngModel)]="music.title"
+                  required
+                  maxlength="255"
+                  placeholder="Ex.: Cornfield Chase"
+                />
+              </label>
+              <label
+                >Artista ou compositor
+                <input
+                  name="artist"
+                  [(ngModel)]="music.artist"
+                  maxlength="255"
+                  placeholder="Ex.: Hans Zimmer"
+                />
+              </label>
+              <div class="full">
+
+                
+                  <label  for="studio-movie"
+                  >Filme associado <span>*</span></label>
+                  <input
+                    #movieInput
+                    id="studio-movie"
+                    type="text"
+                    placeholder="Buscar filme"
+                    (input)="searchMovies(movieInput.value)"
+                    />
+                  
+                  @if(movies().length) {
+                    <div class="movie-options">
+                      @for (movie of movies(); track movie.id) {
+                        <button
+                          type="button"
+                          (click)="selectMovie(movie); movieInput.value = movie.title"
+                        >{{movie.title}}</button>
+                      }
+                    </div>
+                  }
+
+
+              </div>
+              
+              <label class="full"
+                >Nota sobre a trilha <small>opcional</small>
+                <textarea
+                  name="note"
+                  [(ngModel)]="music.note"
+                  maxlength="1000"
+                  rows="3"
+                  placeholder="Uma curiosidade sobre a música ou a cena em que ela aparece..."
+                ></textarea>
+              </label>
+            </div>
+            <footer class="form-actions">
+              <button class="text-button" type="button" (click)="resetMusic(musicForm)">
+                Limpar campos
+              </button>
+              <button
+                class="button primary"
+                type="submit"
+                [disabled]="musicForm.invalid || !music.title.trim() || !audioFile()"
+              >
+                Adicionar rascunho <span aria-hidden="true">↗</span>
+              </button>
+            </footer>
+          </form>
+        </section>
+
+        <aside aria-label="Prévia da música">
+          <div class="preview-card">
+            <p class="eyebrow">Prévia da faixa</p>
+            <div class="record-art" aria-hidden="true">
+              <div class="record"><span>trilha</span></div>
+            </div>
+            <span class="small-label">Trilha sonora</span>
+            <h3>{{ music.title || 'O nome da sua música' }}</h3>
+            <p>{{ music.artist || 'Artista ou compositor' }}</p>
+            <div class="preview-detail">
+              <span>Filme</span><strong>{{ music.movie || 'Ainda não selecionado' }}</strong>
+            </div>
+            <div class="preview-detail">
+              <span>Áudio</span
+              ><strong>{{ audioFile() ? 'Selecionado localmente' : 'Aguardando arquivo' }}</strong>
+            </div>
+            @if (music.note) {
+              <blockquote>{{ music.note }}</blockquote>
+            }
+          </div>
+          <div class="aside-note">
+            <span class="eyebrow">O próximo passo</span>
+            <p>
+              Depois de adicionar a música, use a aba <strong>Desafios diários</strong> para
+              escolher o dia em que ela entra em cena.
+            </p>
+          </div>
+        </aside>
+      </div>
+    } @else {
+      <div class="editor-grid">
+        <section class="editor" aria-labelledby="challenge-heading">
+          <div class="section-heading">
+            <p class="eyebrow">Calendário de descobertas</p>
+            <h2 id="challenge-heading">Novo desafio diário</h2>
+            <p>Combine uma música e uma data para o próximo desafio.</p>
+          </div>
+          <form #challengeForm="ngForm" (ngSubmit)="saveChallenge(challengeForm)">
+            <div class="fields">
+              <label class="full"
+                >Data do desafio <span>*</span>
+                <input type="date" name="date" [(ngModel)]="challengeDate" required />
+              </label>
+              <label class="full"
+                >Música do desafio <span>*</span>
+                <select
+                  name="trackId"
+                  [ngModel]="trackId()"
+                  (ngModelChange)="trackId.set($event)"
+                  required
+                >
+                  <option value="" disabled>Selecione uma música do catálogo temporário</option>
+                  @for (track of tracks(); track track.id) {
+                    <option [value]="track.id">{{ track.title }} · {{ track.movie }}</option>
+                  }
+                </select>
+              </label>
+            </div>
+            <div class="rules">
+              <p class="field-label">Revelação progressiva</p>
+              <p>Cada tentativa revela um pouco mais da música.</p>
+              <ol>
+                @for (seconds of revealStages; track seconds; let index = $index) {
+                  <li>
+                    <span>{{ index + 1 }}ª tentativa</span
+                    ><strong>{{ seconds }}<small>s</small></strong>
+                  </li>
+                }
+              </ol>
+            </div>
+            <footer class="form-actions">
+              <span class="small-label">Uma trilha por dia</span>
+              <button class="button primary" type="submit" [disabled]="challengeForm.invalid">
+                Criar rascunho <span aria-hidden="true">↗</span>
+              </button>
+            </footer>
+          </form>
+        </section>
+        <aside aria-label="Prévia do desafio">
+          <div class="preview-card challenge-preview">
+            <p class="eyebrow">Prévia do desafio</p>
+            <div class="date-art" aria-hidden="true">
+              <span>{{ challengeDate ? (challengeDate | date: 'MM / yyyy') : 'MÊS / ANO' }}</span
+              ><strong>{{ challengeDate ? (challengeDate | date: 'dd') : '—' }}</strong>
+            </div>
+            <span class="small-label">Desafio diário · rascunho</span>
+            <h3>{{ selectedTrack()?.title || 'Qual será a próxima trilha?' }}</h3>
+            <p>{{ selectedTrack()?.artist || 'Escolha uma música para começar' }}</p>
+            <div class="preview-detail">
+              <span>Filme</span><strong>{{ selectedTrack()?.movie || 'A definir' }}</strong>
+            </div>
+            <div class="preview-detail">
+              <span>Data</span
+              ><strong>{{
+                challengeDate ? (challengeDate | date: 'dd/MM/yyyy') : 'A definir'
+              }}</strong>
+            </div>
+          </div>
+          <div class="aside-note">
+            <span class="eyebrow">Feito para surpreender</span>
+            <p>
+              A música e o filme aparecem aqui para conferência. No jogo, a resposta é revelada ao
+              final da partida.
+            </p>
+          </div>
+        </aside>
+      </div>
+      <section class="agenda" aria-labelledby="agenda-heading">
+        <div class="agenda-heading">
+          <h2 id="agenda-heading">Agenda de rascunhos</h2>
+          <span class="small-label">{{ drafts().length }} preparados</span>
+        </div>
+        @if (sortedDrafts().length) {
+          <ul>
+            @for (draft of sortedDrafts(); track draft.date) {
+              <li>
+                <time [attr.datetime]="draft.date">{{ draft.date | date: 'dd/MM/yyyy' }}</time>
+                <div>
+                  <strong>{{ draft.track.title }}</strong>
+                  <p>{{ draft.track.movie }}</p>
+                </div>
+                <button
+                  class="text-button"
+                  type="button"
+                  (click)="removeChallenge(draft.date)"
+                  [attr.aria-label]="'Remover desafio de ' + (draft.date | date: 'dd/MM/yyyy')"
+                >
+                  Remover
+                </button>
+              </li>
+            }
+          </ul>
+        } @else {
+          <div class="empty-agenda">
+            <span aria-hidden="true">＋</span>
+            <h3>O próximo dia ainda está em branco.</h3>
+            <p>Crie um desafio acima para começar sua agenda.</p>
+          </div>
+        }
+      </section>
+    }
+    <footer class="page-footer">
+      <span>trilha / estúdio</span><span>Prévia local · nenhum envio à nuvem</span>
+    </footer>
+  </div>
+</app-shell>

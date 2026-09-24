@@ -1,5 +1,18 @@
 <app-shell>
     <div class="game-page">
+        @if (loading()) {
+            <div class="request-state" role="status">Carregando resultado...</div>
+        } @else if (loadError()) {
+            <div class="request-state">
+                <p role="alert">{{ loadError() }}</p>
+                <button type="button" (click)="getChallenge()">Tentar novamente</button>
+            </div>
+        } @else if (!session()) {
+            <div class="request-state">
+                <p role="status">Nenhuma partida encontrada para mostrar o resultado.</p>
+                <a routerLink="/game">Jogar o desafio do dia</a>
+            </div>
+        } @else {
         <header class="game-header">
             <div class="meta-row">
                 <p class="game-title">filme do dia</p>
@@ -10,7 +23,7 @@
             </div>
 
                 <div class="game-date">
-                <p class="game-date-label">{{today | date:'mediumDate'}}</p>
+                <p class="game-date-label">{{challengeDate() | date:'mediumDate'}}</p>
                 @if (gameStatus() === "won") {
                     <p class="game-date-value">RESOLVIDO</p>
                 } @else {
@@ -95,7 +108,7 @@
         <section class="deck">
             <div class="share">
                 <div class="share-results">
-                    <p class="share-title">TRILHA #142</p>
+                    <p class="share-title">{{ shareTitle() }}</p>
                     <ol class="share-attempts" aria-label="Resultado de cada tentativa">
                         @for (attempt of attempts(); track $index) {
                             <li class="share-attempt"
@@ -143,5 +156,6 @@
             [guesses]="session()?.guesses ?? []"
             [guessSlots]="guessSlots" />
 
+        }
     </div>
 </app-shell>

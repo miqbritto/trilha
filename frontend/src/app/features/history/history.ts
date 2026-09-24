@@ -3,7 +3,7 @@ import { Shell } from '../../shared/components/shell/shell';
 import { ChallengeCard } from './components/challenge-card/challenge-card';
 import { GameService } from '../../core/services/game.service';
 import { GameChallengeHistory } from '../../core/models/game-challenge';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, timeout } from 'rxjs';
 import { RouterLink } from '@angular/router';
 
 @Component({
@@ -14,6 +14,8 @@ import { RouterLink } from '@angular/router';
 })
 export class History implements OnInit {
   private readonly gameService = inject(GameService)
+  protected readonly loading = signal(false);
+  protected readonly loadError = signal('');
 
   protected readonly challenges = signal<GameChallengeHistory[] | null>(null)
 
@@ -59,8 +61,16 @@ export class History implements OnInit {
   }
 
   async getAllChallenges() {
-    const challenges = await firstValueFrom(this.gameService.getAllChallenges())
-    this.challenges.set(challenges)
-    console.log("todos", this.challenges())
+    if (this.loading()) return;
+    this.loading.set(true);
+    this.loadError.set('');
+    try {
+      const challenges = await firstValueFrom(this.gameService.getAllChallenges().pipe(timeout(15000)));
+      this.challenges.set(challenges);
+    } catch {
+      this.loadError.set('Não foi possível carregar o histórico. Tente novamente.');
+    } finally {
+      this.loading.set(false);
+    }
   }
 }

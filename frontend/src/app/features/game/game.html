@@ -1,5 +1,13 @@
 <app-shell [openInstructionsOnInit]="true">
   <div class="game-page">
+    @if (loading()) {
+      <div class="request-state" role="status">Carregando desafio...</div>
+    } @else if (loadError()) {
+      <div class="request-state">
+        <p role="alert">{{ loadError() }}</p>
+        <button type="button" (click)="startNewGame()">Tentar novamente</button>
+      </div>
+    } @else if (session()) {
     <header class="game-header">
       <div class="meta-row">
       
@@ -11,7 +19,7 @@
       </div>
 
         <div class="game-date">
-          <p class="game-date-label">{{today | date:'mediumDate'}}</p>
+          <p class="game-date-label">{{challengeDate() | date:'mediumDate'}}</p>
           <p class="game-date-value">{{remainingGuesses().valueOf()}} TENTATIVAS RESTANTES</p>
         </div>
 
@@ -49,6 +57,7 @@
                   type="button"
                   aria-label="Remover filme selecionado"
                   (click)="clearSelectedMovie()"
+                  [disabled]="submitting()"
                 >
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true">
                     <path d="m7 7 10 10M17 7 7 17" />
@@ -70,6 +79,8 @@
                   aria-describedby="guess-hint"
                   aria-label="Digite o nome do filme"
                   autocomplete="off"
+                  maxlength="30"
+                  [disabled]="submitting()"
                   (input)="searchMovie(movieInput.value)"
                 />
               </div>
@@ -111,13 +122,30 @@
           }
           </div>
           <button class="submit-button" type="button" [class.active]="selectedMovie()"
+          [disabled]="!selectedMovie() || submitting() || hasWon() || !remainingGuesses()"
           (click)="makeGuess()">
-            <span>Palpitar</span>
+            <span>{{ submitting() ? 'Confirmando...' : 'Palpitar' }}</span>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <path d="M5 12h14m-6-6 6 6-6 6" />
             </svg>
           </button>
         </div>
+        @if (searching()) {
+          <p class="request-feedback" role="status">Buscando filmes...</p>
+        } @else if (searchError()) {
+          <div class="request-feedback">
+            <p role="alert">{{ searchError() }}</p>
+            <button type="button" (click)="retrySearch()">Tentar busca novamente</button>
+          </div>
+        } @else if (searchQuery().length >= 2 && suggestions()?.length === 0) {
+          <p class="request-feedback" role="status">Nenhum filme encontrado. Tente outro título.</p>
+        }
+        @if (guessError()) {
+          <div class="request-feedback">
+            <p role="alert">{{ guessError() }}</p>
+            <button type="button" (click)="makeGuess()" [disabled]="submitting() || !selectedMovie()">Tentar palpite novamente</button>
+          </div>
+        }
         <p class="guess-hint" id="guess-hint">Errar não é ruim: cada erro revela mais um trecho da trilha.</p>
       </section>
 
@@ -127,5 +155,6 @@
       >
       </app-guess-history>
     </main>
+    }
   </div>
 </app-shell>
