@@ -6,7 +6,7 @@ import { LessThanOrEqual, Repository } from 'typeorm';
 import { REVEAL_STAGES } from './constants/reveal-stages.constant';
 import { DailyChallengeEntity } from 'src/database/entities/daily-challenge';
 import { getGameDate } from './utils/game-date';
-import { ChallengeHistoryResponse, DailyChallengeResponse, FreeChallengeResponse } from './dto/challenge-response.dto';
+import { ChallengeHistoryResponse, DailyChallengeResponse, FreeChallengeResponse, StudioChallengeResponse } from './dto/challenge-response.dto';
 import { TmdbService } from '../tmdb/tmdb.service';
 
 
@@ -66,7 +66,7 @@ export class GameService {
         return todayChallenge;
     }
 
-    async getAllChallenges(): Promise<ChallengeHistoryResponse[]> {
+    async getChallengeHistory(): Promise<ChallengeHistoryResponse[]> {
         const challenges = await this.dailyChallengeRepo.find({
             where: { date:  LessThanOrEqual(getGameDate())},
             order: { date: 'DESC' }
@@ -81,6 +81,29 @@ export class GameService {
             number: challenge.number,
             date: challenge.date,
         }))
+    }
+
+    async getStudioChallenges(): Promise<StudioChallengeResponse[]> {
+        const challenges = await this.dailyChallengeRepo.find({
+            relations: {
+            musicTrack: {
+                movie: true,
+            },
+            },
+            order: { date: 'ASC' },
+        });
+
+        return challenges.map((challenge) => ({
+            id: challenge.id,
+            number: challenge.number,
+            date: challenge.date,
+            track: {
+            id: challenge.musicTrack.id,
+            title: challenge.musicTrack.title,
+            artist: challenge.musicTrack.artist,
+            movie: challenge.musicTrack.movie.title,
+            },
+        }));
     }
 
     async getChallenge(challengeId: string): Promise<DailyChallengeResponse> {

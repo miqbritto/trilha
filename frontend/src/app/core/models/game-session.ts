@@ -1,7 +1,7 @@
 import { GameChallenge } from "./game-challenge"
 import { GameGuess } from "./game-guess"
 import { Movie } from "./movie";
-import { Track } from "./music-track";
+import { CreateMusicTrack } from "./music-track";
 
 export enum GameSessionStatus {
     IN_PROGRESS = "in_progress",
@@ -17,5 +17,5 @@ export interface GameSession {
 
 export interface GameResult {
     movie: Movie,
-    track: Track
+    track: CreateMusicTrack
 }

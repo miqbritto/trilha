@@ -8,6 +8,7 @@ import { MovieEntity } from 'src/database/entities/movie.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { title } from 'process';
 import { MovieOption } from './interfaces/movie-option';
+import { CreateMovieDto } from './dto/create-movie.dto';
 
 export interface MovieSuggestion {
     tmdbId: number;
@@ -25,6 +26,28 @@ export class MovieService {
         @InjectRepository(MovieEntity)
         private readonly movieRepo: Repository<MovieEntity>
     ) {}
+
+    async create(dto: CreateMovieDto): Promise<MovieEntity> {
+        const existing = await this.movieRepo.findOneBy({ tmdbId: dto.tmdbId });
+        if (existing) return existing;
+
+        const details = await this.tmdbService.getMovieDetails(dto.tmdbId);
+        const movie = this.movieRepo.create({
+            tmdbId: details.tmdbId,
+            title: details.title,
+            quote: dto.quote?.trim() ?? '',
+        });
+        try {
+            return await this.movieRepo.save(movie);
+        } catch (error) {
+            // Another request may have registered the same TMDB movie concurrently.
+            if ((error as { driverError?: { code?: string } }).driverError?.code === '23505') {
+                const registered = await this.movieRepo.findOneBy({ tmdbId: dto.tmdbId });
+                if (registered) return registered;
+            }
+            throw error;
+        }
+    }
 
     async searchMovies(search: unknown) {
         if (search === undefined) {

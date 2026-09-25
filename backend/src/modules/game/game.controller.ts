@@ -23,8 +23,14 @@ export class GameController {
   }
 
   @Get("history")
-  getAllChallenges() {
-    return this.gameService.getAllChallenges()
+  getChallengeHistory() {
+    return this.gameService.getChallengeHistory()
+  }
+
+  @Get('admin/challenges')
+  @UseGuards(AdminApiKeyGuard)
+  getStudioChallenges() {
+    return this.gameService.getStudioChallenges();
   }
 
   @Get("free")

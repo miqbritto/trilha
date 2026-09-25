@@ -3,7 +3,11 @@ import { DatePipe } from '@angular/common';
 import { FormsModule, NgForm } from '@angular/forms';
 import { Shell } from '../../shared/components/shell/shell';
 import { MovieService } from '../../core/services/movie.service';
-import { MovieOption } from '../../core/models/movie';
+import { Movie, MovieOption } from '../../core/models/movie';
+import { MusicTrackService } from '../../core/services/music-track';
+import { GameService } from '../../core/services/game.service';
+import { StudioChallengeResponse } from '../../core/models/game-challenge';
+import { Subscription, switchMap, timer } from 'rxjs';
 
 interface StudioTrack {
   id: string;
@@ -19,8 +23,26 @@ interface StudioTrack {
   styleUrl: './studio.scss',
 })
 export class Studio implements OnDestroy {
+  protected adminKey = '';
   protected readonly movieService = inject(MovieService);
-  protected readonly tab = signal<'music' | 'challenge'>('music');
+  private readonly musicTrackService = inject(MusicTrackService);
+  private readonly gameService = inject(GameService);
+  protected readonly challenges = signal<StudioChallengeResponse[]>([]);
+  protected readonly challengesLoading = signal(false);
+  protected readonly challengesLoaded = signal(false);
+  protected readonly challengesError = signal('');
+  private challengesRequest?: Subscription;
+  protected readonly tab = signal<'music' | 'challenge' | 'movie'>('music');
+  protected movieQuery = '';
+  protected movieQuote = '';
+  protected readonly tmdbMovies = signal<Movie[]>([]);
+  protected readonly tmdbSelection = signal<Movie | null>(null);
+  protected readonly movieSearching = signal(false);
+  protected readonly movieSearched = signal(false);
+  protected readonly movieSaving = signal(false);
+  protected readonly movieError = signal('');
+  private movieSearchRequest?: Subscription;
+  private movieSaveRequest?: Subscription;
   protected readonly feedback = signal('');
   protected readonly fileError = signal('');
   protected readonly audioFile = signal<File | null>(null);
@@ -52,9 +74,105 @@ export class Studio implements OnDestroy {
   );
   private nextTrackId = 1;
 
-  protected switchTab(tab: 'music' | 'challenge'): void {
+  protected switchTab(tab: 'music' | 'challenge' | 'movie'): void {
     this.tab.set(tab);
     this.feedback.set('');
+    if (tab === 'challenge' && this.adminKey.trim()) this.loadChallenges();
+  }
+
+  protected updateAdminKey(key: string): void {
+    this.challengesRequest?.unsubscribe();
+    this.adminKey = key;
+    this.challenges.set([]);
+    this.challengesLoading.set(false);
+    this.challengesLoaded.set(false);
+    this.challengesError.set('');
+  }
+
+  protected searchTmdbMovies(value: string): void {
+    this.movieSearchRequest?.unsubscribe();
+    this.movieQuery = value;
+    this.tmdbSelection.set(null);
+    this.tmdbMovies.set([]);
+    this.movieError.set('');
+    this.feedback.set('');
+    this.movieSearched.set(false);
+    const query = value.trim();
+    if (query.length > 30) this.movieError.set('Use até 30 caracteres para buscar um filme.');
+    this.movieSearching.set(query.length >= 2 && query.length <= 30);
+    if (!this.movieSearching()) return;
+    this.movieSearchRequest = timer(300).pipe(
+      switchMap(() => this.movieService.searchMovie(query)),
+    ).subscribe({
+      next: (movies) => {
+        this.tmdbMovies.set(movies);
+        this.movieSearching.set(false);
+        this.movieSearched.set(true);
+      },
+      error: () => {
+        this.movieSearching.set(false);
+        this.movieError.set('Não foi possível buscar filmes. Altere a busca para tentar novamente.');
+      },
+    });
+  }
+
+  protected selectTmdbMovie(movie: Movie): void {
+    this.movieSearchRequest?.unsubscribe();
+    this.tmdbSelection.set(movie);
+    this.movieQuery = movie.title;
+    this.tmdbMovies.set([]);
+    this.movieSearching.set(false);
+    this.movieError.set('');
+  }
+
+  protected saveMovie(form: NgForm): void {
+    const movie = this.tmdbSelection();
+    if (form.invalid || !movie || !this.adminKey.trim() || this.movieSaving()) return;
+    this.movieSaving.set(true);
+    this.movieError.set('');
+    this.feedback.set('');
+    this.movieSaveRequest = this.movieService.create({
+      tmdbId: movie.tmdbId,
+      quote: this.movieQuote,
+    }, this.adminKey).subscribe({
+      next: (registered) => {
+        this.movieSaving.set(false);
+        this.movieQuery = '';
+        this.movieQuote = '';
+        this.tmdbSelection.set(null);
+        this.tmdbMovies.set([]);
+        this.movieSearched.set(false);
+        form.resetForm({ movieQuery: '', movieQuote: '', movieAdminKey: this.adminKey });
+        this.feedback.set(`Filme "${registered.title}" disponível no catálogo. Você já pode selecioná-lo no cadastro de músicas.`);
+      },
+      error: (error) => {
+        this.movieSaving.set(false);
+        this.movieError.set(error.status === 401 || error.status === 403
+          ? 'Chave de administrador inválida. Confira a chave e tente novamente.'
+          : 'Não foi possível cadastrar o filme. Tente novamente.');
+      },
+    });
+  }
+
+  protected loadChallenges(): void {
+    if (!this.adminKey.trim() || this.challengesLoading()) return;
+    this.challengesLoading.set(true);
+    this.challengesLoaded.set(false);
+    this.challengesError.set('');
+    this.challenges.set([]);
+    this.challengesRequest = this.gameService.getStudioChallenges(this.adminKey).subscribe({
+      next: (challenges) => {
+        this.challenges.set([...challenges].sort((a, b) => a.date.localeCompare(b.date)));
+        this.challengesLoaded.set(true);
+        this.challengesLoading.set(false);
+      },
+      error: (error) => {
+        this.challengesLoading.set(false);
+        this.challengesError.set(error.status === 401 || error.status === 403
+          ? 'Chave de administrador inválida. Confira a chave e tente novamente.'
+          : 'Não foi possível carregar a agenda. Tente novamente.');
+      },
+    });
   }
 
   protected selectFile(event: Event): void {
@@ -125,25 +243,37 @@ export class Studio implements OnDestroy {
 
   protected resetMusic(form: NgForm): void {
     this.music = this.emptyMusic();
-    form.resetForm(this.music);
+    form.resetForm({ ...this.music, adminKey: this.adminKey });
     this.removeFile();
     this.feedback.set('');
   }
 
   protected saveMusic(form: NgForm): void {
-    if (form.invalid || !this.music.title.trim() || !this.audioFile()) return;
-    const track: StudioTrack = {
-      id: `draft-${this.nextTrackId++}`,
-      title: this.music.title.trim(),
-      artist: this.music.artist.trim(),
-      movie: this.music.movie,
-    };
-    this.tracks.update((tracks) => [...tracks, track]);
-    this.resetMusic(form);
-    this.trackId.set(track.id);
-    this.feedback.set(
-      `“${track.title}” adicionada ao catálogo temporário. Você já pode usá-la na aba de desafios. Nenhum arquivo foi enviado.`,
-    );
+    
+    const movie = this.selectedMovie();
+    const audio = this.audioFile();
+
+    if (form.invalid || !movie || !audio || !this.music.title.trim()) return;
+
+    this.musicTrackService.create(
+      {
+        title: this.music.title,
+        movieId: movie?.id,
+        artist: this.music.artist,
+        note: this.music.note
+      },
+      audio,
+      this.adminKey
+    ).subscribe({
+      next: (track) => {
+        this.resetMusic(form);
+        this.selectedMovie.set(null);
+        this.feedback.set(`Música "${track.title}" cadastrada!`);
+      },
+      error: () => {
+        this.feedback.set('Não foi possível cadastrar a música.');
+      }
+    })
   }
 
   protected saveChallenge(form: NgForm): void {
@@ -169,6 +299,9 @@ export class Studio implements OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.movieSearchRequest?.unsubscribe();
+    this.movieSaveRequest?.unsubscribe();
+    this.challengesRequest?.unsubscribe();
     if (this.audioUrl()) URL.revokeObjectURL(this.audioUrl());
   }
 }

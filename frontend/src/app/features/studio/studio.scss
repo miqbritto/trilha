@@ -90,6 +90,7 @@ textarea:focus-visible {
 }
 .workspace-nav {
   display: flex;
+  flex-wrap: wrap;
   gap: 1.75rem;
   margin-top: 2.5rem;
   border-bottom: 1px solid var(--color-border);
@@ -425,6 +426,60 @@ audio {
 }
 .agenda h2 {
   font-size: 1.75rem;
+}
+.agenda-heading {
+  flex-wrap: wrap;
+}
+.agenda-access {
+  display: flex;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin: 1.5rem 0;
+}
+.agenda-access label {
+  flex: 1 1 15rem;
+}
+.movie-fields {
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+  border: 0;
+}
+.tmdb-results {
+  list-style: none;
+  padding: 0;
+  max-height: 24rem;
+  overflow-y: auto;
+}
+.tmdb-results button {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+  padding: 0.75rem;
+  text-align: left;
+  background: var(--color-surface);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+}
+.tmdb-results button:hover {
+  background: var(--color-surface-hover);
+}
+.tmdb-results img {
+  object-fit: cover;
+}
+.tmdb-results small {
+  display: block;
+  margin-top: 0.25rem;
+  color: var(--color-text-secondary);
+}
+.movie-poster {
+  display: block;
+  width: 100%;
+  max-width: 12rem;
+  margin: 1rem auto;
+  border-radius: 0.3rem;
 }
 .agenda ul {
   list-style: none;

@@ -6,7 +6,7 @@
         <h1>Estúdio<span>.</span></h1>
         <p class="intro">Uma nova música. Um novo dia de descobertas.</p>
       </div>
-      <span class="demo-badge"><span aria-hidden="true"></span> Modo demonstração</span>
+      <span class="demo-badge"><span aria-hidden="true"></span> Estúdio administrativo</span>
     </header>
 
     <div class="workspace-nav" aria-label="Seções do estúdio">
@@ -26,11 +26,15 @@
       >
         <span aria-hidden="true">02</span> Desafios diários
       </button>
+      <button type="button" [class.active]="tab() === 'movie'"
+        [attr.aria-pressed]="tab() === 'movie'" (click)="switchTab('movie')">
+        <span aria-hidden="true">03</span> Filmes
+      </button>
     </div>
 
     <p class="demo-note">
-      Explore o cadastro com dados de exemplo. Os rascunhos duram apenas enquanto esta página
-      estiver aberta.
+      Consulte os desafios cadastrados na agenda. O formulário de novos desafios ainda cria
+      rascunhos locais, disponíveis enquanto esta página estiver aberta.
     </p>
     <div class="feedback" role="status" aria-live="polite">{{ feedback() }}</div>
 
@@ -99,6 +103,23 @@
               </div>
             }
             <div class="fields">
+              <label class="full" for="studio-admin-key">
+                Chave de administrador <span>*</span>
+                <input
+                  id="studio-admin-key"
+                  type="password"
+                  name="adminKey"
+                  [ngModel]="adminKey"
+                  (ngModelChange)="updateAdminKey($event)"
+                  required
+                  autocomplete="off"
+                  spellcheck="false"
+                  aria-describedby="admin-key-hint"
+                />
+                <small id="admin-key-hint">
+                  Informe uma vez enquanto esta página estiver aberta.
+                </small>
+              </label>
               <label
                 >Título da música <span>*</span>
                 <input
@@ -200,6 +221,91 @@
           </div>
         </aside>
       </div>
+    } @else if (tab() === 'movie') {
+      <div class="editor-grid">
+        <section class="editor" aria-labelledby="movie-heading">
+          <div class="section-heading">
+            <p class="eyebrow">Catálogo de filmes</p>
+            <h2 id="movie-heading">Adicionar filme</h2>
+            <p>Busque no TMDB e selecione o filme que fará parte das suas trilhas.</p>
+          </div>
+          <form #movieForm="ngForm" (ngSubmit)="saveMovie(movieForm)">
+            <fieldset class="movie-fields" [disabled]="movieSaving()">
+              <div class="fields">
+                <label class="full" for="movie-admin-key">
+                  Chave de administrador <span>*</span>
+                  <input id="movie-admin-key" type="password" name="movieAdminKey"
+                    [ngModel]="adminKey" (ngModelChange)="updateAdminKey($event)"
+                    required autocomplete="off" spellcheck="false" />
+                </label>
+                <label class="full" for="tmdb-search">
+                  Buscar filme <span>*</span>
+                  <input id="tmdb-search" type="search" name="movieQuery"
+                    [ngModel]="movieQuery" (ngModelChange)="searchTmdbMovies($event)"
+                    required autocomplete="off" aria-describedby="tmdb-search-hint"
+                    placeholder="Ex.: Interestelar" />
+                  <small id="tmdb-search-hint">Digite de 2 a 30 caracteres e selecione um resultado.</small>
+                </label>
+              </div>
+              @if (movieSearching()) {
+                <p role="status">Buscando filmes...</p>
+              }
+              @if (tmdbMovies().length) {
+                <ul class="tmdb-results" aria-label="Filmes encontrados">
+                  @for (movie of tmdbMovies(); track movie.tmdbId) {
+                    <li>
+                      <button type="button" (click)="selectTmdbMovie(movie)">
+                        @if (movie.posterUrl) {
+                          <img [src]="movie.posterUrl" alt="" width="46" height="69" loading="lazy" />
+                        }
+                        <span><strong>{{ movie.title }}</strong>
+                          <small>{{ movie.releaseYear || 'Ano não informado' }}</small>
+                        </span>
+                      </button>
+                    </li>
+                  }
+                </ul>
+              } @else if (movieSearched() && !tmdbSelection()) {
+                <p role="status">Nenhum filme encontrado. Tente outro título.</p>
+              }
+              <div class="fields">
+                <label class="full" for="movie-quote">
+                  Frase do filme <small>opcional</small>
+                  <textarea id="movie-quote" name="movieQuote" [(ngModel)]="movieQuote"
+                    maxlength="1000" rows="3" placeholder="Uma frase marcante do filme..."></textarea>
+                </label>
+              </div>
+              <footer class="form-actions">
+                <span class="small-label">Confirme o título e o ano antes de cadastrar.</span>
+                <button class="button primary" type="submit"
+                  [disabled]="movieForm.invalid || !tmdbSelection() || !adminKey.trim() || movieSaving()">
+                  {{ movieSaving() ? 'Cadastrando...' : 'Cadastrar filme' }}
+                </button>
+              </footer>
+            </fieldset>
+            <p class="error" role="alert">{{ movieError() }}</p>
+          </form>
+        </section>
+        <aside aria-label="Prévia do filme">
+          <div class="preview-card">
+            <p class="eyebrow">Filme selecionado</p>
+            @if (tmdbSelection(); as movie) {
+              @if (movie.posterUrl) {
+                <img class="movie-poster" [src]="movie.posterUrl" [alt]="'Pôster de ' + movie.title" />
+              }
+              <h3>{{ movie.title }}</h3>
+              <p>{{ movie.releaseYear || 'Ano não informado' }}</p>
+              @if (movieQuote) { <blockquote>{{ movieQuote }}</blockquote> }
+            } @else {
+              <h3>Qual filme entra no catálogo?</h3>
+              <p>Selecione um resultado da busca para conferir os detalhes.</p>
+            }
+          </div>
+          <div class="aside-note">
+            <p>Após o cadastro, o filme estará disponível na busca da aba Músicas.</p>
+          </div>
+        </aside>
+      </div>
     } @else {
       <div class="editor-grid">
         <section class="editor" aria-labelledby="challenge-heading">
@@ -280,7 +386,63 @@
       </div>
       <section class="agenda" aria-labelledby="agenda-heading">
         <div class="agenda-heading">
-          <h2 id="agenda-heading">Agenda de rascunhos</h2>
+          <h2 id="agenda-heading">Agenda de desafios</h2>
+          @if (challengesLoaded()) {
+            <span class="small-label">{{ challenges().length }} cadastrados</span>
+          }
+        </div>
+        <form class="agenda-access" (ngSubmit)="loadChallenges()">
+          <label for="agenda-admin-key">
+            Chave de administrador
+            <input
+              id="agenda-admin-key"
+              type="password"
+              name="agendaAdminKey"
+              [ngModel]="adminKey"
+              (ngModelChange)="updateAdminKey($event)"
+              required
+              autocomplete="off"
+              spellcheck="false"
+            />
+          </label>
+          <button class="button secondary" type="submit"
+            [disabled]="!adminKey.trim() || challengesLoading()">
+            {{ challengesLoading() ? 'Carregando...' : 'Atualizar agenda' }}
+          </button>
+        </form>
+        <div [attr.aria-busy]="challengesLoading()">
+          @if (challengesLoading()) {
+            <p role="status">Carregando desafios...</p>
+          } @else if (challengesError()) {
+            <p class="error" role="alert">{{ challengesError() }}</p>
+          } @else if (!challengesLoaded()) {
+            <p>Informe a chave e clique em Atualizar agenda para consultar os desafios cadastrados.</p>
+          } @else if (challenges().length) {
+            <ul>
+              @for (challenge of challenges(); track challenge.id) {
+                <li>
+                  <time [attr.datetime]="challenge.date">{{ challenge.date | date: 'dd/MM/yyyy' }}</time>
+                  <div>
+                    <strong>{{ challenge.track.title }}</strong>
+                    <p>{{ challenge.track.artist || 'Artista não informado' }}</p>
+                    <p>{{ challenge.track.movie }}</p>
+                  </div>
+                  <span class="small-label">Desafio #{{ challenge.number }}</span>
+                </li>
+              }
+            </ul>
+          } @else {
+            <div class="empty-agenda" role="status">
+              <h3>Nenhum desafio cadastrado.</h3>
+              <p>Os desafios salvos aparecerão aqui, incluindo os agendados para datas futuras.</p>
+            </div>
+          }
+        </div>
+      </section>
+      @if (drafts().length) {
+      <section class="agenda" aria-labelledby="drafts-heading">
+        <div class="agenda-heading">
+          <h2 id="drafts-heading">Rascunhos locais</h2>
           <span class="small-label">{{ drafts().length }} preparados</span>
         </div>
         @if (sortedDrafts().length) {
@@ -311,9 +473,10 @@
           </div>
         }
       </section>
+      }
     }
     <footer class="page-footer">
-      <span>trilha / estúdio</span><span>Prévia local · nenhum envio à nuvem</span>
+      <span>trilha / estúdio</span><span>Agenda de desafios cadastrados</span>
     </footer>
   </div>
 </app-shell>

@@ -65,7 +65,7 @@ export class History implements OnInit {
     this.loading.set(true);
     this.loadError.set('');
     try {
-      const challenges = await firstValueFrom(this.gameService.getAllChallenges().pipe(timeout(15000)));
+      const challenges = await firstValueFrom(this.gameService.getChallengeHistory().pipe(timeout(15000)));
       this.challenges.set(challenges);
     } catch {
       this.loadError.set('Não foi possível carregar o histórico. Tente novamente.');

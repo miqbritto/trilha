@@ -22,3 +22,15 @@ export interface ChallengeHistoryResponse {
   number: number;
   date: string;
 }
+
+export interface StudioChallengeResponse {
+  id: string;
+  number: number;
+  date: string;
+  track: {
+    id: string;
+    title: string;
+    artist: string | null;
+    movie: string;
+  };
+}

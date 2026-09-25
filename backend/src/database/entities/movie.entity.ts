@@ -8,13 +8,13 @@ export class MovieEntity {
     @PrimaryGeneratedColumn('uuid')
     id!: string;
 
-    @Column({ name: "tmdb_id", nullable: true })
+    @Column({ name: "tmdb_id", unique: true })
     tmdbId!: number;
 
-    @Column({ unique: true })
+    @Column()
     title!: string;
 
-    @Column({ nullable: true })
+    @Column()
     quote!: string;
 
     @OneToMany(() => MusicTrackEntity, (musicTrack) => musicTrack.movie)

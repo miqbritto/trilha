@@ -1,6 +1,6 @@
 import { HttpClient } from "@angular/common/http";
 import { inject, Injectable } from "@angular/core";
-import { Movie, MovieOption } from "../models/movie";
+import { CreateMovie, Movie, MovieOption, RegisteredMovie } from "../models/movie";
 import { environment } from '../../../environments/environment.development';
 
 
@@ -8,6 +8,12 @@ import { environment } from '../../../environments/environment.development';
 export class MovieService {
     private readonly http = inject(HttpClient)
     private readonly apiUrl = `${environment.apiUrl.replace(/\/+$/, '')}/movies`;
+
+    create(movie: CreateMovie, adminKey: string) {
+        return this.http.post<RegisteredMovie>(this.apiUrl, movie, {
+            headers: { 'x-admin-key': adminKey },
+        });
+    }
 
     getDirector(tmdbId: number) {
         return this.http.get<{ director: string | null }>(
