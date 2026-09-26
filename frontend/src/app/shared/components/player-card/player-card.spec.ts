@@ -117,6 +117,47 @@ describe('PlayerCard playback limits', () => {
     expect(fixture.nativeElement.querySelector('.play-button').disabled).toBe(true);
   });
 
+  it('shows a continuous full-track timeline and seeks beyond the challenge stages', async () => {
+    fixture.componentRef.setInput('variant', 'full');
+    fixture.componentRef.setInput('maxSeconds', null);
+    fixture.detectChanges();
+    Object.defineProperty(audio, 'duration', { value: 125, configurable: true });
+    audio.dispatchEvent(new Event('loadedmetadata'));
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('.revealed-seconds')).toBeNull();
+    expect(fixture.nativeElement.querySelectorAll('.wave').length).toBe(1);
+    expect(fixture.nativeElement.querySelector('.timeline-times').textContent).toContain('2:05');
+    const slider = fixture.nativeElement.querySelector('input[type="range"]') as HTMLInputElement;
+    slider.value = '60';
+    slider.dispatchEvent(new Event('input'));
+    fixture.detectChanges();
+    expect(audio.currentTime).toBe(60);
+    expect(player.currentTimeLabel()).toBe('1:00');
+    await player.play();
+    expect(audio.currentTime).toBe(60);
+    expect(paused).toBe(false);
+    await player.replay();
+    expect(player.currentTime()).toBe(0);
+  });
+
+  it('disables seeking until metadata arrives and resets on a new audio source', () => {
+    fixture.componentRef.setInput('variant', 'full');
+    fixture.componentRef.setInput('maxSeconds', null);
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('input[type="range"]').disabled).toBe(true);
+    Object.defineProperty(audio, 'duration', { value: 100, configurable: true });
+    audio.dispatchEvent(new Event('loadedmetadata'));
+    audio.currentTime = 40;
+    audio.dispatchEvent(new Event('timeupdate'));
+    fixture.detectChanges();
+    expect(player.currentTime()).toBe(40);
+    fixture.componentRef.setInput('audioUrl', '/audio/another.wav');
+    fixture.detectChanges();
+    expect(player.duration()).toBe(0);
+    expect(player.currentTime()).toBe(0);
+    expect(fixture.nativeElement.querySelector('input[type="range"]').disabled).toBe(true);
+  });
+
   describe('audio visualization', () => {
     let spectrum: Uint8Array;
     let context: {

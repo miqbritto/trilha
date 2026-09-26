@@ -1,4 +1,4 @@
-import { Body, Controller, FileTypeValidator, ParseFilePipe, Post, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, FileTypeValidator, Get, ParseFilePipe, Post, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { AdminApiKeyGuard } from '../admin-auth/admin-api-key.guard';
 import { MusicService } from './music.service';
 import { CreateMusicDto } from './dto/create-music.dto';
@@ -39,5 +39,11 @@ export class MusicController {
     file: Express.Multer.File,
   ) {
       return await this.musicService.create(dto, file)
+  }
+
+  @Get("all")
+  @UseGuards(AdminApiKeyGuard)
+  getAllTracks() {
+    return this.musicService.getAllTracks()
   }
 }

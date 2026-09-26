@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment.development';
-import { CreateMusicTrack, MusicTrack } from '../models/music-track';
+import { CreateMusicTrack, MusicOption, MusicTrack } from '../models/music-track';
 
 
 @Injectable({ providedIn: "root" })
@@ -31,5 +31,11 @@ export class MusicTrackService {
         return this.http.post<MusicTrack>(this.apiUrl, body, {
             headers: { "x-admin-key": adminKey }
         })
+    }
+
+    getAllTracks(adminKey: string) {
+        return this.http.get<MusicOption[]>(`${this.apiUrl}/all`, {
+            headers: { 'x-admin-key': adminKey },
+        });
     }
 }

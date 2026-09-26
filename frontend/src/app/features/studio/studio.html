@@ -33,8 +33,7 @@
     </div>
 
     <p class="demo-note">
-      Consulte os desafios cadastrados na agenda. O formulário de novos desafios ainda cria
-      rascunhos locais, disponíveis enquanto esta página estiver aberta.
+      Cadastre novos desafios e consulte a agenda, incluindo os próximos dias.
     </p>
     <div class="feedback" role="status" aria-live="polite">{{ feedback() }}</div>
 
@@ -315,6 +314,13 @@
             <p>Combine uma música e uma data para o próximo desafio.</p>
           </div>
           <form #challengeForm="ngForm" (ngSubmit)="saveChallenge(challengeForm)">
+            <fieldset [disabled]="challengeSaving()" style="border: 0; padding: 0; margin: 0; min-width: 0">
+            <label class="full" for="challenge-admin-key">
+              Chave de administrador <span>*</span>
+              <input id="challenge-admin-key" type="password" name="challengeAdminKey"
+                [ngModel]="adminKey" (ngModelChange)="updateAdminKey($event)"
+                required autocomplete="off" spellcheck="false" />
+            </label>
             <div class="fields">
               <label class="full"
                 >Data do desafio <span>*</span>
@@ -328,13 +334,23 @@
                   (ngModelChange)="trackId.set($event)"
                   required
                 >
-                  <option value="" disabled>Selecione uma música do catálogo temporário</option>
+                  <option value="" disabled>Selecione uma música do catálogo</option>
                   @for (track of tracks(); track track.id) {
-                    <option [value]="track.id">{{ track.title }} · {{ track.movie }}</option>
+                    <option [value]="track.id">{{ track.title }} · {{ track.movieTitle }}</option>
                   }
                 </select>
               </label>
             </div>
+            @if (tracksLoading()) {
+              <p role="status">Carregando músicas...</p>
+            } @else if (tracksError()) {
+              <p class="error" role="alert">{{ tracksError() }}</p>
+            } @else if (!tracks().length) {
+              <p role="status">Cadastre uma música na aba Músicas para criar um desafio.</p>
+            }
+            <button class="text-button" type="button" (click)="loadTracks()" [disabled]="tracksLoading()">
+              Atualizar catálogo
+            </button>
             <div class="rules">
               <p class="field-label">Revelação progressiva</p>
               <p>Cada tentativa revela um pouco mais da música.</p>
@@ -349,10 +365,12 @@
             </div>
             <footer class="form-actions">
               <span class="small-label">Uma trilha por dia</span>
-              <button class="button primary" type="submit" [disabled]="challengeForm.invalid">
-                Criar rascunho <span aria-hidden="true">↗</span>
+              <button class="button primary" type="submit" [disabled]="challengeForm.invalid || !selectedTrack() || !adminKey.trim() || challengeSaving() || tracksLoading() || !!tracksError()">
+                {{ challengeSaving() ? 'Cadastrando...' : 'Cadastrar desafio' }} <span aria-hidden="true">↗</span>
               </button>
             </footer>
+            </fieldset>
+            <p class="error" role="alert">{{ challengeError() }}</p>
           </form>
         </section>
         <aside aria-label="Prévia do desafio">
@@ -362,11 +380,11 @@
               <span>{{ challengeDate ? (challengeDate | date: 'MM / yyyy') : 'MÊS / ANO' }}</span
               ><strong>{{ challengeDate ? (challengeDate | date: 'dd') : '—' }}</strong>
             </div>
-            <span class="small-label">Desafio diário · rascunho</span>
+            <span class="small-label">Desafio diário · prévia</span>
             <h3>{{ selectedTrack()?.title || 'Qual será a próxima trilha?' }}</h3>
-            <p>{{ selectedTrack()?.artist || 'Escolha uma música para começar' }}</p>
+            <p>{{ selectedTrack()?.movieTitle }}</p>
             <div class="preview-detail">
-              <span>Filme</span><strong>{{ selectedTrack()?.movie || 'A definir' }}</strong>
+              <span>Filme</span><strong>{{ selectedTrack()?.movieTitle || 'A definir' }}</strong>
             </div>
             <div class="preview-detail">
               <span>Data</span
@@ -396,6 +414,7 @@
             Chave de administrador
             <input
               id="agenda-admin-key"
+              [disabled]="challengeSaving()"
               type="password"
               name="agendaAdminKey"
               [ngModel]="adminKey"
@@ -406,7 +425,7 @@
             />
           </label>
           <button class="button secondary" type="submit"
-            [disabled]="!adminKey.trim() || challengesLoading()">
+            [disabled]="!adminKey.trim() || challengesLoading() || challengeSaving()">
             {{ challengesLoading() ? 'Carregando...' : 'Atualizar agenda' }}
           </button>
         </form>
@@ -439,41 +458,6 @@
           }
         </div>
       </section>
-      @if (drafts().length) {
-      <section class="agenda" aria-labelledby="drafts-heading">
-        <div class="agenda-heading">
-          <h2 id="drafts-heading">Rascunhos locais</h2>
-          <span class="small-label">{{ drafts().length }} preparados</span>
-        </div>
-        @if (sortedDrafts().length) {
-          <ul>
-            @for (draft of sortedDrafts(); track draft.date) {
-              <li>
-                <time [attr.datetime]="draft.date">{{ draft.date | date: 'dd/MM/yyyy' }}</time>
-                <div>
-                  <strong>{{ draft.track.title }}</strong>
-                  <p>{{ draft.track.movie }}</p>
-                </div>
-                <button
-                  class="text-button"
-                  type="button"
-                  (click)="removeChallenge(draft.date)"
-                  [attr.aria-label]="'Remover desafio de ' + (draft.date | date: 'dd/MM/yyyy')"
-                >
-                  Remover
-                </button>
-              </li>
-            }
-          </ul>
-        } @else {
-          <div class="empty-agenda">
-            <span aria-hidden="true">＋</span>
-            <h3>O próximo dia ainda está em branco.</h3>
-            <p>Crie um desafio acima para começar sua agenda.</p>
-          </div>
-        }
-      </section>
-      }
     }
     <footer class="page-footer">
       <span>trilha / estúdio</span><span>Agenda de desafios cadastrados</span>

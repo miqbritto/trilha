@@ -5,6 +5,8 @@ import { MusicTrackEntity } from 'src/database/entities/musicTrack.entity';
 import { Repository } from 'typeorm';
 import { StorageService } from '../storage/storage.service';
 import { CreateMusicDto } from './dto/create-music.dto';
+import { title } from 'process';
+import { MusicOption } from './interfaces/music-option';
 
 @Injectable()
 export class MusicService {
@@ -85,5 +87,21 @@ export class MusicService {
 
             throw error
         }
+    }
+
+    async getAllTracks(): Promise<MusicOption[]> {
+        const tracks = await this.musicRepo.find({
+            relations: { movie: true }
+        })
+
+        if(!tracks) {
+            throw new NotFoundException("Trilhas não encontradas")
+        }
+
+        return tracks.map((track) => ({
+            id: track.id,
+            title: track.title,
+            movieTitle: track.movie.title
+        }))
     }
 }

@@ -1,4 +1,6 @@
-import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Headers, Param, ParseUUIDPipe, Post, Res, StreamableFile, UseGuards } from '@nestjs/common';
+import type { Response } from 'express';
+import { AudioRangeError } from '../storage/audio-range';
 import { AdminApiKeyGuard } from '../admin-auth/admin-api-key.guard';
 import { GameService } from './game.service';
 import { CreateGuessDto } from './dto/create-guess.dto';
@@ -25,6 +27,38 @@ export class GameController {
   @Get("history")
   getChallengeHistory() {
     return this.gameService.getChallengeHistory()
+  }
+
+  @Get('daily/:challengeId/audio')
+  async getChallengeAudio(
+    @Param('challengeId', new ParseUUIDPipe()) challengeId: string,
+    @Headers('range') range: string | undefined,
+    @Res({ passthrough: true }) response: Response,
+  ) {
+    response.setHeader('Cache-Control', 'private, no-store');
+    response.setHeader('Accept-Ranges', 'bytes');
+    response.setHeader('X-Content-Type-Options', 'nosniff');
+    try {
+      const audio = await this.gameService.getChallengeAudio(challengeId, range);
+      if (audio.contentRange) {
+        response.status(206);
+        response.setHeader('Content-Range', audio.contentRange);
+      }
+      response.once('close', () => audio.stream.destroy());
+      const file = new StreamableFile(audio.stream, {
+        type: audio.type,
+        length: audio.length,
+        disposition: `inline; filename="audio.${audio.type === 'audio/wav' ? 'wav' : 'mp3'}"`,
+      });
+      file.setErrorHandler(() => response.destroy());
+      file.setErrorLogger(() => {});
+      return file;
+    } catch (error) {
+      if (error instanceof AudioRangeError) {
+        response.setHeader('Content-Range', `bytes */${error.size}`);
+      }
+      throw error;
+    }
   }
 
   @Get('admin/challenges')

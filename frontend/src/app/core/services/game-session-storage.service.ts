@@ -1,6 +1,7 @@
 import { inject, Injectable, PLATFORM_ID } from '@angular/core';
 import { GameSession } from '../models/game-session';
 import { isPlatformBrowser } from '@angular/common';
+import { environment } from '../../../environments/environment.development';
 
 @Injectable({ providedIn: "root" })
 export class GameSessionStorage {
@@ -21,6 +22,12 @@ export class GameSessionStorage {
             return null;
         }
         const parsedSession = JSON.parse(session);
+
+        // Replace storage URLs persisted by earlier versions, including game-over reloads.
+        if (parsedSession.challenge?.mode === 'daily' && parsedSession.challenge.id) {
+            parsedSession.challenge.audioUrl = `${environment.apiUrl.replace(/\/+$/, '')}/games/daily/${encodeURIComponent(parsedSession.challenge.id)}/audio`;
+            sessionStorage.setItem(this.storageKey, JSON.stringify(parsedSession));
+        }
 
         return parsedSession;
     }

@@ -21,6 +21,11 @@ export interface FreeGameChallenge extends BaseGameChallenge {
     mode: "free";
 }
 
+export interface NewChallenge {
+    musicTrackId: string;
+    date: string;
+}
+
 export type GameChallenge = DailyGameChallenge | FreeGameChallenge;
 
 export interface GameChallengeHistory {

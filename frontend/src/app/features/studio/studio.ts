@@ -4,17 +4,11 @@ import { FormsModule, NgForm } from '@angular/forms';
 import { Shell } from '../../shared/components/shell/shell';
 import { MovieService } from '../../core/services/movie.service';
 import { Movie, MovieOption } from '../../core/models/movie';
-import { MusicTrackService } from '../../core/services/music-track';
+import { MusicTrackService } from '../../core/services/music-track.service';
 import { GameService } from '../../core/services/game.service';
 import { StudioChallengeResponse } from '../../core/models/game-challenge';
 import { Subscription, switchMap, timer } from 'rxjs';
-
-interface StudioTrack {
-  id: string;
-  title: string;
-  artist: string;
-  movie: string;
-}
+import { MusicOption } from '../../core/models/music-track';
 
 @Component({
   selector: 'app-studio',
@@ -32,6 +26,12 @@ export class Studio implements OnDestroy {
   protected readonly challengesLoaded = signal(false);
   protected readonly challengesError = signal('');
   private challengesRequest?: Subscription;
+  private tracksRequest?: Subscription;
+  private challengeSaveRequest?: Subscription;
+  protected readonly challengeSaving = signal(false);
+  protected readonly challengeError = signal('');
+  protected readonly tracksLoading = signal(false);
+  protected readonly tracksError = signal('');
   protected readonly tab = signal<'music' | 'challenge' | 'movie'>('music');
   protected movieQuery = '';
   protected movieQuote = '';
@@ -49,44 +49,39 @@ export class Studio implements OnDestroy {
   protected readonly audioUrl = signal('');
   protected readonly dragging = signal(false);
   protected readonly revealStages = [1, 2, 4, 6, 8];
-  // Example catalog and drafts live only in this component. No API or storage is used.
   protected readonly movies = signal<MovieOption[]>([]);
   protected readonly selectedMovie = signal<MovieOption | null>(null)
-  protected readonly tracks = signal<StudioTrack[]>([
-    { id: 'example-1', title: 'Cornfield Chase', artist: 'Hans Zimmer', movie: 'Interestelar' },
-    { id: 'example-2', title: 'Time', artist: 'Hans Zimmer', movie: 'A Origem' },
-    {
-      id: 'example-3',
-      title: 'Comptine d’un autre été',
-      artist: 'Yann Tiersen',
-      movie: 'O Fabuloso Destino de Amélie Poulain',
-    },
-  ]);
+  protected readonly tracks = signal<MusicOption[]>([]);
   protected music = this.emptyMusic();
   protected readonly trackId = signal('');
   protected challengeDate = '';
   protected readonly selectedTrack = computed(() =>
     this.tracks().find((track) => track.id === this.trackId()),
   );
-  protected readonly drafts = signal<{ date: string; track: StudioTrack }[]>([]);
-  protected readonly sortedDrafts = computed(() =>
-    [...this.drafts()].sort((a, b) => a.date.localeCompare(b.date)),
-  );
-  private nextTrackId = 1;
 
   protected switchTab(tab: 'music' | 'challenge' | 'movie'): void {
     this.tab.set(tab);
     this.feedback.set('');
-    if (tab === 'challenge' && this.adminKey.trim()) this.loadChallenges();
+    if (tab === 'challenge') {
+      if (this.adminKey.trim()) this.loadChallenges();
+      this.loadTracks();
+    }
   }
 
   protected updateAdminKey(key: string): void {
+    if (key === this.adminKey) return;
     this.challengesRequest?.unsubscribe();
+    this.tracksRequest?.unsubscribe();
+    this.tracks.set([]);
+    this.trackId.set('');
+    this.tracksLoading.set(false);
+    this.tracksError.set('');
     this.adminKey = key;
     this.challenges.set([]);
     this.challengesLoading.set(false);
     this.challengesLoaded.set(false);
     this.challengesError.set('');
+    this.challengeError.set('');
   }
 
   protected searchTmdbMovies(value: string): void {
@@ -152,6 +147,30 @@ export class Studio implements OnDestroy {
           : 'Não foi possível cadastrar o filme. Tente novamente.');
       },
     });
+  }
+
+  protected loadTracks() {
+    this.tracksRequest?.unsubscribe();
+    if (!this.adminKey.trim()) {
+      this.tracksError.set('Informe a chave de administrador e atualize o catálogo.');
+      return;
+    }
+    this.tracksLoading.set(true);
+    this.tracksError.set('');
+    this.tracksRequest = this.musicTrackService.getAllTracks(this.adminKey).subscribe(
+      {
+        next: tracks => {
+          this.tracks.set([...tracks]);
+          this.tracksLoading.set(false);
+        },
+        error: (error) => {
+          this.tracksLoading.set(false);
+          this.tracksError.set(error.status === 401 || error.status === 403
+            ? 'Chave de administrador inválida. Confira a chave e atualize o catálogo.'
+            : 'Não foi possível carregar as músicas. Tente novamente.');
+        }
+      }
+    )
   }
 
   protected loadChallenges(): void {
@@ -278,20 +297,40 @@ export class Studio implements OnDestroy {
 
   protected saveChallenge(form: NgForm): void {
     const track = this.selectedTrack();
-    if (form.invalid || !track) return;
-    if (this.drafts().some((draft) => draft.date === this.challengeDate)) {
-      this.feedback.set(
-        'Já existe um rascunho nesta data. Escolha outro dia ou remova o anterior.',
-      );
+    if (form.invalid || !track || !this.challengeDate || !this.adminKey.trim() || this.challengeSaving()) return;
+    this.challengeError.set('');
+    this.feedback.set('');
+    if (this.challenges().some((challenge) => challenge.date === this.challengeDate)) {
+      this.challengeError.set('Já existe um desafio para essa data. Escolha outro dia.');
       return;
     }
-    this.drafts.update((drafts) => [...drafts, { date: this.challengeDate, track }]);
-    this.feedback.set('Desafio adicionado à agenda de rascunhos. Ele ainda não foi publicado.');
-  }
-
-  protected removeChallenge(date: string): void {
-    this.drafts.update((drafts) => drafts.filter((draft) => draft.date !== date));
-    this.feedback.set('Rascunho removido da agenda.');
+    this.challengeSaving.set(true);
+    this.challengeSaveRequest = this.gameService.createDailyChallenge(
+      track.id, this.challengeDate, this.adminKey,
+    ).subscribe({
+      next: () => {
+        this.challengeSaving.set(false);
+        this.challengeDate = '';
+        this.trackId.set('');
+        form.resetForm({ date: '', trackId: '', challengeAdminKey: this.adminKey });
+        this.feedback.set('Desafio cadastrado com sucesso!');
+        this.challengesRequest?.unsubscribe();
+        this.challengesLoading.set(false);
+        this.loadChallenges();
+      },
+      error: (error) => {
+        this.challengeSaving.set(false);
+        this.challengeError.set(error.status === 401 || error.status === 403
+          ? 'Chave de administrador inválida. Confira a chave e tente novamente.'
+          : error.status === 409
+            ? 'Já existe um desafio para essa data. Escolha outro dia.'
+            : error.status === 404
+              ? 'Música não encontrada. Atualize o catálogo e selecione outra música.'
+              : error.status === 400
+                ? 'Confira a data e a música selecionadas e tente novamente.'
+                : 'Não foi possível cadastrar o desafio. Tente novamente.');
+      },
+    });
   }
 
   private emptyMusic() {
@@ -302,6 +341,8 @@ export class Studio implements OnDestroy {
     this.movieSearchRequest?.unsubscribe();
     this.movieSaveRequest?.unsubscribe();
     this.challengesRequest?.unsubscribe();
+    this.tracksRequest?.unsubscribe();
+    this.challengeSaveRequest?.unsubscribe();
     if (this.audioUrl()) URL.revokeObjectURL(this.audioUrl());
   }
 }

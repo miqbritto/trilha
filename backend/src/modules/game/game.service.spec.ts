@@ -7,6 +7,7 @@ import { MovieEntity } from '../../database/entities/movie.entity';
 import { MusicTrackEntity } from '../../database/entities/musicTrack.entity';
 import { TmdbService } from '../tmdb/tmdb.service';
 import { GameService } from './game.service';
+import { StorageService } from '../storage/storage.service';
 
 describe('GameService.getDailyResult', () => {
   let service: GameService;
@@ -30,6 +31,7 @@ describe('GameService.getDailyResult', () => {
     const module = await Test.createTestingModule({
       providers: [
         GameService,
+        { provide: StorageService, useValue: {} },
         { provide: getRepositoryToken(DailyChallengeEntity), useValue: dailyRepo },
         ... [MusicTrackEntity, MovieEntity].map(entity => ({
           provide: getRepositoryToken(entity), useValue: {},

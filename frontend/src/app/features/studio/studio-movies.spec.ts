@@ -4,7 +4,7 @@ import { of, Subject, throwError } from 'rxjs';
 import { vi } from 'vitest';
 import { Studio } from './studio';
 import { MovieService } from '../../core/services/movie.service';
-import { MusicTrackService } from '../../core/services/music-track';
+import { MusicTrackService } from '../../core/services/music-track.service';
 import { GameService } from '../../core/services/game.service';
 import { Movie, RegisteredMovie } from '../../core/models/movie';
 

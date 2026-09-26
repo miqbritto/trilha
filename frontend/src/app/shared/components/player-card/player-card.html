@@ -1,10 +1,17 @@
-<section class="deck" aria-label="Reprodutor de áudio">
+<section class="deck" [class.deck-full]="variant() === 'full'" aria-label="Reprodutor de áudio">
         <div class="deck-labels">
-          <span>now playing</span>
+          <span>{{ variant() === 'full' ? 'Trilha completa' : 'now playing' }}</span>
           <span>{{ maxSeconds() === null ? durationLabel() : maxSeconds() + 's liberados' }}</span>
         </div>
 
         <div class="player" [class.is-playing]="isPressed()">
+          @if (variant() === 'full') {
+            <div class="wave is-unlocked" aria-hidden="true">
+              @for (wave of fullWaveBars; track wave) {
+                <div #waveBar class="wave-bar"></div>
+              }
+            </div>
+          } @else {
           @for (second of stages(); track $index) {
             <div class="wave" [class.is-unlocked]="unlockedStages()[$index]" aria-hidden="true">
               @for (wave of waveBars; track wave) {
@@ -12,8 +19,20 @@
               }      
             </div>
           }
+          }
         </div>
 
+        @if (variant() === 'full') {
+          <div class="timeline">
+            <input type="range" min="0" [max]="duration()" step="0.1"
+              [value]="currentTime()" [disabled]="!duration()"
+              [style.--progress]="progress() + '%'"
+              aria-label="Posição na trilha"
+              [attr.aria-valuetext]="currentTimeLabel() + ' de ' + durationLabel()"
+              (input)="seek($event)" />
+            <div class="timeline-times"><span>{{ currentTimeLabel() }}</span><span>{{ durationLabel() }}</span></div>
+          </div>
+        } @else {
           <div class="revealed-seconds">
             @for (second of stages(); track $index) {
               <div class="second">
@@ -23,6 +42,7 @@
             }
             
           </div>
+        }
         
         <div class="playback-controls">
           <audio
@@ -58,10 +78,10 @@
             @if (isPressed()) {
               <p class="playback-title">Ouvindo...</p>
             } @else {
-              <p class="playback-title">Ouça a trilha e identifique o filme.</p>
+              <p class="playback-title">{{ variant() === 'full' ? 'Aproveite a trilha completa.' : 'Ouça a trilha e identifique o filme.' }}</p>
             }
             
-            <p class="playback-hint">{{ maxSeconds() === null ? 'Ouça o trecho completo.' : 'Cada erro libera mais um trecho da trilha.' }}</p>
+            <p class="playback-hint">{{ variant() === 'full' ? 'Dê o play ou escolha um ponto da música.' : 'Cada erro libera mais um trecho da trilha.' }}</p>
           </div>
           <button class="replay-button" type="button" aria-label="Reiniciar trilha" [disabled]="maxSeconds() === 0" (click)="replay()">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">

@@ -20,13 +20,17 @@ describe('Administrative API authentication', () => {
     checkGuess: jest.fn().mockResolvedValue({ correct: false }),
     getDailyResult: jest.fn().mockResolvedValue({ movie: {}, track: {} }),
   };
-  const music = { create: jest.fn().mockResolvedValue({ id: 'track-id' }) };
+  const music = {
+    create: jest.fn().mockResolvedValue({ id: 'track-id' }),
+    getAllTracks: jest.fn().mockResolvedValue([]),
+  };
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
       imports: [AdminAuthModule],
       controllers: [GameController, MusicController],
       providers: [
+        { provide: ConfigService, useValue: { get: () => configuredKey } },
         { provide: GameService, useValue: game },
         { provide: MusicService, useValue: music },
       ],
@@ -47,6 +51,13 @@ describe('Administrative API authentication', () => {
 
   afterAll(async () => {
     await app?.close();
+  });
+
+  it('protects the track catalog with the admin key', async () => {
+    await request(app.getHttpServer()).get('/music/all').expect(401);
+    expect(music.getAllTracks).not.toHaveBeenCalled();
+    await request(app.getHttpServer()).get('/music/all').set('X-Admin-Key', key).expect(200);
+    expect(music.getAllTracks).toHaveBeenCalledTimes(1);
   });
 
   describe.each(['/games/daily', '/music'])('POST %s', (path) => {

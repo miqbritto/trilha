@@ -8,6 +8,7 @@ import { DailyChallengeEntity } from 'src/database/entities/daily-challenge';
 import { getGameDate } from './utils/game-date';
 import { ChallengeHistoryResponse, DailyChallengeResponse, FreeChallengeResponse, StudioChallengeResponse } from './dto/challenge-response.dto';
 import { TmdbService } from '../tmdb/tmdb.service';
+import { StorageService } from '../storage/storage.service';
 
 
 @Injectable()
@@ -20,6 +21,7 @@ export class GameService {
          @InjectRepository(DailyChallengeEntity)
          private readonly dailyChallengeRepo: Repository<DailyChallengeEntity>,
          private readonly tmdbService: TmdbService,
+         private readonly storageService: StorageService,
         
     ) {}
 
@@ -35,20 +37,22 @@ export class GameService {
             throw new NotFoundException("Trilha não encontrada");
         }
 
-        const existingChallenge = await this.dailyChallengeRepo.findOne({
-            where: { date }
-        })
-
-        if(existingChallenge) {
-            throw new ConflictException("Já existe um desafio para essa data")
-        }
-
-        const challenge = await this.dailyChallengeRepo.create({
-            date,
-            musicTrackId
-        })
-
-        return this.dailyChallengeRepo.save(challenge);
+        return this.dailyChallengeRepo.manager.transaction(async (manager) => {
+            // Serialize numbering and date checks across concurrent studio requests.
+            await manager.query('LOCK TABLE "daily_challenges" IN SHARE ROW EXCLUSIVE MODE');
+            const challenges = manager.getRepository(DailyChallengeEntity);
+            const existingChallenge = await challenges.findOne({ where: { date } });
+            if (existingChallenge) {
+                throw new ConflictException('Já existe um desafio para essa data');
+            }
+            const lastChallenge = await challenges.findOne({
+                where: {}, order: { number: 'DESC' },
+            });
+            const challenge = challenges.create({
+                date, musicTrackId, number: (lastChallenge?.number ?? 0) + 1,
+            });
+            return challenges.save(challenge);
+        });
     }
 
     async findDailyChallenge(): Promise<DailyChallengeEntity> {
@@ -116,7 +120,8 @@ export class GameService {
             throw new NotFoundException("Desafio não encontrado");
         }
         
-        const audioUrl = challenge.musicTrack?.previewUrl?.trim();
+        const audioUrl = challenge.musicTrack?.externalId?.trim()
+            ? `/games/daily/${challenge.id}/audio` : undefined;
 
         if(!audioUrl) {
             throw new NotFoundException("Audio indisponível para o desafio de hoje")
@@ -137,7 +142,8 @@ export class GameService {
     async getDailyChallenge(): Promise<DailyChallengeResponse> {
         const challenge = await this.findDailyChallenge();
 
-        const audioUrl = challenge.musicTrack?.previewUrl?.trim();
+        const audioUrl = challenge.musicTrack?.externalId?.trim()
+            ? `/games/daily/${challenge.id}/audio` : undefined;
 
         if(!audioUrl) {
             throw new NotFoundException("Audio indisponível para o desafio de hoje")
@@ -153,6 +159,15 @@ export class GameService {
             },
             audioUrl
         }
+    }
+
+    async getChallengeAudio(challengeId: string, range?: string) {
+        const challenge = await this.dailyChallengeRepo.findOne({
+            where: { id: challengeId }, relations: { musicTrack: true },
+        });
+        const key = challenge?.musicTrack?.externalId;
+        if (!key) throw new NotFoundException('Áudio não encontrado.');
+        return this.storageService.getAudio(key, range);
     }
 
     async getFreeChallenge(): Promise<FreeChallengeResponse> {

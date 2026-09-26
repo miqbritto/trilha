@@ -8,6 +8,7 @@ import { Component, computed, effect, ElementRef, input, OnDestroy, signal, view
 export class PlayerCard implements OnDestroy {
   readonly guessSlots = input.required<number[]>();
   readonly audioUrl = input.required<string>()
+  readonly variant = input<'challenge' | 'full'>('challenge');
   readonly maxSeconds = input<number | null>(null);
   readonly revealStages = input<number[]>([]);
   readonly stages = computed(() => this.revealStages().length ? this.revealStages() : this.guessSlots());
@@ -16,11 +17,15 @@ export class PlayerCard implements OnDestroy {
     return this.stages().map(second => limit === null || second <= limit);
   });
   readonly duration = signal(0);
+  readonly currentTime = signal(0);
+  readonly currentTimeLabel = computed(() => this.formatTime(this.currentTime()));
+  readonly progress = computed(() => this.duration() > 0 ? this.currentTime() / this.duration() * 100 : 0);
   readonly durationLabel = computed(() => {
     const seconds = Math.floor(this.duration());
     return `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}`;
   });
   readonly waveBars = Array.from({ length: 18 }, (_, index) => index);
+  readonly fullWaveBars = Array.from({ length: 72 }, (_, index) => index);
   readonly isPressed = signal(false);
   private playbackTimeout?: ReturnType<typeof setTimeout>;
   readonly playbackError = signal('');
@@ -39,11 +44,32 @@ export class PlayerCard implements OnDestroy {
       this.maxSeconds();
       const audio = this.audioRef()?.nativeElement;
       this.onPause();
+      this.currentTime.set(0);
       if (audio && typeof audio.pause === 'function') {
         audio.pause();
         audio.currentTime = 0;
       }
     });
+    effect(() => {
+      this.audioUrl();
+      this.duration.set(0);
+      this.playbackError.set('');
+    });
+  }
+
+  private formatTime(value: number): string {
+    const seconds = Math.floor(value);
+    return `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}`;
+  }
+
+  seek(event: Event) {
+    const audio = this.audioRef()?.nativeElement;
+    if (!audio || this.variant() !== 'full' || !this.duration()) return;
+    const value = Number((event.target as HTMLInputElement).value);
+    if (!Number.isFinite(value)) return;
+    audio.currentTime = Math.max(0, Math.min(value, this.duration(), this.maxSeconds() ?? Infinity));
+    this.onTimeUpdate();
+    this.scheduleLimit();
   }
 
   async pressButton() {
@@ -120,7 +146,7 @@ export class PlayerCard implements OnDestroy {
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
     const unlocked = this.unlockedStages();
     const bars = this.barRefs()
-      .filter((_, index) => unlocked[Math.floor(index / this.waveBars.length)])
+      .filter((_, index) => this.variant() === 'full' || unlocked[Math.floor(index / this.waveBars.length)])
       .map(ref => ref.nativeElement);
     const binWidth = context.sampleRate / analyser.fftSize;
     const minFrequency = 60;
@@ -169,6 +195,7 @@ export class PlayerCard implements OnDestroy {
       if (audio.currentTime !== limit) audio.currentTime = limit;
       this.onPause();
     }
+    if (audio) this.currentTime.set(audio.currentTime);
   }
 
   scheduleLimit() {
@@ -190,6 +217,7 @@ export class PlayerCard implements OnDestroy {
     if(!audio) return;
 
     audio.currentTime = 0;
+    this.currentTime.set(0);
     await this.play()
 
   }
