@@ -46,17 +46,17 @@
 
         <div class="guess-form">
           <div class="guess-search">
-            @if (selectedMovie(); as movie) {
+            @if (movieSearch.selectedMovie(); as movie) {
               <div class="selected-movie" role="status" aria-label="Filme selecionado">
                 <div class="selected-movie-copy">
                   <span class="selected-movie-title">{{ movie.title }}</span>
-                  <span class="selected-movie-meta">{{ movie.releaseYear }} <span aria-hidden="true">·</span> {{ directorLoading() ? 'Carregando direção...' : (movie.director ?? 'Direção indisponível') }}</span>
+                  <span class="selected-movie-meta">{{ movie.releaseYear }} <span aria-hidden="true">·</span> {{ movieSearch.directorLoading() ? 'Carregando direção...' : (movie.director ?? 'Direção indisponível') }}</span>
                 </div>
                 <button
                   class="clear-selection"
                   type="button"
                   aria-label="Remover filme selecionado"
-                  (click)="clearSelectedMovie()"
+                  (click)="movieSearch.clearSelectedMovie()"
                   [disabled]="submitting()"
                 >
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true">
@@ -81,13 +81,13 @@
                   autocomplete="off"
                   maxlength="30"
                   [disabled]="submitting()"
-                  (input)="searchMovie(movieInput.value)"
+                  (input)="movieSearch.searchMovie(movieInput.value)"
                 />
               </div>
             }
-          @if (suggestions()?.length) {
+          @if (movieSearch.suggestions()?.length) {
           <div class="suggestions-container" aria-label="Filmes sugeridos">
-          @for (movie of suggestions(); track movie.tmdbId) {
+          @for (movie of movieSearch.suggestions(); track movie.tmdbId) {
             <button
               class="suggestions"
               type="button"
@@ -121,8 +121,8 @@
           </div>
           }
           </div>
-          <button class="submit-button" type="button" [class.active]="selectedMovie()"
-          [disabled]="!selectedMovie() || submitting() || hasWon() || !remainingGuesses()"
+          <button class="submit-button" type="button" [class.active]="movieSearch.selectedMovie()"
+          [disabled]="!movieSearch.selectedMovie() || submitting() || hasWon() || !remainingGuesses()"
           (click)="makeGuess()">
             <span>{{ submitting() ? 'Confirmando...' : 'Palpitar' }}</span>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -130,20 +130,20 @@
             </svg>
           </button>
         </div>
-        @if (searching()) {
+        @if (movieSearch.searching()) {
           <p class="request-feedback" role="status">Buscando filmes...</p>
-        } @else if (searchError()) {
+        } @else if (movieSearch.searchError()) {
           <div class="request-feedback">
-            <p role="alert">{{ searchError() }}</p>
-            <button type="button" (click)="retrySearch()">Tentar busca novamente</button>
+            <p role="alert">{{ movieSearch.searchError() }}</p>
+            <button type="button" (click)="movieSearch.retrySearch()">Tentar busca novamente</button>
           </div>
-        } @else if (searchQuery().length >= 2 && suggestions()?.length === 0) {
+        } @else if (movieSearch.searchQuery().length >= 2 && movieSearch.suggestions()?.length === 0) {
           <p class="request-feedback" role="status">Nenhum filme encontrado. Tente outro título.</p>
         }
         @if (guessError()) {
           <div class="request-feedback">
             <p role="alert">{{ guessError() }}</p>
-            <button type="button" (click)="makeGuess()" [disabled]="submitting() || !selectedMovie()">Tentar palpite novamente</button>
+            <button type="button" (click)="makeGuess()" [disabled]="submitting() || !movieSearch.selectedMovie()">Tentar palpite novamente</button>
           </div>
         }
         <p class="guess-hint" id="guess-hint">Errar não é ruim: cada erro revela mais um trecho da trilha.</p>

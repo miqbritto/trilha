@@ -77,7 +77,7 @@ describe('Player request feedback', () => {
     await game.makeGuess();
     await fixture.whenStable();
     expect(game.guessesMade()).toBe(0);
-    expect(game.selectedMovie()).toEqual(movie);
+    expect(game.movieSearch.selectedMovie()).toEqual(movie);
     expect(fixture.nativeElement.querySelector('[role="alert"]').textContent).toContain('confirmar o palpite');
     await game.makeGuess();
     expect(game.guessesMade()).toBe(1);
@@ -90,14 +90,14 @@ describe('Player request feedback', () => {
     vi.useFakeTimers();
     movies.searchMovie.mockReturnValueOnce(unavailable());
     const game = fixture.componentInstance;
-    game.searchMovie('Filme');
+    game.movieSearch.searchMovie('Filme');
     await vi.advanceTimersByTimeAsync(350);
-    expect(game.searchError()).toContain('Não foi possível buscar');
-    game.retrySearch();
+    expect(game.movieSearch.searchError()).toContain('Não foi possível buscar');
+    game.movieSearch.retrySearch();
     await vi.advanceTimersByTimeAsync(350);
     expect(movies.searchMovie).toHaveBeenCalledTimes(2);
-    expect(game.searchError()).toBe('');
-    expect(game.suggestions()).toEqual([]);
+    expect(game.movieSearch.searchError()).toBe('');
+    expect(game.movieSearch.suggestions()).toEqual([]);
   });
 
   it('stops loading if the challenge request never responds', async () => {
