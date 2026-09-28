@@ -1,39 +1,22 @@
 :host {
     display: flex;
     flex-direction: column;
-    height: 100vh;
+    min-height: 100vh;
+    min-height: 100dvh;
+    min-width: 0;
     background-color: var(--color-bg);
 }
 
 .shell {
     position: relative;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-width: 0;
 }
 
 .shell--wide {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    min-height: 0;
-
     .center-header { width: min(100%, 66rem); padding-inline: 1.5rem; }
-}
-
-.studio-link {
-    display: inline-block;
-    padding: .5rem;
-    color: var(--color-text-secondary);
-    font: .6875rem var(--font-mono);
-    text-transform: uppercase;
-    text-decoration: none;
-    letter-spacing: .12em;
-
-    &:hover, &.active { color: var(--color-primary); }
-    &:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 3px; }
-}
-
-@media (max-width: 480px) {
-    .center-header { flex-wrap: wrap; padding-bottom: .5rem; }
-    .right { display: flex; flex-wrap: wrap; gap: .25rem; }
 }
 
 .shell::after {
@@ -86,6 +69,8 @@
 }
 
 .how-to-play {
+    box-sizing: border-box;
+    min-height: 44px;
     background: var(--color-bg);
     border: 1px solid transparent;
     border-radius: 4px;
@@ -116,6 +101,10 @@
     flex-shrink: 0;
 }
 
+.how-to-play.active {
+    color: var(--color-primary);
+}
+
 .how-to-play:focus-visible {
     outline: 2px solid var(--color-primary);
     outline-offset: 3px;
@@ -127,9 +116,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    min-height: 0;
-    overflow-y: auto;
-    overflow-x: hidden;
+    min-width: 0;
     background: var(--color-bg);
     // background:
     //     radial-gradient(circle at top, color-mix(in srgb, var(--color-primary) 18%, transparent), transparent 28%),
@@ -168,7 +155,13 @@
     flex-direction: column;
     align-items: center;
     flex: 1;
-    min-height: 0;
+    min-width: 0;
     width: 100%;
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+@media (max-width: 480px) {
+    .center-header { flex-wrap: wrap; padding-bottom: .5rem; }
+    .right { display: flex; flex-wrap: wrap; gap: .25rem; }
 }
 

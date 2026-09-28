@@ -4,14 +4,12 @@
     <header class="shell-header">
         <div class="center-header">
             <div class="left">
-                <a class="trilha" href="#">trilha</a>
+                <a class="trilha" routerLink="/game" routerLinkActive="active" ariaCurrentWhenActive="page">trilha</a>
             </div>
 
             <div class="right">
 
-                <a class="studio-link" routerLink="/studio" routerLinkActive="active" ariaCurrentWhenActive="page">estúdio</a>
-
-                <button class="how-to-play" type="button" aria-haspopup="dialog" routerLink="/history">
+                <a class="how-to-play" routerLink="/history" routerLinkActive="active" ariaCurrentWhenActive="page">
                     <svg 
                     xmlns="http://www.w3.org/2000/svg" 
                     width="16"
@@ -31,7 +29,7 @@
                         <path d="M2 17a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 17"></path>
                     </svg>
                     histórico
-                </button>
+                </a>
                 
                 <button class="how-to-play" type="button" aria-haspopup="dialog" (click)="howToPlayDialog.open()">
                     <svg

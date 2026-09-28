@@ -12,11 +12,18 @@ export class Shell {
   readonly wide = input(false);
   readonly openInstructionsOnInit = input(false);
   private readonly instructions = viewChild.required(HowToPlayDialog);
+  private readonly instructionsSeenKey = 'trilha.instructionsSeen';
 
   constructor() {
     afterNextRender(() => {
       if (this.openInstructionsOnInit()) {
+        try {
+          if (localStorage.getItem(this.instructionsSeenKey) === 'true') return;
+        } catch { /* Instructions remain available when storage is disabled. */ }
         this.instructions().open();
+        try {
+          localStorage.setItem(this.instructionsSeenKey, 'true');
+        } catch { /* A storage error must not block the page. */ }
       }
     });
   }

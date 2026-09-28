@@ -1,7 +1,6 @@
 :host {
   display: block;
   width: 100%;
-  overflow: auto;
 }
 
 .game-page {
@@ -221,8 +220,8 @@
   flex: 0 0 auto;
   align-items: center;
   justify-content: center;
-  width: 2.55rem;
-  height: 2.55rem;
+  width: 2.75rem;
+  height: 2.75rem;
   padding: 0;
   border: 1px solid var(--color-border);
   border-radius: 3px;
@@ -473,6 +472,10 @@
 }
 
 @media (max-width: 640px) {
+  .game-header { flex-wrap: wrap; gap: 1rem; }
+  .issue-number { font-size: clamp(3rem, 14vw, 5rem); overflow-wrap: anywhere; }
+  .game-date { margin-left: auto; }
+
   .game-page {
     width: 100%;
     padding-inline: 0.75rem;

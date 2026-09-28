@@ -1,7 +1,6 @@
 :host {
   display: block;
   width: 100%;
-  overflow: auto;
 }
 
 
@@ -126,6 +125,12 @@
 }
 
 @media (max-width: 36rem) {
+  .challenge-items {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .challenge-link { min-width: 0; }
+
   .history-header .header-title {
     flex-direction: column;
     align-items: flex-start;

@@ -12,6 +12,7 @@ import { Shell } from './shared/components/shell/shell';
 
 describe('Game entry', () => {
   beforeEach(() => {
+    localStorage.removeItem('trilha.instructionsSeen');
     TestBed.configureTestingModule({
       providers: [
         provideRouter(routes),
@@ -32,9 +33,12 @@ describe('Game entry', () => {
     });
   });
 
-  afterEach(() => vi.restoreAllMocks());
+  afterEach(() => {
+    localStorage.removeItem('trilha.instructionsSeen');
+    vi.restoreAllMocks();
+  });
 
-  it.each(['/', '/game', '/onboarding'])('opens the game with instructions from %s', async url => {
+  it.each(['/', '/game'])('opens the game with instructions from %s', async url => {
     // jsdom does not implement the native modal dialog API.
     const open = vi.spyOn(HowToPlayDialog.prototype, 'open').mockImplementation(() => {});
     const harness = await RouterTestingHarness.create();
@@ -49,7 +53,23 @@ describe('Game entry', () => {
     await harness.fixture.whenStable();
     expect(open).toHaveBeenCalledTimes(1);
 
-    harness.routeNativeElement?.querySelector<HTMLButtonElement>('.how-to-play')?.click();
+    harness.routeNativeElement?.querySelector<HTMLButtonElement>('button.how-to-play')?.click();
+    expect(open).toHaveBeenCalledTimes(2);
+  });
+
+  it('remembers instructions across page instances and still allows manual opening', async () => {
+    const open = vi.spyOn(HowToPlayDialog.prototype, 'open').mockImplementation(() => {});
+    const first = TestBed.createComponent(Shell);
+    first.componentRef.setInput('openInstructionsOnInit', true);
+    await first.whenStable();
+    expect(open).toHaveBeenCalledTimes(1);
+    expect(localStorage.getItem('trilha.instructionsSeen')).toBe('true');
+    first.destroy();
+    const second = TestBed.createComponent(Shell);
+    second.componentRef.setInput('openInstructionsOnInit', true);
+    await second.whenStable();
+    expect(open).toHaveBeenCalledTimes(1);
+    second.nativeElement.querySelector('button.how-to-play').click();
     expect(open).toHaveBeenCalledTimes(2);
   });
 

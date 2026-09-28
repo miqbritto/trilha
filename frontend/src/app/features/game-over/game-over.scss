@@ -1,7 +1,6 @@
 :host {
     display: block;
     width: 100%;
-    overflow: auto;
 }
 
 .game-page {
@@ -101,14 +100,43 @@
         width: 100%;
         box-sizing: border-box;
         border-radius: 3px;
-        //border: 8px solid #E2D5C1;
+        border: 8px solid #E2D5C1;
         box-shadow: 10px 10px 0 0 var(--color-bg-dark);
     }
+}
+
+.next-trilha {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: .65rem;
+    margin-top: 1.5rem;
+    padding: 1.5rem 0 .5rem;
+    border-top: 1px solid var(--color-border-subtle);
+    color: var(--color-text-secondary);
+    font-family: var(--font-mono);
+    font-size: .6875rem;
+    letter-spacing: .16em;
+    line-height: 1.6;
+    text-align: center;
+
+    p { margin: 0; }
+    strong { color: var(--color-primary); font-weight: 500; white-space: nowrap; }
+}
+
+.next-trilha-dot {
+    width: .375rem;
+    height: .375rem;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background: var(--color-primary);
 }
 
 
 
 .movie-info {
+    min-width: 0;
+    overflow-wrap: anywhere;
     display: flex;
     flex-direction: column;
 
@@ -127,7 +155,7 @@
     h2 {
         color: var(--color-text);
         font-family: var(--font-sans);
-        font-size: 52px;
+        font-size: clamp(2rem, 6vw, 3.25rem);
         line-height: .95;
         letter-spacing: -.025em;
         font-weight: inherit;
@@ -166,6 +194,7 @@
     }
 
     dd {
+        min-width: 0;
         color: var(--color-text-secondary);
         font-size: 15px;
         margin: 0;
@@ -421,4 +450,32 @@
         border-color: var(--color-border-subtle);
         opacity: 1;
     }
+}
+
+@media (max-width: 640px) {
+    .game-page { padding-inline: .75rem; }
+    .game-header { flex-wrap: wrap; gap: 1rem; }
+    .issue-number { font-size: clamp(3rem, 14vw, 5rem); overflow-wrap: anywhere; }
+    .game-date { margin-left: auto; }
+
+    .movie-section {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 1.5rem;
+    }
+    .movie-poster { width: min(60%, 12rem); justify-self: center; }
+    .line {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr);
+        gap: .75rem;
+        dt, dd { line-height: 1.5; }
+    }
+    .results {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        gap: 1rem;
+    }
+    .result-listen { padding-left: 1rem; }
+    .result-text { line-height: 1.5; }
+    .deck { padding: 1rem; }
+    .share-button { width: 100%; }
 }

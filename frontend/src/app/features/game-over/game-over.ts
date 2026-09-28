@@ -1,4 +1,4 @@
-import { Component, computed, DestroyRef, inject, OnInit, signal } from '@angular/core';
+import { afterNextRender, Component, computed, DestroyRef, inject, OnInit, signal } from '@angular/core';
 import { Shell } from '../../shared/components/shell/shell';
 import { DatePipe } from '@angular/common';
 import { GameSessionStorage } from '../../core/services/game-session-storage.service';
@@ -11,6 +11,7 @@ import { getGameStatus } from '../../shared/utils/helpers';
 import { MAX_GUESSES, guessSlots } from '../../shared/utils/constants';
 import { GuessHistory } from '../../shared/components/guess-history/guess-history';
 import { PlayerCard } from '../../shared/components/player-card/player-card';
+import { nextTrilhaCountdown } from '../../shared/utils/next-trilha';
 
 @Component({
   selector: 'app-game-over',
@@ -47,9 +48,16 @@ export class GameOver implements OnInit{
   });
  
   private copiedTimeout?: ReturnType<typeof setTimeout>;
+  protected readonly nextTrilha = signal(nextTrilhaCountdown(new Date()));
 
   constructor() {
     this.destroyRef.onDestroy(() => clearTimeout(this.copiedTimeout));
+    afterNextRender(() => {
+      const update = () => this.nextTrilha.set(nextTrilhaCountdown(new Date()));
+      update();
+      const interval = setInterval(update, 1000);
+      this.destroyRef.onDestroy(() => clearInterval(interval));
+    });
   }
 
   protected readonly gameStatus = computed(() => {

@@ -11,10 +11,12 @@ describe('Audio and catalog access', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({ providers: [provideHttpClient(), provideHttpClientTesting()] });
     sessionStorage.clear();
+    localStorage.clear();
   });
   afterEach(() => {
     TestBed.inject(HttpTestingController).verify();
     sessionStorage.clear();
+    localStorage.clear();
     TestBed.resetTestingModule();
   });
   it('points playback to the API even if a legacy response contains a storage URL', () => {
@@ -39,6 +41,23 @@ describe('Audio and catalog access', () => {
     const session = TestBed.inject(GameSessionStorage).load();
     expect(session?.challenge.audioUrl).toBe(`${base}/games/daily/old-id/audio`);
     expect(session?.guesses).toEqual([{ correct: false }]);
-    expect(sessionStorage.getItem('session')).not.toContain('storage.invalid');
+    expect(localStorage.getItem('session')).not.toContain('storage.invalid');
+    expect(sessionStorage.getItem('session')).toBeNull();
+  });
+  it('restores the saved game from localStorage and clears it explicitly', () => {
+    const storage = TestBed.inject(GameSessionStorage);
+    localStorage.setItem('session', JSON.stringify({
+      version: 1, challenge: { mode: 'daily', id: 'saved-id' }, guesses: [],
+    }));
+    const session = storage.load()!;
+    storage.save(session);
+    sessionStorage.clear();
+    expect(storage.load()).toEqual(session);
+    storage.clear();
+    expect(storage.load()).toBeNull();
+  });
+  it('ignores malformed stored data', () => {
+    localStorage.setItem('session', '{broken');
+    expect(TestBed.inject(GameSessionStorage).load()).toBeNull();
   });
 });

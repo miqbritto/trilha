@@ -83,6 +83,14 @@
   }
 }
 
+@media (max-width: 36rem) {
+  :host { width: 100%; }
+  .challenge-card { padding: 1rem .75rem; }
+  .challenge-card__header,
+  .challenge-card__footer { flex-wrap: wrap; gap: .5rem; }
+  .challenge-card__number { white-space: normal; overflow-wrap: anywhere; min-width: 0; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .challenge-card,
   .challenge-card__hash {
