@@ -7,8 +7,8 @@ import { Component, computed, input } from '@angular/core';
   templateUrl: './challenge-card.html',
 })
 export class ChallengeCard {
-  readonly number = input.required<number>();
-  readonly dateLabel = input.required<string>();
+  readonly number      = input.required<number>();
+  readonly dateLabel   = input.required<string>();
   readonly highlighted = input(false);
 
   readonly formattedDate = computed(() => {

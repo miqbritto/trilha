@@ -1,18 +1,17 @@
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
-import { Shell } from '../../shared/components/shell/shell';
-import { GameMovieSearch } from './game-movie-search';
-import { Movie } from '../../core/models/movie';
+import { Shell }                   from '../../shared/components/shell/shell';
+import { GameMovieSearch }         from './game-movie-search';
+import { Movie }                   from '../../core/models/movie';
+import { HttpErrorResponse }       from '@angular/common/http';
+import { GameSession }             from '../../core/models/game-session';
+import { GameSessionStorage }      from '../../core/services/game-session-storage.service';
+import { GameService }             from '../../core/services/game.service';
+import { DatePipe }                from '@angular/common';
+import { ActivatedRoute, Router }  from '@angular/router';
+import { MAX_GUESSES }             from '../../shared/utils/constants';
+import { GuessHistory }            from '../../shared/components/guess-history/guess-history';
+import { PlayerCard }              from '../../shared/components/player-card/player-card';
 import { firstValueFrom, timeout } from 'rxjs';
-import { HttpErrorResponse } from '@angular/common/http';
-import { GameSession } from '../../core/models/game-session';
-import { GameSessionStorage } from '../../core/services/game-session-storage.service';
-import { GameService } from '../../core/services/game.service';
-import { DatePipe } from '@angular/common';
-import { ActivatedRoute, Router } from '@angular/router';
-import { MAX_GUESSES } from '../../shared/utils/constants';
-import { GuessHistory } from '../../shared/components/guess-history/guess-history';
-import { PlayerCard } from '../../shared/components/player-card/player-card';
-
 @Component({
   selector: 'app-game',
   providers: [GameMovieSearch],

@@ -25,24 +25,27 @@ export class GameOver implements OnInit{
       (_, index) => index + 1,
    )
 
-  protected readonly gameStorage = inject(GameSessionStorage)
-  protected readonly game = inject(GameService)
+  protected readonly gameStorage    = inject(GameSessionStorage)
+  protected readonly game           = inject(GameService)
+  private readonly destroyRef       = inject(DestroyRef);
 
-  protected readonly session = signal<GameSession | null>(null)
-  protected readonly challenge = signal<DailyGameChallenge | null>(null)
-  protected readonly result = signal<GameResult | null>(null);
-  protected readonly loading = signal(false);
-  protected readonly loadError = signal('');
-  protected readonly attempts = computed(() => this.session()?.guesses ?? []);
-  protected readonly attemptCount = computed(() => this.attempts().length);
+
+  protected readonly session        = signal<GameSession | null>(null)
+  protected readonly challenge      = signal<DailyGameChallenge | null>(null)
+  protected readonly result         = signal<GameResult | null>(null);
+  protected readonly loading        = signal(false);
+  protected readonly loadError      = signal('');
+   protected readonly shareFeedback = signal('');
+  protected readonly isSharing      = signal(false);
+  protected readonly isCopied       = signal(false);
+
+  protected readonly attempts       = computed(() => this.session()?.guesses ?? []);
+  protected readonly attemptCount   = computed(() => this.attempts().length);
   protected readonly revealedSeconds = computed(() => {
     if (!this.attemptCount()) return 0;
     return this.session()?.challenge.rules.revealStages?.[this.attemptCount() - 1] ?? null;
   });
-  protected readonly shareFeedback = signal('');
-  protected readonly isSharing = signal(false);
-  protected readonly isCopied = signal(false);
-  private readonly destroyRef = inject(DestroyRef);
+ 
   private copiedTimeout?: ReturnType<typeof setTimeout>;
 
   constructor() {
