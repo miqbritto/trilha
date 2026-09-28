@@ -1,14 +1,13 @@
 import { HttpClient } from "@angular/common/http";
 import { computed, inject, Injectable, signal } from "@angular/core";
 import { environment } from "../../../environments/environment.development";
-import { sign } from "crypto";
 import { tap, timeout } from "rxjs";
 
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class StudioAccess {
     private readonly http = inject(HttpClient);
-    private readonly apiUrl = `${environment.apiUrl.replace(/\/+$/, '')}/admin/auth}`
+    private readonly apiUrl = `${environment.apiUrl.replace(/\/+$/, '')}/admin/auth`;
 
     private readonly adminKey = signal<string | null>(null)
 

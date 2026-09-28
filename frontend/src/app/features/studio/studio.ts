@@ -9,6 +9,7 @@ import { GameService } from '../../core/services/game.service';
 import { StudioChallengeResponse } from '../../core/models/game-challenge';
 import { Subscription, switchMap, timer } from 'rxjs';
 import { MusicOption } from '../../core/models/music-track';
+import { StudioAccess } from '../../core/services/studio-access.service';
 
 @Component({
   selector: 'app-studio',
@@ -17,7 +18,8 @@ import { MusicOption } from '../../core/models/music-track';
   styleUrl: './studio.scss',
 })
 export class Studio implements OnDestroy {
-  protected adminKey = '';
+  private readonly studioService = inject(StudioAccess);
+  protected adminKey = this.studioService.getKey();
   protected readonly movieService = inject(MovieService);
   private readonly musicTrackService = inject(MusicTrackService);
   private readonly gameService = inject(GameService);

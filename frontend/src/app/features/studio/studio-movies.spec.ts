@@ -1,3 +1,4 @@
+import { StudioAccess } from '../../core/services/studio-access.service';
 import { TestBed } from '@angular/core/testing';
 import { NgForm } from '@angular/forms';
 import { of, Subject, throwError } from 'rxjs';
@@ -20,6 +21,7 @@ describe('Studio movie registration', () => {
     vi.useFakeTimers();
     vi.resetAllMocks();
     TestBed.configureTestingModule({ providers: [
+      { provide: StudioAccess, useValue: { getKey: () => 'key' } },
       { provide: MovieService, useValue: service },
       { provide: MusicTrackService, useValue: {} },
       { provide: GameService, useValue: {} },

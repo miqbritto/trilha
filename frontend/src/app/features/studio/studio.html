@@ -102,23 +102,6 @@
               </div>
             }
             <div class="fields">
-              <label class="full" for="studio-admin-key">
-                Chave de administrador <span>*</span>
-                <input
-                  id="studio-admin-key"
-                  type="password"
-                  name="adminKey"
-                  [ngModel]="adminKey"
-                  (ngModelChange)="updateAdminKey($event)"
-                  required
-                  autocomplete="off"
-                  spellcheck="false"
-                  aria-describedby="admin-key-hint"
-                />
-                <small id="admin-key-hint">
-                  Informe uma vez enquanto esta página estiver aberta.
-                </small>
-              </label>
               <label
                 >Título da música <span>*</span>
                 <input
@@ -231,12 +214,6 @@
           <form #movieForm="ngForm" (ngSubmit)="saveMovie(movieForm)">
             <fieldset class="movie-fields" [disabled]="movieSaving()">
               <div class="fields">
-                <label class="full" for="movie-admin-key">
-                  Chave de administrador <span>*</span>
-                  <input id="movie-admin-key" type="password" name="movieAdminKey"
-                    [ngModel]="adminKey" (ngModelChange)="updateAdminKey($event)"
-                    required autocomplete="off" spellcheck="false" />
-                </label>
                 <label class="full" for="tmdb-search">
                   Buscar filme <span>*</span>
                   <input id="tmdb-search" type="search" name="movieQuery"
@@ -315,12 +292,6 @@
           </div>
           <form #challengeForm="ngForm" (ngSubmit)="saveChallenge(challengeForm)">
             <fieldset [disabled]="challengeSaving()" style="border: 0; padding: 0; margin: 0; min-width: 0">
-            <label class="full" for="challenge-admin-key">
-              Chave de administrador <span>*</span>
-              <input id="challenge-admin-key" type="password" name="challengeAdminKey"
-                [ngModel]="adminKey" (ngModelChange)="updateAdminKey($event)"
-                required autocomplete="off" spellcheck="false" />
-            </label>
             <div class="fields">
               <label class="full"
                 >Data do desafio <span>*</span>
@@ -410,20 +381,6 @@
           }
         </div>
         <form class="agenda-access" (ngSubmit)="loadChallenges()">
-          <label for="agenda-admin-key">
-            Chave de administrador
-            <input
-              id="agenda-admin-key"
-              [disabled]="challengeSaving()"
-              type="password"
-              name="agendaAdminKey"
-              [ngModel]="adminKey"
-              (ngModelChange)="updateAdminKey($event)"
-              required
-              autocomplete="off"
-              spellcheck="false"
-            />
-          </label>
           <button class="button secondary" type="submit"
             [disabled]="!adminKey.trim() || challengesLoading() || challengeSaving()">
             {{ challengesLoading() ? 'Carregando...' : 'Atualizar agenda' }}
@@ -435,7 +392,7 @@
           } @else if (challengesError()) {
             <p class="error" role="alert">{{ challengesError() }}</p>
           } @else if (!challengesLoaded()) {
-            <p>Informe a chave e clique em Atualizar agenda para consultar os desafios cadastrados.</p>
+            <p>Clique em Atualizar agenda para consultar os desafios cadastrados.</p>
           } @else if (challenges().length) {
             <ul>
               @for (challenge of challenges(); track challenge.id) {

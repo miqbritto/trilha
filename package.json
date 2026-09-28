@@ -10,5 +10,8 @@
   },
   "devDependencies": {
     "concurrently": "^9.2.1"
+  },
+  "dependencies": {
+    "@nestjs/throttler": "^6.7.1"
   }
 }

@@ -1,3 +1,4 @@
+import { StudioAccess } from '../../core/services/studio-access.service';
 import { TestBed } from '@angular/core/testing';
 import { NgForm } from '@angular/forms';
 import { of, Subject, throwError } from 'rxjs';
@@ -19,6 +20,7 @@ describe('Studio challenge creation', () => {
     games.getStudioChallenges.mockReturnValue(of([]));
     music.getAllTracks.mockReturnValue(of([track]));
     TestBed.configureTestingModule({ providers: [
+      { provide: StudioAccess, useValue: { getKey: () => 'key' } },
       { provide: GameService, useValue: games },
       { provide: MovieService, useValue: {} },
       { provide: MusicTrackService, useValue: music },

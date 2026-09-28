@@ -1,8 +1,15 @@
 import { Routes } from '@angular/router';
+import { studioAccessGuard } from './core/guards/studio-access.guard';
 
 export const routes: Routes = [
     {
+        path: 'studio/login',
+        title: 'Acesso ao estúdio | trilha',
+        loadComponent: () => import('./features/studio/studio-login').then(m => m.StudioLogin),
+    },
+    {
         path: "studio",
+        canActivate: [studioAccessGuard],
         title: "Estúdio | trilha",
         loadComponent: () =>
             import("./features/studio/studio")
