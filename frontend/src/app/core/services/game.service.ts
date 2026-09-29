@@ -4,7 +4,7 @@ import { DailyGameChallenge, GameChallengeHistory, NewChallenge, StudioChallenge
 import { ValidateGuessResponse } from "../models/game-guess";
 import { Movie } from "../models/movie";
 import { GameResult } from "../models/game-session";
-import { environment } from '../../../environments/environment.development';
+import { environment } from '../../../environments/environment';
 import { map } from 'rxjs';
 
 

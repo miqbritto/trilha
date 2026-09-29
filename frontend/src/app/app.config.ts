@@ -7,7 +7,7 @@ import { provideHttpClient } from '@angular/common/http'
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
-    provideRouter(routes), provideClientHydration(),
+    provideRouter(routes),
     provideHttpClient()
   ]
 };

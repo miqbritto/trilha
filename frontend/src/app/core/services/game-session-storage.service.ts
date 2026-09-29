@@ -1,7 +1,7 @@
 import { inject, Injectable, PLATFORM_ID } from '@angular/core';
 import { GameSession } from '../models/game-session';
 import { isPlatformBrowser } from '@angular/common';
-import { environment } from '../../../environments/environment.development';
+import { environment } from '../../../environments/environment';
 
 @Injectable({ providedIn: "root" })
 export class GameSessionStorage {

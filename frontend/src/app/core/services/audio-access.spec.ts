@@ -4,7 +4,7 @@ import { HttpTestingController, provideHttpClientTesting } from '@angular/common
 import { GameService } from './game.service';
 import { MusicTrackService } from './music-track.service';
 import { GameSessionStorage } from './game-session-storage.service';
-import { environment } from '../../../environments/environment.development';
+import { environment } from '../../../environments/environment';
 
 describe('Audio and catalog access', () => {
   const base = environment.apiUrl.replace(/\/+$/, '');

@@ -1,6 +1,6 @@
 import { HttpClient } from "@angular/common/http";
 import { computed, inject, Injectable, signal } from "@angular/core";
-import { environment } from "../../../environments/environment.development";
+import { environment } from "../../../environments/environment";
 import { tap, timeout } from "rxjs";
 
 

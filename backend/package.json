@@ -44,7 +44,8 @@
     "pg": "^8.23.0",
     "postgres": "^3.4.9",
     "reflect-metadata": "^0.2.2",
-    "rxjs": "^7.8.1"
+    "rxjs": "^7.8.1",
+    "typeorm": "^1.1.1"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.2.0",
@@ -69,7 +70,6 @@
     "ts-loader": "^9.5.2",
     "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",
-    "typeorm": "^1.1.1",
     "typescript": "^5.7.3",
     "typescript-eslint": "^8.20.0"
   },
