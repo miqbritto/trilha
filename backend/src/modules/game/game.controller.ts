@@ -40,6 +40,8 @@ export class GameController {
     response.setHeader('X-Content-Type-Options', 'nosniff');
     try {
       const audio = await this.gameService.getChallengeAudio(challengeId, range);
+
+      response.setHeader('Cache-Control', 'private, max-age=86400')
       if (audio.contentRange) {
         response.status(206);
         response.setHeader('Content-Range', audio.contentRange);
@@ -54,6 +56,8 @@ export class GameController {
       file.setErrorLogger(() => {});
       return file;
     } catch (error) {
+      response.setHeader('Cache-Control', 'private, no-store');
+
       if (error instanceof AudioRangeError) {
         response.setHeader('Content-Range', `bytes */${error.size}`);
       }
